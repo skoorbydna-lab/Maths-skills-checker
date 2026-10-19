@@ -30,6 +30,8 @@ li{display:flex;flex-wrap:wrap;gap:0 .5em;padding:.6em .2em;border-bottom:1px so
 .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;font-size:.95em;line-height:1.15}
 .fr i{font-style:normal;padding:0 .25em}.fr i:first-child{border-bottom:.08em solid currentColor}
 .ov{border-top:.08em solid currentColor;padding:0 .1em}
+.sqrt{display:inline-flex;align-items:stretch;white-space:nowrap}.rad{font-size:1.12em;line-height:1;margin-right:-.05em}.rcl{border-top:.075em solid currentColor;padding:.05em .12em 0 .1em;margin-top:.06em;line-height:1.05}
+.mixdd{max-height:62vh;overflow:auto;min-width:320px}.mh{font-weight:700;margin-top:8px;color:var(--c1)}.mt label{display:block}.mt details{margin-left:18px}.mt summary{font-size:.85em;padding:2px 8px;display:inline-block;margin:2px 0}.ms{display:block;font-size:.9em}#mclr{margin-top:8px}
 .t{border-collapse:collapse;margin-top:.3em;font-size:.8em}.t td,.t th{border:1px solid var(--bd);padding:2px 8px;text-align:center}
 .chip{font-size:13px;padding:4px 10px;border-radius:999px;opacity:.6}.chip.on{opacity:1;background:var(--fg);color:var(--bg)}.chip.na{opacity:.3;cursor:not-allowed;text-decoration:line-through}.chip small{opacity:.7}.rm #strands,.rm #topic{display:none}
 .gp{display:flex;gap:6px;align-items:center;padding:4px 8px;border:2px solid var(--bd);border-radius:10px}.gp.act{border-color:var(--c1)}
@@ -48,6 +50,7 @@ svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
 <div class="g" id="tiers"><button data-t="F" class="on">Foundation</button><button data-t="H">Higher</button></div>
 <div class="gp act" id="ga"><b>By strand</b><select id="sd" aria-label="Strand"><option value="0">Number</option><option value="1">Algebra</option><option value="2">Shape and space</option><option value="3">Data handling</option><option value="4">Probability</option></select><select id="topic" aria-label="Topic"></select><select id="sub" aria-label="Sub-topic" style="display:none"></select></div>
 <div class="gp" id="gb"><b>By route map</b><select id="yr" aria-label="Year group"><option value="">Year group…</option><option>Year 7</option><option>Year 8</option><option>Year 9 Set 1</option><option>Year 9 Set 2/3</option><option>Year 9 Set 3/4</option><option>Year 10 Foundation</option><option>Year 10 Higher</option><option>Year 11 Foundation</option><option>Year 11 Higher</option></select><details id="tmd"><summary>Terms: all</summary><div class="dd"><label><input type="checkbox" value="1" checked> Term 1</label><label><input type="checkbox" value="2" checked> Term 2</label><label><input type="checkbox" value="3" checked> Term 3</label><label><input type="checkbox" value="4" checked> Term 4</label><label><input type="checkbox" value="5" checked> Term 5</label><label><input type="checkbox" value="6" checked> Term 6</label></div></details></div>
+<details id="mix" class="gp"><summary>Mix topics: none</summary><div class="dd mixdd" id="mixbody"></div></details>
 <label>Questions per column <select id="n"></select></label>
 <label>Columns <select id="cl"><option value="0">All 3 levels</option><option value="1">Level 1 only</option><option value="2">Level 2 only</option><option value="3">Level 3 only</option></select></label>
 <button id="go">New questions</button><button id="sa">Show answers</button>
@@ -67,10 +70,10 @@ const fr=(n,d)=>`<span class=fr><i>${n}</i><i>${d}</i></span>`,sf=(n,d)=>{let g=
 const up=(b,e)=>`${b}<sup>${e}</sup>`,X2=up('x',2),mn=s=>String(s).replace(/-/g,'−'),nf=n=>n.toLocaleString('en-GB').replace(/,/g,' ');
 const pl=(...t)=>{let s='';t.forEach(([c,v])=>{if(!c)return;let a=Math.abs(c);s+=(s?(c<0?' − ':' + '):(c<0?'−':''))+(v&&a==1?'':a)+v});return s||'0'};
 const bi=(b,a=1)=>`(${pl([a,'x'],[b,''])})`;
-const sqr=n=>{let k=1;for(let i=2;i*i<=n;i++)if(n%(i*i)==0)k=i;let r=n/(k*k);return(k>1?k:'')+(r>1?`√<span class=ov>${r}</span>`:'')};
+const sqr=n=>{let k=1;for(let i=2;i*i<=n;i++)if(n%(i*i)==0)k=i;let r=n/(k*k);return(k>1?k:'')+(r>1?sq(r):'')};
 const pf=n=>{let o={};for(let p=2;n>1;p++)while(n%p==0){o[p]=(o[p]||0)+1;n/=p}return Object.entries(o).map(([p,e])=>e>1?up(p,e):p).join(' × ')};
 const sum=a=>a.reduce((x,y)=>x+y,0),TR=[[3,4,5],[5,12,13],[6,8,10],[8,15,17],[9,12,15],[7,24,25]];
-const D=Math.PI/180,p3=n=>String(n).padStart(3,'0'),sq=n=>`√<span class=ov>${n}</span>`;
+const D=Math.PI/180,p3=n=>String(n).padStart(3,'0'),sq=n=>`<span class=sqrt><span class=rad>√</span><span class=rcl>${n}</span></span>`;
 const sv=(w,h,b)=>`<svg viewBox="0 0 ${w} ${h}" style="width:${(w/22).toFixed(2)}em;max-width:100%;height:auto;stroke:currentColor;fill:none;stroke-width:1.5;display:block;margin-top:.3em">${b}</svg>`;
 const tx=(x,y,s,a='middle')=>`<text x="${x}" y="${y}" text-anchor="${a}">${s}</text>`;
 const vec=(a,b)=>`<span class=v><i>${mn(a)}</i><i>${mn(b)}</i></span>`;
@@ -102,6 +105,8 @@ const stg=(v,t1,t2,t3)=>{let X=t=>30+t*190/t3;return sv(250,170,`<path d="M30 20
 const gx=(f,a,b,st=.1)=>{let p=[];for(let x=a;x<=b+1e-9;x+=st)p.push(`${(130+x*20).toFixed(1)} ${(100-f(x)*10).toFixed(1)}`);return'M'+p.join('L')};
 const gp=(...ps)=>sv(260,200,`<path d="${[...Array(13)].map((_,i)=>`M${10+i*20} 0V200`).join('')}${[...Array(11)].map((_,i)=>`M0 ${i*20}H260`).join('')}" style="stroke-width:.3"/><path d="M10 100H250M130 5V195"/>`+[-6,-4,-2,2,4,6].map(v=>tx(130+v*20,114,mn(v))).join('')+[-8,-4,4,8].map(v=>tx(124,104-v*10,mn(v),'end')).join('')+ps.map(q=>`<path d="${q}" style="stroke:var(--c3);stroke-width:2.2"/>`).join(''));
 const dv=n=>[...Array(n)].map((_,i)=>i+1).filter(i=>n%i==0);
+const pic=(rows,k)=>sv(300,34+rows.length*28,rows.map(([n,c],i)=>{let y=22+i*28,g='';for(let j=0;j<Math.floor(c);j++)g+=`<circle cx="${88+j*24}" cy="${y-5}" r="9" fill="currentColor" fill-opacity=".3"/>`;if(c%1)g+=`<path d="M${88+Math.floor(c)*24} ${y-14}a9 9 0 0 0 0 18z" fill="currentColor" fill-opacity=".3"/>`;return tx(76,y,n,'end')+g}).join('')+tx(10,26+rows.length*28,`Key: one circle = ${k} students`,'start'));
+const dtg=(p,xm,ym)=>{let X=t=>35+t*190/xm,Y=d=>130-d*110/ym;return sv(250,170,`<path d="M35 15V130H230"/><path d="${p.map(([t,d],i)=>(i?'L':'M')+X(t)+' '+Y(d)).join('')}" style="stroke:var(--c3);stroke-width:2"/>`+[...Array(xm*2+1)].map((_,i)=>`<path d="M${X(i/2)} 130v4"/>`+(i%2?'':tx(X(i/2),146,i/2))).join('')+[0,1,2,3,4].map(i=>tx(30,Y(ym*i/4)+4,ym*i/4,'end')).join('')+tx(130,164,'Time (hours)')+tx(8,70,'km'))};
 const ST=['Number','Algebra','Shape and space','Data handling','Probability'];
 // [strand, topic, Higher-only, H => [level1, level2, level3]]
 const T=[
@@ -351,6 +356,85 @@ const T=[
 ()=>P([[`Tom says, "The sum of two prime numbers is always even." Is he correct? Give an example.`,`No. For example 2 + 3 = 5, which is odd.`],[`Kim says 0.4 is smaller than 0.35 because 4 is smaller than 35. Is she correct?`,`No. 0.4 = 0.40, which is bigger than 0.35.`],[`Sam says, "Squaring a number always makes it bigger." Is he correct? Give an example.`,`No. For example 0.5² = 0.25, which is smaller than 0.5.`],[`Ava says, "Multiplying by 10 just adds a zero." Give an example where this is wrong.`,`0.5 × 10 = 5, not 0.50.`]]),
 ()=>{let a=R(2,6),b=a+R(1,5);return P([[`Show that ${a*b} ÷ 0.5 = ${a*b*2}.`,`${a*b} ÷ 0.5 = ${a*b} × 2 = ${a*b*2}`],[`Show that ${fr(a,b)} + ${fr(b,a)} is greater than 2.`,`${fr(a,b)} + ${fr(b,a)} = ${fr(a*a+' + '+b*b,a*b)} and ${a*a} + ${b*b} > 2 × ${a*b} because (${b} − ${a})² > 0.`]])}]]
 
+,
+[0,'Number lines and scales',0,H=>{let nl=(a,b,k)=>{let X=i=>20+i*26,v=a+k*(b-a)/10;return[sv(300,70,`<path d="M20 40H280"/>`+[...Array(11)].map((_,i)=>`<path d="M${X(i)} 34v12"/>`).join('')+[0,5,10].map(i=>tx(X(i),64,mn(+(a+i*(b-a)/10).toFixed(2)))).join('')+`<path d="M${X(k)} 10v22M${X(k)} 32l-4-6M${X(k)} 32l4-6"/>`+tx(X(k),8,'X')),+v.toFixed(2)]},K=()=>P([1,2,3,4,6,7,8,9]);return[
+()=>{let a=P([0,10,20,50]),s=P([2,5,10]),[g,v]=nl(a,a+10*s,K());return[`What number is at X?${g}`,v]},
+()=>{let a=P([-50,-20,-10]),s=P([2,5,10]),[g,v]=nl(a,a+10*s,K());return[`What number is at X?${g}`,mn(v)]},
+()=>{let a=P([0,0.5,1]),s=P([.1,.2,.5]),[g,v]=nl(a,+(a+10*s).toFixed(2),K());return[`What number is at X?${g}`,v]}]}],
+[2,'Unit conversion (given rate)',0,H=>{let U=[['gallons','litres',4.5],['miles','kilometres',1.6],['pounds','kilograms',.45],['inches','centimetres',2.5]],f=(a,b)=>+(a*b).toFixed(2),one=x=>x.replace(/s$/,'');return[
+()=>{let[x,y,r]=P(U),n=R(2,9);return[`Convert ${n} ${x} to ${y}. Use 1 ${one(x)} = ${r} ${y}.`,`${f(n,r)} ${y}`]},
+()=>{let[x,y,r]=P(U),n=R(2,9);return[`Convert ${f(n,r)} ${y} to ${x}. Use 1 ${one(x)} = ${r} ${y}.`,`${n} ${x}`]},
+()=>{let d=R(2,9)*5,k=P([8,10,12,5,16]);return[`A car travels ${d} miles. Use 5 miles = 8 kilometres. The car uses 1 litre of fuel for every ${k} km. How many litres are used? (calculator)`,`${+(d*1.6/k).toFixed(2)} litres`]}]}],
+[0,'Earnings, offers and tax',0,H=>[
+()=>{let p=R(2,9)*10,n=P([3,4,5]);return P([[`A shop has "${n} for the price of ${n-1}" on T-shirts. One T-shirt costs £${p}. Work out the cost of ${n} T-shirts.`,`£${p*(n-1)}`],[`Pens cost ${p}p each. Special offer: buy 2, get the third free. Work out the cost of 6 pens.`,`£${(p*4/100).toFixed(2)}`]])},
+()=>{let h=R(20,35),r=P([9.5,10.2,11.2]),e=R(3,8),r2=P([11.8,12.5,13.6]);return[`This week Liam works ${h} hours at £${r.toFixed(2)} per hour and ${e} extra hours at £${r2.toFixed(2)} per hour. Work out his total pay.`,`£${(h*r+e*r2).toFixed(2)}`]},
+()=>{let s=R(15,40)*1000+P([0,500]);return[`Income tax is 0% on the first £12 570 of earnings and 20% on the rest. Kiran earns £${nf(s)}. Work out her income tax. (calculator)`,`£${((s-12570)*.2).toFixed(2)}`]}]],
+[3,'Pictograms',0,H=>{let nm=['Walk','Bus','Car','Bike'],g=()=>{let k=P([2,4,6,10]);return[nm.map(n=>[n,R(1,6)+(Math.random()<.4?.5:0)]),k]};return[
+()=>{let[r,k]=g(),i=R(0,3);return[`How many students travel by ${r[i][0].toLowerCase()}?${pic(r,k)}`,r[i][1]*k]},
+()=>{let[r,k]=g(),i=R(0,3),j=(i+R(1,3))%4;return P([[`How many students travel by ${r[i][0].toLowerCase()} or ${r[j][0].toLowerCase()}?${pic(r,k)}`,(r[i][1]+r[j][1])*k],[`How many students were asked altogether?${pic(r,k)}`,r.reduce((s,x)=>s+x[1],0)*k]])},
+()=>{let k=P([4,6,8,10]),c=R(2,6)+(Math.random()<.5?.5:0);return[`In a pictogram each symbol represents ${k} students. ${c*k} students travel by bus. How many symbols are needed for the bus?`,`${Math.floor(c)}${c%1?' and a half':''} symbols`]}]}],
+[1,'Distance-time graphs',0,H=>{let jy=()=>{let t1,s1,d1,t2,t3,s3,k=0;do{t1=P([1,1.5,2]);s1=P([20,30,40,60]);d1=s1*t1;t2=P([.5,1]);t3=P([1,1.5,2]);s3=d1/t3;k++}while(!Number.isInteger(s3)&&k<50);let tm=t1+t2+t3;return{t1,s1,d1,t2,t3,s3,tm,g:dtg([[0,0],[t1,d1],[t1+t2,d1],[tm,0]],Math.ceil(tm),Math.ceil(d1/20)*20)}};return[
+()=>{let j=jy();return[`The graph shows a journey. Work out the speed in the first part (km/h).${j.g}`,`${j.s1} km/h`]},
+()=>{let j=jy();return P([[`The graph shows a journey. For how many minutes was the traveller stopped?${j.g}`,`${j.t2*60} minutes`],[`The graph shows a journey. Work out the speed on the return part (km/h).${j.g}`,`${j.s3} km/h`]])},
+()=>{let j=jy();return[`The graph shows a journey. Work out the average speed for the whole journey (1 d.p.).${j.g}`,`${(2*j.d1/j.tm).toFixed(1)} km/h`]}]}],
+[0,'Always, sometimes or never true',0,H=>{let S=[['The sum of two odd numbers is even.','Always'],['The product of two odd numbers is even.','Never'],['A prime number is odd.','Sometimes (2 is prime and even)'],['A square number is even.','Sometimes (4 is even, 9 is odd)'],['The sum of three consecutive integers is a multiple of 3.','Always'],['Multiplying a number by 2 gives a bigger number.','Sometimes (not for negatives or 0)'],['x² is greater than x.','Sometimes (not for 0 ≤ x ≤ 1)'],['The angles of a triangle add up to 180°.','Always'],['One angle in a triangle is obtuse.','Sometimes'],['The diagonals of a rectangle are perpendicular.','Sometimes (only if it is a square)'],['A rhombus has four right angles.','Sometimes (only if it is a square)'],['The mean of a set of numbers is one of the numbers.','Sometimes'],['A multiple of 6 is a multiple of 3.','Always'],['The square root of a number is smaller than the number.','Sometimes (not for numbers less than 1)'],['The exterior angles of a polygon add up to 360°.','Always'],['If a > b then a² > b².','Sometimes (not if both are negative)']],q=(i,j)=>{let[s,a]=P(S.slice(i,j));return[`Is this statement always true, sometimes true or never true? Give an example or reason. "${s}"`,a]};return[()=>q(0,8),()=>q(4,12),()=>q(8,16)]}],
+[0,'Counting and arrangements',0,H=>[
+()=>{let s=R(2,4),m=R(3,7),d=R(2,5);return[`A menu has ${s} starters, ${m} main courses and ${d} desserts. How many different 3-course meals are possible?`,s*m*d]},
+()=>{let n=P([3,4,5]);return[`How many different ${n}-digit numbers can be made using ${n} different non-zero digits, each used once?`,[...Array(n)].reduce((p,_,i)=>p*(n-i),1)]},
+()=>{let ds=P([[2,4,6,7,9],[1,3,4,6,8],[2,3,5,8,9],[1,2,4,6,7]]);return[`How many 5-digit odd numbers can be made using the digits ${ds.join(', ')}, each used once?`,ds.filter(x=>x%2).length*24]}]],
+[0,'Bounds',1,H=>[
+()=>{let v=R(11,99);return P([[`A length is ${v} cm to the nearest cm. Write down the lower and upper bounds.`,`${v-.5} ≤ L < ${v+.5}`],[`A mass is ${v*10} g to the nearest 10 g. Write down the lower and upper bounds.`,`${v*10-5} ≤ m < ${v*10+5}`]])},
+()=>{let a=R(12,60),b=R(12,60);return P([[`a = ${a} and b = ${b}, both to the nearest integer. Work out the upper bound of a + b.`,a+b+1],[`a = ${a} and b = ${b}, both to the nearest integer. Work out the lower bound of a − b.`,a-b-1]])},
+()=>{let a=R(20,80),b=P([10,20,30,40,50]);return[`a = ${a} to the nearest integer and b = ${b} to 1 significant figure. Work out the upper bound of 2a² − b². Show your working.`,`a = ${a+.5}, b = ${b-5}: 2 × ${(a+.5)**2} − ${(b-5)**2} = ${2*(a+.5)**2-(b-5)**2}`]}]],
+[3,'Quartiles from a list',0,H=>{let ls=n=>[...Array(n)].map(()=>R(2,40)).sort((x,y)=>x-y),md=x=>{let k=x.length;return k%2?x[(k-1)/2]:(x[k/2-1]+x[k/2])/2},q=a=>{let n=a.length;return[md(a.slice(0,Math.floor(n/2))),md(a),md(a.slice(Math.ceil(n/2)))]};return[
+()=>{let a=ls(9);return[`Here are 9 numbers in order: ${a.join(', ')}. Write down the median.`,q(a)[1]]},
+()=>{let a=ls(11),[l,m,u]=q(a);return[`Here are 11 numbers in order: ${a.join(', ')}. Work out the lower quartile, the upper quartile and the interquartile range.`,`LQ ${l}, UQ ${u}, IQR ${u-l}`]},
+()=>{let a=ls(12),[l,m,u]=q(a);return[`Here are 12 numbers in order: ${a.join(', ')}. Work out the median and the interquartile range.`,`Median ${m}, IQR ${u-l}`]}]}],
+[2,'Maps and scales',0,H=>[
+()=>{let n=P([1000,5000,10000,50000]),c=R(2,9);return[`A map has a scale of 1 : ${nf(n)}. A road is ${c} cm long on the map. How long is the road in real life? Give your answer in metres.`,`${nf(c*n/100)} m`]},
+()=>{let n=P([5000,25000,50000]),km=R(2,9);return[`A map has a scale of 1 : ${nf(n)}. Two towns are ${km} km apart in real life. How far apart are they on the map?`,`${+(km*100000/n).toFixed(2)} cm`]},
+()=>{let n=P([100,200,500]),c=R(2,6),d=R(2,6);return[`A plan has a scale of 1 : ${n}. A room is ${c} cm by ${d} cm on the plan. Work out its real area in m².`,`${+(c*n/100*d*n/100).toFixed(2)} m²`]}]],
+[0,'Decimals to fractions',0,H=>[
+()=>{let d=P([.5,.25,.75,.2,.4,.6,.8,.1,.3,.7,.9]);return[`Write ${d} as a fraction in its simplest form.`,sf(Math.round(d*100),100)]},
+()=>{let n=R(1,19)*5;return[`Write 0.${String(n).padStart(2,'0')} as a fraction in its simplest form.`,sf(n,100)]},
+()=>{let n=P([125,375,625,875,1875]);return[`Write ${n/1000} as a fraction in its simplest form.`,n==1875?fr(15,8):sf(n,1000)]}]],
+[1,'Special sequences',0,H=>{let S=[['triangular',n=>n*(n+1)/2],['square',n=>n*n],['cube',n=>n**3],['powers of 2',n=>2**(n-1)]];return[
+()=>{let[nm,f]=P(S);return[`Name this sequence: ${[1,2,3,4,5].map(f).join(', ')}, …`,nm=='powers of 2'?'Powers of 2':nm[0].toUpperCase()+nm.slice(1)+' numbers']},
+()=>{let[nm,f]=P(S),k=R(5,7);return[`The ${nm} numbers start ${[1,2,3,4].map(f).join(', ')}, … Work out the ${k}th term.`,f(k)]},
+()=>{let a=R(2,6),b=R(1,5),n=R(10,20);return P([[`Write down the nth term of the sequence ${[1,2,3,4].map(i=>i*i+a).join(', ')}, …`,`n² + ${a}`],[`The nth term of a sequence is n² + ${b}. Work out the ${n}th term.`,n*n+b],[`The triangular numbers start 1, 3, 6, 10, … The nth term is n(n + 1) ÷ 2. Work out the 20th term.`,210]])}]}],
+[1,'Algebraic modelling',0,H=>[
+()=>{let a=R(1,3);return[`Sunita is x years old. Beth is ${a} year${a>1?'s':''} younger. Joel is double Sunita's age. Write an expression for the total of their ages.`,`${pl([4,'x'],[-a,''])} years`]},
+()=>{let x=3*R(4,8)+1;return[`Sunita is x years old. Beth is one year younger than Sunita. Joel is double Sunita's age. The mean of their three ages is ${(4*x-1)/3}. Work out Sunita's age.`,`4x − 1 = ${4*x-1}, so x = ${x}`]},
+()=>{let k=P([40,50,80,90]),g=G(k,60);return[`A factory packs x boxes per hour. Each box has ${k} teabags. Write an expression for the number of teabags packed per minute, in its simplest form.`,60/g==1?`${k/g}x`:fr(`${k/g}x`,60/g)]}]],
+[0,'Comparing and deciding',0,H=>[
+()=>{let a=R(1,4),b=R(2,5),k=R(2,4);return P([[`Kai says "${a*k} : ${b*k} is equivalent to ${a} : ${b}". Is he correct?`,`Yes: both parts are divided by ${k}`],[`Kai says "${a*k+1} : ${b*k} is equivalent to ${a} : ${b}". Is he correct?`,`No: ${a*k+1} ÷ ${a} = ${+((a*k+1)/a).toFixed(2)} but ${b*k} ÷ ${b} = ${k}`]])},
+()=>{let a=P([20,28,32,40]),p=P([10,20,25]),b=P([40,60,80]),q=P([10,15,20]),x=a*(1+p/100),y=b*(1-q/100);return[`${a} is increased by ${p}%. ${b} is decreased by ${q}%. Which answer is bigger? Show how you decide.`,`${+x.toFixed(2)} and ${+y.toFixed(2)}, so the ${x>y?'first':'second'} is bigger`]},
+()=>{let n1=P([250,400,500]),n2=P([750,800,1000]),c1=R(150,300)/100,c2=+(c1*(n2/n1)*P([.85,.9,1.1])).toFixed(2);return[`Shop A: ${n1} g of rice for £${c1.toFixed(2)}. Shop B: ${n2} g for £${c2.toFixed(2)}. Which is better value? Show your working.`,`${c1/n1<c2/n2?'Shop A':'Shop B'}: ${(c1/n1*100).toFixed(2)}p per g and ${(c2/n2*100).toFixed(2)}p per g`]}]],
+[2,'Journeys and average speed',0,H=>[
+()=>{let s=P([30,40,48,60]),t=P([1.5,2,2.5,3]);return[`A car travels at ${s} mph for ${t} hours. How far does it travel?`,`${+(s*t).toFixed(2)} miles`]},
+()=>{let s1=P([40,48,60]),t1=P([2,2.5,3]),d2=P([30,45,60]),s2=P([30,45,60]);return[`A journey has two parts. First: ${s1*t1} miles at ${s1} mph. Second: ${d2} miles at ${s2} mph. Work out the total time for the journey.`,`${t1} h + ${+(d2/s2).toFixed(2)} h = ${+(t1+d2/s2).toFixed(2)} hours`]},
+()=>{let a=P([20,30,40,60]),b=P([30,40,60,80]);while(a==b)b=P([30,40,60,80]);let d=P([60,120,240]);return[`A cyclist rides ${d} km at ${a} km/h then rides back ${d} km at ${b} km/h. Work out the average speed for the whole journey (1 d.p.).`,`${(2*d/(d/a+d/b)).toFixed(1)} km/h`]}]],
+[2,'Volume and rates of flow',0,H=>[
+()=>{let l=R(20,50),w=R(10,30),h=R(10,30),r=P([500,1000,2000]);return[`A tank is ${l} cm by ${w} cm by ${h} cm. Water flows in at ${r} cm³ per minute. How long does it take to fill? (1 d.p.)`,`${(l*w*h/r).toFixed(1)} minutes`]},
+()=>{let r=R(5,15),h=R(10,30),q=P([200,300,400]);return[`A cylinder has radius ${r} cm and height ${h} cm. Water is poured in at ${q} cm³ per second. How long does it take to fill? (1 d.p., calculator)`,`${(Math.PI*r*r*h/q).toFixed(1)} seconds`]},
+()=>{let r=P([6,9,12]),q=P([200,300,325,400]);return[`A bowl is a hemisphere of radius ${r} cm. Volume of a sphere = 4/3 πr³. Water is poured in at ${q} cm³ per second. How long does it take to fill? (1 d.p., calculator)`,`${(2/3*Math.PI*r**3/q).toFixed(1)} seconds`]}]],
+[1,'Algebraic proof (more)',1,H=>[
+()=>{let d=P([2,4,6,8]);return[`Two integers are n and n + ${d}. Show that their product plus ${(d/2)**2} is a square number.`,`n(n + ${d}) + ${(d/2)**2} = n² + ${d}n + ${(d/2)**2} = (n + ${d/2})²`]},
+()=>P([[`Show that the sum of the squares of two consecutive integers is always odd.`,`n² + (n + 1)² = 2n² + 2n + 1 = 2(n² + n) + 1, which is odd`],[`Show that (n + 1)² − n² is always odd.`,`(n + 1)² − n² = 2n + 1, which is odd`]]),
+()=>[`Prove that the difference of the squares of two consecutive odd numbers is a multiple of 8.`,`(2n + 3)² − (2n + 1)² = 8n + 8 = 8(n + 1)`]]],
+[1,'Problems in context (equations)',0,H=>[
+()=>{let s=P([55,62,70]),n=R(3,9);return[`${n} small bags of popcorn have a total mass of ${s*n} g. Work out the mass of one small bag.`,`${s} g`]},
+()=>{let s=P([55,62,70]),l=P([95,110,120]),n=R(2,5),m=R(1,3);return[`${n} small bags have a total mass of ${s*n} g. ${n+1} small bags and ${m} large bags have a total mass of ${(n+1)*s+m*l} g. Work out the mass of one large bag.`,`${l} g`]},
+()=>{let a1,c1,a2,c2,A=R(6,14),C=R(3,8);do{a1=R(1,4);c1=R(1,4);a2=R(1,4);c2=R(1,4)}while(a1*c2==a2*c1);return[`${a1} adult and ${c1} child tickets cost £${a1*A+c1*C}. ${a2} adult and ${c2} child tickets cost £${a2*A+c2*C}. Work out the cost of an adult ticket and of a child ticket.`,`Adult £${A}, child £${C}`]}]],
+[1,'Inequalities reasoning',0,H=>[
+()=>{let a=R(-4,0),b=a+R(4,7);return[`Write down all the integers that satisfy ${mn(a)} ≤ x < ${mn(b)}.`,[...Array(b-a)].map((_,i)=>mn(a+i)).join(', ')]},
+()=>{let c0=R(5,9),d0=R(1,3),a=c0-R(1,2),b=d0+R(1,2);return[`c > ${a}, d < ${b} and c − d = ${c0-d0}. Work out a possible pair of values for c and d.`,`For example c = ${c0}, d = ${d0}`]},
+()=>{let k=R(2,4),b=R(1,6),lo=R(-3,2),hi=lo+R(2,5);return[`Solve ${k*lo+b} < ${pl([k,'x'],[b,''])} ≤ ${k*hi+b}`,`${mn(lo)} < x ≤ ${mn(hi)}`]}]],
+[0,'Primes and reasoning',0,H=>[
+()=>{let p=P([[3,5],[3,7],[5,7],[2,11],[3,11],[5,11]]);return[`Two prime numbers are multiplied together. The answer is ${p[0]*p[1]}. What are the two primes?`,`${p[0]} and ${p[1]}`]},
+()=>{let pr=[2,3,5,7,11,13,17,19,23,29,31,37],lo,c;do{lo=R(20,70);c=pr.filter(p=>2*p>lo&&2*p<lo+10)}while(c.length!=1);return[`Two prime numbers are multiplied together. The answer is an even number between ${lo} and ${lo+10}. What is the answer, and which two primes were multiplied?`,`${2*c[0]} = 2 × ${c[0]}`]},
+()=>{let[n,f]=P([[91,'7 × 13'],[119,'7 × 17'],[133,'7 × 19'],[143,'11 × 13'],[161,'7 × 23'],[187,'11 × 17']]);return[`Show that ${n} is not a prime number.`,`${n} = ${f}`]}]]
+
 ].map(([s,n,h,f])=>({s,n,h,f}));
 const lsh=()=>{let W=R(8,14),Q=R(7,12),w=R(2,W-4),h=R(2,Q-3),s=10,X=20,Y=20;return[`Work out the area and perimeter of this shape. All angles are right angles.${sv(220,170,`<path d="M${X} ${Y}H${X+(W-w)*s}V${Y+h*s}H${X+W*s}V${Y+Q*s}H${X}Z"/>`+tx(X+W*s/2,Y+Q*s+16,W+' cm')+tx(X-6,Y+Q*s/2,Q+' cm','end')+tx(X+(W-w/2)*s,Y+h*s-6,w+' cm')+tx(X+(W-w)*s-6,Y+h*s/2,h+' cm','end'))}`,`Area ${W*Q-w*h} cm², perimeter ${2*(W+Q)} cm`]};
 const OV={
@@ -562,36 +646,262 @@ const SUB4={
 ['Missing points',L=>{let x=R(-3,3),y=R(-3,3),w=R(2,6),h=R(2,6),mx=R(-3,3),my=R(-3,3);if(L==1)return[`A(${mn(x)}, ${mn(y)}), B(${mn(x)}, ${mn(y+h)}) and C(${mn(x+w)}, ${mn(y+h)}) are three vertices of rectangle ABCD. Write down the coordinates of D.`,`(${mn(x+w)}, ${mn(y)})`];return L==2?[`M(${mn(mx)}, ${mn(my)}) is the midpoint of AB. A is (${mn(x)}, ${mn(y)}). Work out the coordinates of B.`,`(${mn(2*mx-x)}, ${mn(2*my-y)})`]:[`ABCD is a parallelogram with A(${mn(x)}, ${mn(y)}), B(${mn(x+w)}, ${mn(y+1)}) and C(${mn(x+w+2)}, ${mn(y+h+1)}). Work out the coordinates of D.`,`(${mn(x+2)}, ${mn(y+h)})`]}]]
 };
 Object.entries(SUB4).forEach(([n,a])=>{let t=T.find(x=>x.n==n);if(t)t.sub=a.map(x=>[x[0],x[1],x[2]||t.h&&1||0])});
+const EXS=[];
+const EXTRA={
+'Order of operations':[
+['Insert brackets',L=>{let a=R(2,9),b=R(2,9),c=R(4,9),d=R(1,3);return L==1?[`Put one pair of brackets in ${a} + ${b} × ${c} so that it equals ${(a+b)*c}.`,`(${a} + ${b}) × ${c}`]:L==2?[`Put one pair of brackets in ${a} × ${b} + ${c} so that it equals ${a*(b+c)}.`,`${a} × (${b} + ${c})`]:[`Put two pairs of brackets in ${a} + ${b} × ${c} − ${d} so that it equals ${(a+b)*(c-d)}.`,`(${a} + ${b}) × (${c} − ${d})`]}],
+['Powers and roots first',L=>{let a=R(2,9),b=R(2,5),c=R(2,6);return L==1?[`Work out ${a} + ${b}²`,a+b*b]:L==2?[`Work out (${a} + ${b})² − ${c}`,(a+b)**2-c]:[`Work out ${a}² − ${b}³ ÷ ${b} + ${sq(c*c)}`,a*a-b*b*b/b+c]}]],
+'Indices':[
+['Powers as numbers',L=>{let a=R(2,6),n=R(2,5);return L==1?[`Write ${Array(n).fill(a).join(' × ')} as a power.`,up(a,n)]:L==2?[`Work out ${up(a,n)}`,a**n]:[`Work out ${up(a,2)} + ${up(a,3)}`,a*a+a**3]}],
+['Roots',L=>{let r=R(2,12);return L==1?[`Write down the value of ${sq(r*r)}.`,r]:L==2?(()=>{let q=P([4,9,16,25]);return[`Work out ${sq(r*r)} + ${sq(q)}.`,r+Math.sqrt(q)]})():[`Write down the cube root of ${r**3<1000?r**3:27}.`,r**3<1000?r:3]}]],
+'Quadratic equations':[
+['Taking out a common factor',L=>{let b=R(2,9)*P([1,-1]);return[`Solve x² ${b<0?'−':'+'} ${Math.abs(b)}x = 0`,`x = 0 or x = ${mn(-b)}`]}]],
+'Volume and surface area':[
+['Capacity and units',L=>{let l=R(20,60),w=R(10,40),h=R(10,40);return L==1?[`A tank is ${l} cm by ${w} cm by ${h} cm. Work out its volume.`,`${nf(l*w*h)} cm³`]:L==2?[`A tank has volume ${nf(l*w*h)} cm³. How many litres is this? (1 litre = 1000 cm³)`,`${+(l*w*h/1000).toFixed(2)} litres`]:[`A cuboid tank is ${l} cm by ${w} cm and holds ${+(l*w*h/1000).toFixed(2)} litres. How deep is the water?`,`${h} cm`]}],
+['Density',L=>{let d=P([2,3,5,8]),v=R(2,9)*10;return L==1?[`A block has density ${d} g/cm³ and volume ${v} cm³. Work out its mass.`,`${d*v} g`]:L==2?[`A block has mass ${d*v} g and volume ${v} cm³. Work out its density.`,`${d} g/cm³`]:[`A metal has density ${d} g/cm³. A piece has mass ${d*v} g. Work out its volume.`,`${v} cm³`]}]],
+'Angles in parallel lines':[
+['Name the angle pair',L=>{let[r1,r2,nm]=L==1?P([['AR','AR','Corresponding'],['BR','AL','Alternate']]):P([['BR','AR','Co-interior (allied)'],['AR','AR','Corresponding'],['BR','AL','Alternate']]);return[`The two marked angles are on parallel lines. What type of angles are they?${par([r1,'a'],[r2,'b'])}`,nm]}],
+['Missing angle, two steps',L=>{let k=R(100,145);return[`Work out x and y (angles in degrees).${par(['BR',k+'°'],['AR','x'])}`,`x = ${180-k}° (co-interior), then y is the angle on a straight line with it: y = ${k}°`]}]],
+'Bearings':[
+['Compass directions',L=>{let[n,b]=L==1?P([['North','000°'],['East','090°'],['South','180°'],['West','270°']]):P([['North-east','045°'],['South-east','135°'],['South-west','225°'],['North-west','315°']]);return L<3?[`Write the three-figure bearing for ${n}.`,b]:(()=>{let e=R(3,9),nn=R(3,9);return[`A boat sails ${e} km east then ${nn} km north. What is its bearing from the start? (1 d.p., calculator)`,(Math.atan(e/nn)/D).toFixed(1).padStart(5,'0')+'°']})()}],
+['Bearing from a diagram description',L=>{let t=R(2,17)*10;return[`B is on a bearing of ${p3(t)}° from A. Work out the bearing of A from B.`,p3((t+180)%360)+'°']}]],
+'Transformations':[
+['Reflecting a point',L=>{let x=R(1,6),y=R(1,6);return L==1?[`Reflect (${x}, ${y}) in the x-axis.`,`(${x}, −${y})`]:L==2?[`Reflect (${x}, ${y}) in the y-axis.`,`(−${x}, ${y})`]:[`Reflect (${x}, ${y}) in the line y = x.`,`(${y}, ${x})`]}],
+['Translation vectors',L=>{let a=R(-5,5),b=R(-5,5),u=R(-6,6),v=R(-6,6);return L==1?[`Translate (${mn(a)}, ${mn(b)}) by ${vec(u,v)}.`,`(${mn(a+u)}, ${mn(b+v)})`]:[`A point moves from (${mn(a)}, ${mn(b)}) to (${mn(a+u)}, ${mn(b+v)}). Write the translation as a column vector.`,vec(u,v)]}],
+['Rotating a point',L=>{let x=R(1,6),y=R(1,6);return L==1?[`Rotate (${x}, ${y}) by 180° about the origin.`,`(−${x}, −${y})`]:L==2?[`Rotate (${x}, ${y}) by 90° anticlockwise about the origin.`,`(−${y}, ${x})`]:[`Rotate (${x}, ${y}) by 90° clockwise about the origin.`,`(${y}, −${x})`]}],
+['Enlargement scale factors',L=>{let k=P([2,3,4]),a=R(2,6);return L==1?[`A shape is enlarged by scale factor ${k}. A side of length ${a} cm becomes how long?`,`${a*k} cm`]:L==2?[`A side of ${a} cm becomes ${a*k} cm after an enlargement. What is the scale factor?`,k]:[`A shape is enlarged by scale factor ${fr(1,k)}. A side of ${a*k} cm becomes how long?`,`${a} cm`]}]],
+'Similar shapes':[
+['Rectangles and scale factor',L=>{let a=R(2,6),b=R(2,6),k=P([2,3,4]);return L==1?[`Two rectangles are similar. The first is ${a} cm by ${b} cm. The second has a longer side of ${a*k} cm. Work out the other side of the second rectangle.`,`${b*k} cm`]:L==2?[`A photo ${a*2} cm by ${b*2} cm is enlarged so the width is ${a*2*k} cm. Work out the new height.`,`${b*2*k} cm`]:[`A model is a scale of 1 : ${k*10}. A real building is ${a*k*10} m tall. How tall is the model in cm?`,`${a*100} cm`]}],
+['Lengths, areas, volumes',L=>{let k=P([2,3]),a=R(2,9);return L==1?[`Two similar shapes have length scale factor ${k}. The area of the small shape is ${a} cm². Work out the area of the large shape.`,`${a*k*k} cm²`]:L==2?[`Two similar solids have length scale factor ${k}. The volume of the small solid is ${a} cm³. Work out the volume of the large solid.`,`${a*k**3} cm³`]:[`Two similar shapes have areas ${a} cm² and ${a*k*k} cm². Work out the length scale factor.`,k]},1]],
+'Sine and cosine rules':[
+['Area of a triangle',L=>{let a=R(5,12),b=R(5,12),C=R(30,120);return[`A triangle has sides ${a} cm and ${b} cm with an angle of ${C}° between them. Work out its area to 3 s.f. (calculator)`,`${(.5*a*b*Math.sin(C*D)).toPrecision(3)} cm²`]}],
+['Choosing the rule',L=>{return P([[`You know two sides and the angle between them. Which rule finds the third side?`,'Cosine rule'],[`You know two angles and a side opposite one of them. Which rule finds another side?`,'Sine rule'],[`You know all three sides. Which rule finds an angle?`,'Cosine rule']])}]],
+'Negative numbers':[
+['Ordering and number lines',L=>{let v=[R(-9,-1),R(-9,9),R(-9,9),R(-9,9)];v=[...new Set(v)];return[`Write in order, smallest first: ${v.map(mn).join(', ')}`,[...v].sort((a,b)=>a-b).map(mn).join(', ')]}],
+['Substituting negatives',L=>{let x=R(2,6);return L==1?[`Work out x + 5 when x = −${x}`,mn(5-x)]:L==2?[`Work out x² when x = −${x}`,x*x]:[`Work out 3x² − 2x when x = −${x}`,3*x*x+2*x]}]],
+'Decimals':[
+['Ordering decimals',L=>{let v=[...new Set([R(1,99)/10,R(1,99)/100,R(1,9)/10,R(10,99)/100])];return[`Write in order, smallest first: ${v.join(', ')}`,[...v].sort((a,b)=>a-b).join(', ')]}],
+['Money with decimals',L=>{let p=R(15,95)/100,n=R(3,9);return L==1?[`${n} sweets cost £${p.toFixed(2)} each. Work out the total cost.`,`£${(p*n).toFixed(2)}`]:[`${n} identical pens cost £${(p*n).toFixed(2)}. Work out the cost of one pen.`,`£${p.toFixed(2)}`]}]],
+'Rearranging formulae':[
+['From context',L=>{return L==1?P([[`P = 2(l + w). Make w the subject.`,`w = ${fr('P',2)} − l`],[`A = lw. Make l the subject.`,`l = ${fr('A','w')}`]]):L==2?P([[`v = u + at. Make t the subject.`,`t = ${fr('v − u','a')}`],[`C = 2πr. Make r the subject.`,`r = ${fr('C','2π')}`]]):P([[`A = πr². Make r the subject.`,`r = ${fr('√A','√π')}`],[`s = ut + ½at². Make u the subject.`,`u = ${fr('s − ½at²','t')}`]])}]],
+'Number lines and scales':[
+['Halfway between',L=>{let a=R(1,9)*(L==1?2:L==2?10:1),b=a+R(1,9)*2*(L==1?1:L==2?10:.5);return[`What number is halfway between ${a} and ${b}?`,(a+b)/2]}],
+['Size of one division',L=>{let n=P([4,5,10]),s=P([2,5,10,20]);return[`A scale from 0 to ${n*s} has ${n} equal divisions. What does each division represent?`,s]}],
+['Fractions on a number line',L=>{let d=P([4,5,8,10]),n=R(1,d-1);return[`A number line from 0 to 1 is split into ${d} equal parts. What fraction is at the ${n}${n==1?'st':n==2?'nd':n==3?'rd':'th'} mark?`,sf(n,d)]}]],
+'Unit conversion (given rate)':[
+['Metric conversions',L=>{let a=R(2,9);return L==1?P([[`Convert ${a} m to cm.`,`${a*100} cm`],[`Convert ${a*1000} g to kg.`,`${a} kg`]]):L==2?P([[`Convert ${a} km to m.`,`${a*1000} m`],[`Convert ${a*10} mm to cm.`,`${a} cm`]]):[`Convert ${a} m² to cm².`,`${nf(a*10000)} cm²`]}],
+['Speed conversions',L=>{let a=R(2,12)*5;return L<3?[`Convert ${a*3.6} km/h to m/s.`,`${a} m/s`]:[`Convert ${a} m/s to km/h.`,`${+(a*3.6).toFixed(1)} km/h`]}]],
+'Earnings, offers and tax':[
+['Sale prices',L=>{let p=R(4,20)*5,d=P([10,20,25,30]);return[`A jacket costs £${p*4}. In a sale there is ${d}% off. Work out the sale price.`,`£${+(p*4*(1-d/100)).toFixed(2)}`]}],
+['Deposit and instalments',L=>{let c=R(4,9)*100,d=R(5,15)*10,n=P([6,12]);return[`A sofa costs £${c}. Pay £${d} deposit and ${n} equal monthly payments. Work out each payment if there is no extra charge. (2 d.p.)`,`£${((c-d)/n).toFixed(2)}`]}],
+['Overtime pay',L=>{let r=R(8,14),h=R(30,40),o=R(2,8);return[`Dev earns £${r} per hour for ${h} hours, and time-and-a-half for ${o} extra hours. Work out his total pay.`,`£${+(r*h+r*1.5*o).toFixed(2)}`]}]],
+'Pictograms':[
+['Find the key',L=>{let k=P([2,4,5,10]),c=R(2,6);return[`In a pictogram, ${c} symbols stand for ${c*k} students. What does each symbol stand for?`,k]}],
+['Half symbols',L=>{let k=P([2,4,6,10]),c=R(1,5);return[`In a pictogram one symbol means ${k} students. A row has ${c} symbols and a half symbol. How many students is this?`,c*k+k/2]}]],
+'Distance-time graphs':[
+['Reading distances',L=>{let s=P([20,30,40]),t=R(1,3);return[`A person walks at ${s/10} km/h. How far do they walk in ${t} hours?`,`${+(s/10*t).toFixed(1)} km`]}],
+['Which part is fastest?',L=>{let a=R(2,8)*10,b=R(2,8)*10;return[`On a distance-time graph, one line goes up ${a} km in 1 hour and another goes up ${b} km in 2 hours. Which shows the faster speed?`,a>b/2?'The first line':a<b/2?'The second line':'They are the same speed']}]],
+'Counting and arrangements':[
+['Outfits',L=>{let a=R(2,6),b=R(2,6),c=R(2,4);return[`A person has ${a} tops, ${b} skirts and ${c} pairs of shoes. How many different outfits can they make?`,a*b*c]}],
+['PIN codes',L=>{let n=P([3,4,5]);return[`A PIN has ${n} digits, each from 0 to 9. How many different PINs are possible?`,10**n]}],
+['Handshakes',L=>{let n=R(4,12);return[`${n} people each shake hands with everyone else once. How many handshakes are there?`,n*(n-1)/2]}],
+['Arranging letters',L=>{let w=P([['CAT',6],['MATH',24],['DOG',6],['PLUS',24],['TRIAL',120]]);return[`How many different ways can the letters of the word ${w[0]} be arranged? (All letters are different.)`,w[1]]}]],
+'Bounds':[
+['Error intervals (decimal places)',L=>{let d=P([1,2]),v=(R(10,99)/10**d).toFixed(d),h=.5/10**d;return[`x = ${v} to ${d} decimal place${d>1?'s':''}. Write down the error interval for x.`,`${(v-h).toFixed(d+1)} ≤ x < ${(+v+h).toFixed(d+1)}`]}],
+['Error intervals (significant figures)',L=>{let v=P([4500,3200,780,6400,150000]),d=v>=100000?2:P([2,2]);let h=v>=100000?5000:v>=1000?50:5;return[`A number is ${nf(v)} to ${v>=100000?2:2} significant figures. Write down the error interval.`,`${nf(v-h)} ≤ n < ${nf(v+h)}`]}],
+['Bounds of a speed',L=>{let d=R(10,50)*2,t=R(2,9);return[`A distance is ${d} km and a time is ${t} hours, both to the nearest whole unit. Work out the upper bound of the speed.`,`${d+.5} ÷ ${t-.5} = ${+((d+.5)/(t-.5)).toFixed(2)} km/h`]}],
+['Bounds of a measurement',L=>{let[n,u,st]=P([['length','cm',1],['mass','g',10],['time','seconds',1],['distance','km',1],['volume','ml',50]]),v=R(11,99)*st;return[`A ${n} is ${v} ${u} to the nearest ${st} ${u}. Write down the lower bound and the upper bound.`,`${v-st/2} ≤ ${n[0]} < ${v+st/2}`]}],
+['Bounds of sums and differences',L=>{let a=R(12,60),b=R(12,60);return[`a = ${a} and b = ${b}, both to the nearest integer. Work out the lower bound and upper bound of a + b.`,`${a+b-1} and ${a+b+1}`]}],
+['Bounds of products and quotients',L=>{let a=R(10,40),b=R(5,20);return[`A rectangle is ${a} cm by ${b} cm, both to the nearest cm. Work out the upper bound of its area.`,`${a+.5} × ${b+.5} = ${(a+.5)*(b+.5)} cm²`]}]],
+'Quartiles from a list':[
+['Range and median',L=>{let a=[...Array(7)].map(()=>R(2,40)).sort((x,y)=>x-y);return[`Here are 7 numbers: ${[...a].sort(()=>Math.random()-.5).join(', ')}. Work out the median and the range.`,`Median ${a[3]}, range ${a[6]-a[0]}`]}],
+['Compare two sets',L=>{let m1=R(10,30),m2=m1+R(2,9),i1=R(4,12),i2=R(4,12);return[`Class A: median ${m1}, IQR ${i1}. Class B: median ${m2}, IQR ${i2}. Compare the two classes.`,`Class ${m2>m1?'B':'A'} has the higher median; class ${i1<i2?'A':'B'} is more consistent (smaller IQR).`]}]],
+'Maps and scales':[
+['Finding the scale',L=>{let n=P([5,10,20,50])*1000,c=R(2,8);return[`${c} cm on a map represents ${nf(c*n/100000)} km. Write the scale as 1 : n.`,`1 : ${nf(n)}`]}],
+['Scale drawings',L=>{let n=P([50,100,200]),m=R(2,9);return[`A scale drawing uses 1 cm for every ${n/100} m. A wall is ${m*n/100} m long. How long is it on the drawing?`,`${m} cm`]}]],
+'Decimals to fractions':[
+['Fractions to decimals',L=>{let[n,d]=P([[1,8],[3,8],[1,4],[3,5],[7,20],[9,25]]);return[`Write ${fr(n,d)} as a decimal.`,+(n/d).toFixed(4)]}],
+['Order fractions and decimals',L=>{let v=[[.4,'0.4'],[1/3,fr(1,3)],[.35,'0.35'],[3/8,fr(3,8)]].sort(()=>Math.random()-.5);return[`Write in order, smallest first: ${v.map(x=>x[1]).join(' , ')}`,[...v].sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(' , ')]}]],
+'Special sequences':[
+['Fibonacci-type sequences',L=>{let a=R(1,4),b=R(2,6),t=[a,b];for(let i=0;i<5;i++)t.push(t[i]+t[i+1]);return[`A sequence starts ${a}, ${b}, … Each term is the sum of the two before it. Write the next three terms.`,t.slice(2,5).join(', ')]}],
+['Terms from n² + a',L=>{let a=R(1,9),n=R(3,7);return[`The nth term of a sequence is n² + ${a}. Work out the ${n}th term.`,n*n+a]}],
+['Is it in the sequence?',L=>{let v=P([36,49,64,81,100,121,45,55]),sq0=Math.sqrt(v)%1==0;return[`Is ${v} a square number? Give a reason.`,sq0?`Yes: ${Math.sqrt(v)}² = ${v}`:`No: it is not the square of a whole number`]}]],
+'Algebraic modelling':[
+['Perimeter expressions',L=>{let a=R(2,6),b=R(1,5);return[`A rectangle has length (x + ${a}) cm and width ${b} cm. Write an expression for its perimeter in its simplest form.`,`${pl([2,'x'],[2*a+2*b,''])} cm`]}],
+['Cost expressions',L=>{let p=R(2,9),d=R(3,8);return[`Pens cost £${p} each and delivery is £${d}. Write an expression for the cost of n pens.`,`£(${pl([p,'n'],[d,''])})`]}]],
+'Comparing and deciding':[
+['Cheaper per item',L=>{let a=R(3,6),b=a+R(2,4),pa=R(150,300)/100,pb=+(pa*(b/a)*P([.85,.95,1.1])).toFixed(2);return[`${a} cakes cost £${pa.toFixed(2)}. ${b} cakes cost £${pb.toFixed(2)}. Which is cheaper per cake?`,`${pa/a<pb/b?a+' cakes':b+' cakes'} (${(pa/a*100).toFixed(1)}p and ${(pb/b*100).toFixed(1)}p each)`]}],
+['Which is larger?',L=>{let[a,b,c,d]=P([[3,4,5,7],[2,3,5,8],[5,6,7,9]]);return[`Which is larger: ${fr(a,b)} or ${fr(c,d)}? Show how you decide.`,a/b>c/d?`${a}/${b} = ${+(a/b).toFixed(3)} is larger`:`${c}/${d} = ${+(c/d).toFixed(3)} is larger`]}]],
+'Journeys and average speed':[
+['Time taken',L=>{let s=P([30,40,60]),t=P([1.5,2,2.5]);return[`A car travels ${s*t} miles at ${s} mph. How long does the journey take?`,`${t} hours`]}],
+['Speed from minutes',L=>{let s=P([30,60,90]),m=P([20,40,45]);return[`A train travels ${s*m/60} km in ${m} minutes. Work out its average speed in km/h.`,`${s} km/h`]}]],
+'Volume and rates of flow':[
+['Flow rate',L=>{let r=R(2,9)*100,m=R(2,9)*10;return[`A tank holds ${nf(r*m)} cm³. It fills in ${m} minutes. Work out the flow rate in cm³ per minute.`,`${nf(r)} cm³/min`]}],
+['Litres and cm³',L=>{let l=R(2,9);return[`A bottle holds ${l} litres. How many cm³ is this?`,`${nf(l*1000)} cm³`]}]],
+'Algebraic proof (more)':[
+['Show an expression simplifies',L=>{let a=R(2,6);return[`Show that (x + ${a})² − x² − ${2*a}x simplifies to ${a*a}.`,`x² + ${2*a}x + ${a*a} − x² − ${2*a}x = ${a*a}`]}],
+['Even and odd',L=>P([[`Prove that the sum of two consecutive even numbers is not a multiple of 4.`,`2n + (2n + 2) = 4n + 2 = 2(2n + 1), which is 2 more than a multiple of 4`],[`Prove that the product of two odd numbers is odd.`,`(2m + 1)(2n + 1) = 4mn + 2m + 2n + 1 = 2(2mn + m + n) + 1`]])]],
+'Problems in context (equations)':[
+['Perimeter equations',L=>{let x=R(3,9),a=R(1,4);return[`A rectangle has sides x cm and (x + ${a}) cm. Its perimeter is ${4*x+2*a} cm. Work out x.`,`x = ${x}`]}],
+['Angle equations',L=>{let c=R(1,10)*4,x=(180-c)/4;return[`The angles of a triangle are x°, 2x° and (x + ${c})°. Work out x.`,`4x + ${c} = 180, so x = ${x}`]}],
+['Age problems',L=>{let a=R(3,9),k=R(2,4);return[`Mia is ${a} years old. Her mum is ${k} times as old plus 2 years. Write down mum's age.`,`${k*a+2}`]}]],
+'Inequalities reasoning':[
+['Smallest integer',L=>{let k=R(2,5),c=R(7,25);return[`Work out the smallest integer n such that ${k}n > ${c}.`,Math.floor(c/k)+1]}],
+['Describe in words',L=>{let a=R(-3,5),b=a+R(2,6);return[`List the whole numbers that satisfy ${mn(a)} < n ≤ ${mn(b)}.`,[...Array(b-a)].map((_,i)=>mn(a+1+i)).join(', ')]}]],
+'Primes and reasoning':[
+['List the primes',L=>{let a=R(1,5)*10;let p=[];for(let n=a;n<=a+10;n++){if(n>1&&![...Array(n)].some((_,i)=>i>1&&n%i==0))p.push(n)}return[`List the prime numbers between ${a} and ${a+10}.`,p.join(', ')||'None']}],
+['Is it prime?',L=>{let n=P([51,57,87,91,93,97,101,111]),np=[...Array(n)].some((_,i)=>i>1&&n%i==0);return[`Is ${n} a prime number? Give a reason.`,np?`No: ${n} is divisible by ${[...Array(n)].findIndex((_,i)=>i>1&&n%i==0)}`:'Yes: it has no factors other than 1 and itself']}]]
+};
+Object.entries(EXTRA).forEach(([n,xs])=>{let t=T.find(q=>q.n==n);if(!t)return;if(!t.sub.length)t.sub.push(['Standard questions',(L,H)=>t.f(H)[L-1]()]);xs.forEach(x=>{t.sub.push(x);EXS.push(x)})});
+const E2={
+'Combined events':[
+['Mutually exclusive events',L=>{let a=R(1,4)/10,b=R(1,5)/10;return L==1?[`P(red) = ${a} and P(blue) = ${b}. Counters cannot be both. Work out P(red or blue).`,+(a+b).toFixed(2)]:L==2?[`P(A) = ${a} and P(B) = ${b} are mutually exclusive. Work out P(neither A nor B).`,+(1-a-b).toFixed(2)]:[`P(rain on Monday) = ${a}, P(rain on Tuesday) = ${b}, independent. Work out P(rain on both days).`,+(a*b).toFixed(2)]}],
+['Coins and spinners',L=>{let n=P([4,5,6,8]);return L==1?[`A fair coin is flipped and a fair spinner with ${n} equal sections numbered 1 to ${n} is spun. Work out P(tails and 1).`,sf(1,2*n)]:L==2?[`A fair coin is flipped and a fair spinner with ${n} equal sections numbered 1 to ${n} is spun. Work out P(heads and an even number).`,sf(Math.floor(n/2),2*n)]:[`Two fair spinners each have ${n} equal sections numbered 1 to ${n}. Work out P(both show 1).`,sf(1,n*n)]}],
+['Missing branch probability',L=>{let a=R(1,4),d=P([5,6,7,8,10]);return[`On a tree diagram, P(first counter is red) = ${fr(a,d)}. Work out P(first counter is not red).`,sf(d-a,d)]}]],
+'Angles in parallel lines':[
+['Vertically opposite and straight lines',L=>{let a=R(30,150);return L==1?[`Two straight lines cross. One angle is ${a}°. Write down the angle vertically opposite it.`,`${a}°`]:[`Two straight lines cross. One angle is ${a}°. Work out the other two angles.`,`${180-a}° and ${180-a}°`]}]],
+'Similar shapes':[
+['Similar triangles (sides)',L=>{let t=P([[3,4,5],[5,12,13],[6,8,10]]),k=P([2,3,4]);return L==1?[`Triangle ABC has sides ${t.join(' cm, ')} cm. A similar triangle has shortest side ${t[0]*k} cm. Work out its longest side.`,`${t[2]*k} cm`]:L==2?[`Triangle ABC has sides ${t.join(' cm, ')} cm. A similar triangle has longest side ${t[2]*k} cm. Work out its middle side.`,`${t[1]*k} cm`]:[`Triangle ABC has sides ${t.join(' cm, ')} cm. A similar triangle has perimeter ${(t[0]+t[1]+t[2])*k} cm. Work out the scale factor and its shortest side.`,`Scale factor ${k}; shortest side ${t[0]*k} cm`]}]],
+'Circle theorems':[
+['Angle at the centre (text)',L=>{let a=R(20,80);return L==1?[`The angle at the circumference is ${a}°. Work out the angle at the centre on the same arc.`,`${2*a}°`]:L==2?[`The angle at the centre is ${2*a}°. Work out the angle at the circumference on the same arc.`,`${a}°`]:[`Angles at the circumference on the same arc: one is ${a}°. What is the other, and why?`,`${a}° (angles in the same segment are equal)`]}],
+['Cyclic quadrilaterals (text)',L=>{let a=R(70,110);return[`ABCD is a cyclic quadrilateral. Angle ABC = ${a}°. Work out angle ADC.`,`${180-a}°`]}],
+['Tangents (text)',L=>{let a=R(25,65);return[`A tangent meets a radius at point A. In triangle OAT (right angle at A), angle AOT = ${a}°. Work out angle ATO.`,`${90-a}°`]}]],
+'Scatter graphs':[
+['Describe the correlation in context',L=>{let[c,t]=P([['Hours of revision and test score','positive'],['Age of a car and its value','negative'],['Shoe size and exam mark','no']]);return[`Say what type of correlation you expect between: ${c.toLowerCase()}.`,`${t[0].toUpperCase()+t.slice(1)} correlation`]}],
+['Using the equation of the line',L=>{let m=R(1,4),c=R(1,9),x=R(2,9);return[`A line of best fit has equation y = ${pl([m,'x'],[c,''])}. Estimate y when x = ${x}.`,m*x+c]}],
+['Outliers',L=>{return P([[`What is an outlier on a scatter graph?`,`A point that does not fit the pattern of the rest of the data`],[`Should an outlier be included when drawing a line of best fit? Give a reason.`,`Usually not: it does not follow the trend and would distort the line`]])}]],
+'Bar charts and pie charts':[
+['Pie chart angle to percentage',L=>{let a=P([36,72,90,108,120,144,180]);return L==1?[`A sector on a pie chart has angle ${a}°. What fraction of the whole is it?`,sf(a,360)]:[`A sector on a pie chart has angle ${a}°. What percentage of the whole is it?`,`${+(a/3.6).toFixed(1)}%`]}],
+['Modal category',L=>{let v=[R(2,12),R(2,12),R(2,12),R(2,12)],n=['Cat','Dog','Fish','Bird'],m=Math.max(...v);return v.filter(x=>x==m).length>1?[`Which is bigger: ${n[0].toLowerCase()}s (${v[0]}) or ${n[1].toLowerCase()}s (${v[1]+1})?`,`${n[1].toLowerCase()}s`]:[`${n.map((x,i)=>x+' '+v[i]).join(', ')}. Which is the modal category?`,n[v.indexOf(m)]]}]],
+'Histograms':[
+['Frequency density',L=>{let w=P([5,10,20]),f=R(2,9)*w/5;return L==1?[`A histogram class has frequency ${f} and class width ${w}. Work out the frequency density.`,+(f/w).toFixed(2)]:L==2?[`A class has frequency density ${+(f/w).toFixed(2)} and width ${w}. Work out the frequency.`,f]:[`A class has frequency ${f} and frequency density ${+(f/w).toFixed(2)}. Work out the class width.`,w]}]],
+'Surds':[
+['Adding and multiplying surds',L=>{let a=R(2,6),b=R(2,6),r=P([2,3,5,7]);return L==1?[`Simplify ${a}${sq(r)} + ${b}${sq(r)}`,`${a+b}${sq(r)}`]:L==2?[`Simplify ${sq(6)} × ${sq(3)}`,`3${sq(2)}`]:[`Simplify ${a}${sq(r)} × ${b}${sq(r)}`,a*b*r]}],
+['Rational or irrational',L=>{let[v,t]=P([[sq(16),'Rational (it equals 4)'],[sq(2),'Irrational'],[sq(49),'Rational (it equals 7)'],[sq(5),'Irrational'],[sq(9),'Rational (it equals 3)']]);return[`Is ${v} rational or irrational?`,t]}]],
+'Recurring decimals':[
+['Fraction to recurring decimal',L=>{let[n,d,s]=P([[1,3,'0.3\u0307'],[2,3,'0.6\u0307'],[1,9,'0.1\u0307'],[1,6,'0.16\u0307'],[5,6,'0.83\u0307'],[1,7,'0.142857\u0307 (repeating block 142857)']]);return[`Write ${fr(n,d)} as a recurring decimal.`,s]}],
+['Prove a recurring decimal',L=>{let a=R(1,8);return[`Show that 0.${a}\u0307 = ${fr(a,9)}.`,`Let x = 0.${a}${a}${a}… Then 10x = ${a}.${a}${a}… so 9x = ${a}, x = ${fr(a,9)}`]}]],
+'Direct and inverse proportion':[
+['Finding k and the formula',L=>{let k=R(2,9),x=R(2,9);return L==1?[`y is directly proportional to x. When x = ${x}, y = ${k*x}. Find the constant of proportionality.`,k]:L==2?[`y is directly proportional to x. When x = ${x}, y = ${k*x}. Write a formula for y in terms of x.`,`y = ${k}x`]:[`y is directly proportional to x. When x = ${x}, y = ${k*x}. Find x when y = ${k*x*3}.`,x*3]}],
+['Workers and time',L=>{let n=P([4,6,8]),d=P([6,10,12]),m=P([2,3,12,24].filter(v=>(n*d)%v==0));return[`${n} workers take ${d} days. How long would ${m} workers take (same rate)?`,`${n*d/m} days`]}]],
+'Frequency trees and two-way tables':[
+['Complete a frequency tree',L=>{let n=P([40,50,80,100]),p=P([40,60]),a=P([25,50]);let g=n*p/100;return[`${n} people are asked. ${g} are adults. ${a}% of the adults have a pet. How many adults have a pet?`,g*a/100]}],
+['Probability from a table',L=>{let a=R(5,20),b=R(5,20),c=R(5,20),d=R(5,20);return[`Boys: ${a} like tea, ${b} like coffee. Girls: ${c} like tea, ${d} like coffee. A student is chosen at random. Work out P(girl who likes coffee).`,sf(d,a+b+c+d)]}]],
+'Equation of a circle':[
+['Centre and radius',L=>{let a=R(-4,4)||2,b=R(-4,4)||3,r=R(2,7);return L==1?[`Write down the centre and radius of x² + y² = ${r*r}.`,`Centre (0, 0), radius ${r}`]:[`Write down the centre and radius of ${up('('+pl([1,'x'],[-a,''])+')',2)} + ${up('('+pl([1,'y'],[-b,''])+')',2)} = ${r*r}.`,`Centre (${mn(a)}, ${mn(b)}), radius ${r}`]}]],
+'Functions':[
+['Solving f(x) = k',L=>{let a=R(2,5),b=R(1,6),x=R(1,8);return[`f(x) = ${pl([a,'x'],[b,''])}. Solve f(x) = ${a*x+b}.`,`x = ${x}`]}],
+['Function machines',L=>{let a=R(2,6),b=R(1,9),x=R(2,9);return L<3?[`x → ×${a} → +${b} → output. The input is ${x}. Write the output.`,a*x+b]:[`x → ×${a} → +${b} → output. The output is ${a*x+b}. Work out the input.`,x]}]],
+'Algebraic fractions':[
+['Simplify by factorising',L=>{let a=R(2,5),b=R(1,5);return[`Simplify ${fr(pl([a,'x'],[a*b,'']),a)}`,pl([1,'x'],[b,''])]}],
+['Multiply and divide',L=>{let a=R(2,5),b=R(2,5);return[`Simplify ${fr(a+'x',b)} × ${fr(b,'x')}`,String(a)]}]],
+'Cumulative frequency and box plots':[
+['Five-figure summary',L=>{let a=R(1,5)*5,b=a+R(2,5)*5,m=b+R(1,4)*5,c=m+R(1,4)*5,e=c+R(2,5)*5;return[`A set of data has minimum ${a}, lower quartile ${b}, median ${m}, upper quartile ${c} and maximum ${e}. Work out the range and the interquartile range.`,`Range ${e-a}, IQR ${c-b}`]}],
+['Interpreting a box plot',L=>P([[`What percentage of the data lies between the lower quartile and the upper quartile?`,`50%`],[`What percentage of the data is below the median?`,`50%`],[`What percentage of the data is above the upper quartile?`,`25%`]])]],
+'Speed-time graphs':[
+['Acceleration from speeds',L=>{let a=R(2,6),t=R(2,8);return[`A car speeds up from 0 to ${a*t} m/s in ${t} s at a constant rate. Work out its acceleration.`,`${a} m/s²`]}],
+['Distance at constant speed',L=>{let v=R(2,9)*2,t=R(3,12);return[`A cyclist travels at a constant ${v} m/s for ${t} s. Work out the distance travelled (the area under the graph).`,`${v*t} m`]}]],
+'Rates of change':[
+['Average rate from a table',L=>{let a=R(2,6),t=R(2,5);return[`A plant is ${a*3} cm tall at 3 weeks and ${a*3+a*t} cm after ${3+t} weeks. Work out the average rate of growth per week.`,`${a} cm per week`]}]],
+'Iteration':[
+['Bracketing a root',L=>{let a=R(1,3),k=a**3+a+R(1,3);return[`f(x) = x³ + x − ${k}. Work out f(${a}) and f(${a+1}). What does this tell you?`,`f(${a}) = ${mn(a**3+a-k)}, f(${a+1}) = ${(a+1)**3+a+1-k}: sign change, so a root lies between ${a} and ${a+1}`]}]],
+'Properties of polygons':[
+['Naming polygons',L=>{let[n,nm]=P([[5,'pentagon'],[6,'hexagon'],[7,'heptagon'],[8,'octagon'],[9,'nonagon'],[10,'decagon']]);return L==1?[`What is a polygon with ${n} sides called?`,nm[0].toUpperCase()+nm.slice(1)]:L==2?[`How many sides does a ${nm} have, and how many lines of symmetry if it is regular?`,`${n} sides, ${n} lines of symmetry`]:[`How many diagonals can be drawn from one vertex of a ${nm}?`,n-3]}]],
+'Constructions and loci':[
+['Describe the locus',L=>{let r=R(2,6);return L==1?[`Describe the locus of points ${r} cm from a fixed point P.`,`A circle, centre P, radius ${r} cm`]:L==2?[`Describe the locus of points equidistant from two points A and B.`,`The perpendicular bisector of AB`]:[`Describe the locus of points equidistant from two lines that meet at a point.`,`The bisector of the angle between the lines`]}]],
+'Quadratic graphs':[
+['Turning point from completed square',L=>{let h=R(-4,5)||2,k=R(-6,6)||1;return[`A graph has equation y = (x ${h<0?'+':'−'} ${Math.abs(h)})² ${k<0?'−':'+'} ${Math.abs(k)}. Write down the coordinates of its turning point.`,`(${mn(h)}, ${mn(k)})`]}],
+['Roots from factorised form',L=>{let a=R(1,6),b=R(1,6);return[`Where does y = (x − ${a})(x + ${b}) cross the x-axis?`,`x = ${a} and x = −${b}`]}],
+['y-intercept',L=>{let b=R(-6,6)||2,c=R(-9,9)||3;return[`Write down the y-intercept of y = ${pl([1,X2],[b,'x'],[c,''])}.`,`(0, ${mn(c)})`]}]],
+'Recognising graphs':[
+['Which equation is a straight line?',L=>{return[`Which of these gives a straight line: y = x², y = 2x + 1, y = 1/x, y = x³?`,`y = 2x + 1`]}],
+['Shape of y = ax² and y = −ax²',L=>P([[`Does the graph of y = x² have a maximum or minimum point?`,`Minimum (U-shaped)`],[`Does the graph of y = −x² have a maximum or minimum point?`,`Maximum (∩-shaped)`]])]],
+'Faces, edges and vertices':[
+['Name the solid',L=>{let[d,n]=P([['6 square faces','Cube'],['2 circular faces and one curved surface','Cylinder'],['1 circular face, 1 curved surface and 1 vertex','Cone'],['5 faces: 4 triangles and 1 square','Square-based pyramid'],['5 faces: 2 triangles and 3 rectangles','Triangular prism']]);return[`Name the 3D shape with ${d}.`,n]}],
+['Euler\'s formula',L=>{let v=R(5,12),f=R(5,10);return[`A solid has ${f} faces and ${v} vertices. Use V − E + F = 2 to find the number of edges.`,v+f-2]}]],
+'Relative frequency':[
+['Fair or biased?',L=>{let n=P([60,120,300]),f=Math.round(n/6*P([1.5,.5,1]));return[`A dice is rolled ${n} times and lands on 6, ${f} times. Is the dice likely to be fair? Compare with the expected number of 6s.`,`Expected about ${n/6}. ${Math.abs(f-n/6)>n/12?'Quite different, so possibly biased':'Close to expected, so possibly fair'}`]}],
+['Estimate from trials',L=>{let n=P([50,100,200]),a=R(5,30),b=R(5,40);return[`A spinner is spun ${n} times: red ${a} times, blue ${b} times. Estimate P(red).`,sf(a,n)]}]],
+'Algebraic proof':[
+['Show that an expression is even or odd',L=>P([[`Show that 2n + 4 is always even.`,`2n + 4 = 2(n + 2), a multiple of 2`],[`Show that 2n + 1 is always odd.`,`It is 1 more than a multiple of 2`],[`Prove that (n + 1)² − (n − 1)² = 4n.`,`(n² + 2n + 1) − (n² − 2n + 1) = 4n`]])]],
+'Reasoning and explaining':[
+['Percentage comparisons',L=>{let a=P([10,20,25]),b=P([100,120,150]),c=P([15,30,40]),d=P([40,60,80]);return[`Which is bigger: ${a}% of ${b} or ${c}% of ${d}? Show your working.`,`${a*b/100} and ${c*d/100}: ${a*b>c*d?'the first':a*b<c*d?'the second':'they are equal'}`]}],
+['Fraction reasoning',L=>{let[a,b,c,d]=P([[3,5,4,7],[2,5,3,8],[5,8,7,12]]);return[`Which is bigger: ${fr(a,b)} or ${fr(c,d)}? Show how you decide.`,a/b>c/d?`${a}/${b} is bigger`:`${c}/${d} is bigger`]}]],
+'Unit conversion (given rate)':[
+['Volume and capacity',L=>{let a=R(2,9);return L==1?[`Convert ${a*1000} cm³ to litres.`,`${a} litres`]:L==2?[`Convert ${a} litres to ml.`,`${nf(a*1000)} ml`]:[`Convert ${a} m³ to litres. (1 m³ = 1000 litres)`,`${nf(a*1000)} litres`]}]],
+'Pictograms':[
+['Total from a key',L=>{let k=P([4,6,8,10]),a=R(2,6),b=R(2,6);return[`A pictogram key is: one symbol = ${k} students. Bus has ${a} symbols and walking has ${b} symbols. How many students are there in total for these two?`,(a+b)*k]}]],
+'Distance-time graphs':[
+['Average speed from two points',L=>{let t=R(2,4),s=P([20,30,40,50]);return[`A distance-time graph passes through (0, 0) and (${t}, ${s*t}) (time in hours, distance in km). Work out the speed.`,`${s} km/h`]}]],
+'Quartiles from a list':[
+['Interquartile range from a five-figure summary',L=>{let b=R(10,20),c=b+R(5,15);return[`The lower quartile is ${b} and the upper quartile is ${c}. Work out the interquartile range.`,c-b]}]],
+'Maps and scales':[
+['Area on a map',L=>{let n=P([100,500,1000]),a=R(2,9);return[`A map has scale 1 : ${nf(n)}. A field has area ${a} cm² on the map. Work out the real area in m².`,`${nf(a*n*n/10000)} m²`]}]],
+'Algebraic modelling':[
+['Area expressions',L=>{let a=R(2,6);return[`A rectangle has length (x + ${a}) cm and width 3 cm. Write an expression for its area.`,`${pl([3,'x'],[3*a,''])} cm²`]}]],
+'Comparing and deciding':[
+['True or false calculation claims',L=>{let a=R(2,9),b=R(2,9);return P([[`Ben says ${a} × ${b} is the same as ${b} × ${a}. Is he correct?`,`Yes: multiplication is commutative`],[`Ben says ${a + b} − ${a} is the same as ${a} − ${a + b}. Is he correct?`,`No: ${b} and ${-b}`]])}]]
+};
+Object.entries(E2).forEach(([n,xs])=>{let t=T.find(q=>q.n==n);if(!t)return;if(!t.sub.length)t.sub.push(['Standard questions',(L,H)=>t.f(H)[L-1]()]);xs.forEach(x=>{t.sub.push(x);EXS.push(x)})});
+const E3={
+'Venn diagrams':[
+['Set notation counts',L=>{let a=R(8,20),b=R(6,18),i=R(2,Math.min(a,b)-1);return L==1?[`n(A) = ${a}, n(B) = ${b} and n(A ∩ B) = ${i}. Work out n(A ∪ B).`,a+b-i]:L==2?[`n(A ∪ B) = ${a+b-i}, n(A) = ${a} and n(B) = ${b}. Work out n(A ∩ B).`,i]:[`ξ has ${a+b-i+R(3,9)} elements, n(A ∪ B) = ${a+b-i}. Work out n((A ∪ B)').`,null]}],
+['Complement and totals',L=>{let u=R(30,50),a=R(10,20);return[`${u} students. ${a} play football. How many do not play football?`,u-a]}]],
+'Rates of change':[['Reading a rate from words',L=>{let v=R(2,9)*5,t=R(2,8);return[`A tank fills ${v*t} litres in ${t} minutes at a steady rate. Write the rate in litres per minute.`,v]}]],
+'Iteration':[['Using an iteration formula',L=>{let a=R(2,5);return[`x(n+1) = ${a} + 1/x(n) with x(1) = 1. Work out x(2) and x(3).`,`x(2) = ${a+1}, x(3) = ${+(a+1/(a+1)).toFixed(3)}`]}]],
+'Constructions and loci':[['Regions in context',L=>{let r=R(2,6);return[`A sprinkler waters points within ${r} m of a post P. Describe the watered region.`,`The inside of a circle, centre P, radius ${r} m`]}]],
+'Primes and reasoning':[['Prime or not (factor pairs)',L=>{let n=P([21,27,33,39,49,51]);let f=[...Array(n)].findIndex((_,i)=>i>1&&n%i==0);return[`Write ${n} as a product of two factors greater than 1. What does this show?`,`${f} × ${n/f}: it is not prime`]}]],
+'Journeys and average speed':[['Distance from speed and time',L=>{let s=P([20,30,45,60]),m=P([20,30,40,45]);return[`A bus travels at ${s} mph for ${m} minutes. How far does it travel? Give your answer in miles.`,`${+(s*m/60).toFixed(2)} miles`]}]],
+'Volume and rates of flow':[['Depth of water',L=>{let l=R(2,5)*10,w=R(2,4)*10,h=R(2,9);return[`A tank is ${l} cm by ${w} cm. Water of volume ${l*w*h} cm³ is poured in. How deep is the water?`,`${h} cm`]}]]
+};
+E3['Venn diagrams'][0][1]=L=>{let a=R(8,20),b=R(6,18),i=R(2,Math.min(a,b)-1),x=R(3,9);return L==1?[`n(A) = ${a}, n(B) = ${b} and n(A ∩ B) = ${i}. Work out n(A ∪ B).`,a+b-i]:L==2?[`n(A ∪ B) = ${a+b-i}, n(A) = ${a} and n(B) = ${b}. Work out n(A ∩ B).`,i]:[`ξ has ${a+b-i+x} elements and n(A ∪ B) = ${a+b-i}. Work out n((A ∪ B)′).`,x]};
+Object.entries(E3).forEach(([n,xs])=>{let t=T.find(q=>q.n==n);if(!t)return;xs.forEach(x=>{t.sub.push(x);EXS.push(x)})});
+(()=>{const sg=q=>String(q).replace(/<svg.*?<\/svg>/g,'D').replace(/<table.*?<\/table>/g,'TB').replace(/<[^>]+>/g,' ').replace(/\d+(\.\d+)?/g,'#').replace(/\s+/g,' ').trim();
+const info=new Map;
+T.forEach(t=>{let flat=[];t.sub.forEach(x=>{if(!EXS.includes(x))return;let A=new Set,B=new Set,len=0;for(let i=0;i<40;i++){try{A.add(sg(x[1](1,true)[0]));B.add(sg(x[1](3,true)[0]));len+=sg(x[1](2,true)[0]).length}catch(e){}}let u=new Set([...A,...B]),it=[...A].filter(v=>B.has(v)).length;if(it/u.size>=.5)flat.push([x,len]);});
+flat.sort((a,b)=>a[1]-b[1]);let m=flat.length;flat.forEach(([x],r)=>{x.lv=m==1?[1,2,3]:m==2?(r?[2,3]:[1,2]):r<m/3?[1,2]:r<2*m/3?[1,2,3]:[2,3]})});})();
+const LVX={'Bounds':{'Error intervals (decimal places)':[1,2],'Error intervals (significant figures)':[2,3],'Bounds of a speed':[3],'Bounds of a measurement':[1],'Bounds of sums and differences':[2],'Bounds of products and quotients':[3]},'Counting and arrangements':{'Outfits':[1],'PIN codes':[1,2],'Handshakes':[2,3],'Arranging letters':[3]}};
+T.forEach(t=>{let m=LVX[t.n];if(m)t.sub.forEach(x=>{if(m[x[0]])x.lv=m[x[0]]})});
+const alw=(g,L)=>{let a=g.map((_,i)=>i).filter(i=>!g[i].lv||g[i].lv.includes(L));return a.length?a:g.map((_,i)=>i)};
+const gl=(t,H)=>{let ss=t.sub.filter(x=>H||!x[2]);if(!ss.length)return[L=>t.f(H)[L-1]()];let fl=ss.some(x=>x[3]),g=ss.filter(x=>!x[3]).map(x=>{let f=L=>x[1](L,H);f.lv=x.lv;return f});return fl?[L=>t.f(H)[L-1](),...g]:g};
 const $=s=>document.querySelector(s);let tier='F',mode='s',fs=22;
 const RM={"Year 7": {"1": ["Place Value", "Number Operations - Addition and Subtraction", "Applications: Perimeter and Angles", "Rounding and Estimation", "Introduction to Algebra"], "2": ["Number Operations: Multiplication and Division", "Measures: Time and Unit Conversions", "Properties of Shape"], "3": ["Area", "Multiples, Factors and Primes", "Indices, Squares and Cubes", "Working with Algebra"], "4": ["Working with Equations", "Working with Sequences", "Fractions"], "5": ["Percentages FDP", "Probability", "Presenting and Analysing Data"], "6": ["Averages"]}, "Year 8": {"1": ["Volume and Surface Area", "Angles", "Spatial Reasoning", "Construction", "Algebraic Expressions"], "2": ["Equations and Formulae", "Inequalities", "Pythagoras"], "3": ["Presenting Data", "Averages", "Probability", "Coordinates", "Graphs"], "4": ["Transformations"], "5": ["Proportion", "Ratio", "Scale and Similarity", "Fractions"], "6": ["Percentages"]}, "Year 9 Set 1": {"1": ["Fractions - 4 ops", "Solving equations and inequalities", "Collecting and representing data", "Area & Perimeter"], "2": ["Pythagoras' theorem", "Percentages", "Transformations", "Simultaneous equations", "Rounding", "Sequences", "Angles", "Probability"], "3": ["Ratio and proportion problem solving", "Prime factorisation, HCF LCM", "Expanding and factorising", "Constructions and loci", "Venn diagrams", "Frequency trees", "CF and box plots", "Volume and surface area", "Similar triangles", "Indices", "Equation of straight lines"], "4": ["Standard form", "Averages", "Trigonometry", "Bearings and scale drawings", "Solving quadratic equations using factorising"], "5": ["Conditional probability", "Transformations 2"], "6": ["iteration notation", "Plotting quadratics", "Identities"]}, "Year 9 Set 2/3": {"1": ["4 Ops integers", "Basic algebra", "Fractions - 4 ops and fraction of an amount", "Solving equations"], "2": ["Collecting and representing data", "Percentages", "Coordinates and lines", "More algebra and equations", "Area & Perimeter", "Substitution", "Rounding", "Angles and bearings"], "3": ["Ratio and proportion problem solving", "Probability", "Factors, multiples, HCF LCM", "Constructions and loci", "Sequences", "Four operations with decimals", "Volume and surface area", "Negative numbers", "Equivalent FDP", "Frequency trees", "Venn diagrams"], "4": ["Transformations 1", "Classifying polygons", "Types of number and prime factors", "Linear graphs", "Bank statements", "time calculations", "Formulae"], "5": ["Averages", "Indices"], "6": ["Transformations 2", "Expanding and factorising", "Ratio and proportion problem solving"]}, "Year 9 Set 3/4": {"1": ["4 operations - integers", "Types of number", "Basic algebra", "Time", "Fraction of an amount", "Solving equations"], "2": ["collecting and representing data", "Percentages", "Co-ordinates and lines", "Area and perimeter", "Rounding", "Angles"], "3": ["Ratio and proportion problem solving", "Probability", "Factors and multiples", "Sequences", "Adding and subtracting decimals", "Volume", "Negative numbers", "Equivalent FDP", "Frequency trees", "Time and money problems"], "4": ["Averages and spread", "Classifying polygons", "symmetry and transformations", "Bank statements", "bus timetables", "Two way tables"], "5": ["Area and volume", "Venn diagrams"], "6": ["Calculator skills", "BIDMAS"]}, "Year 10 Foundation": {"1": ["Coordinates and Linear Graphs", "Angles", "Expanding and factorising", "Factors and Multiples", "Calculating with percentages", "Percentage change", "Indices"], "2": ["FDP", "Equations", "Ratio and Proportion", "Rounding", "Standard Form", "Perimeter and Area"], "3": ["Sequences", "Collecting and Representing Data", "Scatter Graphs", "Statistical Measures", "BIDMAS", "Bank statements"], "4": ["Properties of Polygons", "Probability", "Circumference and Area", "Fractions and decimals"], "5": ["Volume and surface area", "2D Representations of 3D Shapes", "Real Life Graphs", "Pythagoras’ Theorem", "Inequalities"], "6": ["Measures", "Scale Diagrams and Bearings", "Financial maths and codebreaking"]}, "Year 10 Higher": {"1": ["Factors and Multiples", "Basic algebra review", "Angles , Scale diagrams and Bearings", "Coordinates and Linear Graphs", "Calculating with Percentages"], "2": ["Indices", "Standard Form", "Pythagoras Theorem and Basic Trigonometry", "Recurring decimals", "Perimeter and Area", "Linear equations and inequalities", "Simultaneous Equations"], "3": ["Ratio and Proportion", "Circle Theorems", "Solving quadratics by factorising", "Sequences", "Rounding"], "4": ["Measures", "Statistical Measures", "Collecting and Representing Data", "Scatter Graphs", "Surds", "Cumulative frequency"], "5": ["Congruence and Similarity", "Volume", "Changing the subject harder and identities", "Further simultaneous equations", "Sine and Cosine Rules and 1/2absinC"], "6": ["FINANCIAL MATHS AND CODEBREAKING", "Algebraic Fractions", "2D Representations of 3D shapes", "Basic Probability", "Circumference and Area"]}, "Year 11 Foundation": {"1": ["Transformations", "Simultaneous Equations", "Trigonometry", "Congruence and Similarity", "Algebra and Graphs"], "2": ["Probability", "Set notation", "Constructions and Loci", "Solving Quadratic Equations"], "3": ["Volume and SA of curved shapes", "Direct and Inverse Proportion", "Vectors", "Quadratic Graphs", "Compound interest"], "4": ["Growth and Decay", "Sketching graphs"]}, "Year 11 Higher": {"1": ["Probability", "Transforming Functions", "Transformations", "Vectors", "Gradients and rate of change", "Equation of a Circle"], "2": ["Set notation", "Inequalities", "Real Life Graphs", "Direct and Inverse proportion", "Constructions and Loci"], "3": ["Histograms", "Quadratic inequalities", "Numerical Methods", "Functions"], "4": ["Proof inc proof of congruence", "Combining ratios and equations", "Pre-calculus and area under a curve", "Growth and Decay"]}};
 const KW=[['bidmas|calculator skills|order of op',['Order of operations']],['^(?!.*algebraic).*fraction',['Fractions']],['percent|bank|financial|interest|growth|decay',['Percentages','Growth and decay']],['fdp',['Equivalent FDP']],['ratio',['Ratio and proportion']],['direct and inverse|^proportion',['Direct and inverse proportion']],['standard form',['Standard form']],['factor|multiple|prime|types of number',['Factors, multiples and primes']],['indices|squares and cubes',['Indices']],['expand|factoris|expression|algebra|identit|simplif|substitution|formulae',['Expanding and factorising','Substitution and simplifying']],['rearrang|subject|formulae',['Rearranging formulae']],['^(?!.*(circle|quadratic|simultaneous)).*equation',['Solving linear equations']],['inequalit',['Inequalities']],['sequence',['Sequences (nth term)']],['quadratic',['Quadratic equations']],['coordinate|linear graph|straight|lines|^graphs|real life graphs',['Straight-line graphs','Coordinates']],['simultaneous',['Simultaneous equations']],['^(?!.*curve).*(perimeter|area|circumference)',['Area and perimeter']],['measures|time|timetable|money|bank',['Time and measures','Money and best buy']],['volume|surface|3d',['Volume and surface area']],['angle|polygon',['Angles','Angles in parallel lines']],['bearing|scale diagram',['Bearings']],['pythag',['Pythagoras']],['trig|sine',['Trigonometry']],['sine and cosine',['Sine and cosine rules']],['congruen|similar|scale and sim',['Similar shapes']],['circle theorem',['Circle theorems']],['transform',['Transformations']],['probab|conditional',['Basic probability','Combined events','Relative frequency']],['venn',['Venn diagrams']],['frequency tree|two way',['Frequency trees and two-way tables']],['collecting|presenting|representing|data|chart',['Bar charts and pie charts']],['average|statistical measures|spread|stats',['Averages']],['scatter',['Scatter graphs']],['histogram',['Histograms']],['surd',['Surds']],['recurring',['Recurring decimals']],['round|estimation',['Rounding and estimation']],['negative|operations|integers|place value|addition|multiplication|4 ops',['Negative numbers']],['decimals?',['Decimals']],['function',['Functions']],['vector',['Vectors']],['equation of a circle',['Equation of a circle']],['algebraic fractions',['Algebraic fractions']],['box plot|cumulative',['Cumulative frequency and box plots']],['real life graphs|area under|gradients|rate of change',['Speed-time graphs','Rates of change']],['numerical|iteration',['Iteration']],['classifying|polygon|properties of shape',['Properties of polygons']],['construction|loci',['Constructions and loci']],['quadratic graphs|plotting quadratics|sketching',['Quadratic graphs','Recognising graphs']],['spatial|3d shapes|representations',['Faces, edges and vertices']],['proof',['Algebraic proof']]];
 const chipGen=n=>{let s=new Set;KW.forEach(([r,g])=>{if(new RegExp(r,'i').test(n))g.forEach(x=>s.add(x))});return[...s]};
 const mark=(sel,k,v)=>document.querySelectorAll(sel).forEach(b=>b.classList.toggle('on',b.dataset[k]==v));
+const selT=new Set,selS=new Set;
+const mixN=()=>{let t=new Set([...selT,...[...selS].map(x=>x.split('|')[0])]);return t.size+' topic'+(t.size==1?'':'s')};
+function mixSum(){$('#mix summary').textContent=selT.size||selS.size?'Mix topics: '+mixN()+(selS.size?', '+selS.size+' sub':''):'Mix topics: none'}
+function mixBuild(){let h='';ST.forEach((s,i)=>{let ts=T.filter(t=>t.s==i&&(tier=='H'||!t.h));if(!ts.length)return;h+=`<div class="mh">${s}</div>`;ts.forEach(t=>{let ss=t.sub.filter(x=>tier=='H'||!x[2]);h+=`<div class="mt"><label><input type="checkbox" data-t="${t.n}"${selT.has(t.n)?' checked':''}> ${t.n}</label>${ss.length?`<details><summary>${ss.length} sub-topics</summary>${ss.map(x=>`<label class="ms"><input type="checkbox" data-s="${t.n}|${x[0]}"${selS.has(t.n+'|'+x[0])?' checked':''}> ${x[0]}</label>`).join('')}</details>`:''}</div>`})});$('#mixbody').innerHTML=h+'<button id="mclr">Clear all</button>';mixSum()}
+function mixG(H){let g=[];T.forEach(t=>{if(!(H||!t.h))return;let ss=t.sub.filter(x=>(H||!x[2])&&selS.has(t.n+'|'+x[0]));if(ss.length)ss.forEach(x=>g.push(L=>x[1](L,H)));else if(selT.has(t.n))g.push(...gl(t,H))});return g}
 const okT=n=>T.find(t=>t.n==n&&(tier=='H'||!t.h));
 const avail=()=>T.filter(t=>t.s==+$('#sd').value&&(tier=='H'||!t.h));
 const terms=()=>[...document.querySelectorAll('#tmd input:checked')].map(i=>+i.value);
 function topics(){$('#topic').innerHTML='<option value="-1">All topics in this strand</option>'+avail().map(t=>`<option value="${T.indexOf(t)}">${t.n}${t.sub.length?' ›':''}</option>`).join('');subs()}
 function subs(){let v=+$('#topic').value,t=v>=0&&mode=='s'?T[v]:null,l=t?t.sub.filter(x=>tier=='H'||!x[2]):[];$('#sub').style.display=l.length?'':'none';$('#sub').innerHTML=l.length?'<option value="-1">All sub-topics</option>'+l.map(x=>`<option value="${t.sub.indexOf(x)}">${x[0]}</option>`).join(''):''}
-function pool(){if(mode=='s'){let v=+$('#topic').value;return v<0?avail():[T[v]]}let s=new Set;document.querySelectorAll('.chip.on').forEach(c=>JSON.parse(c.dataset.g).forEach(n=>{let t=okT(n);t&&s.add(t)}));return[...s]}
+function pool(){if(mode=='x')return mixG(tier=='H').length?[1]:[];if(mode=='s'){let v=+$('#topic').value;return v<0?avail():[T[v]]}let s=new Set;document.querySelectorAll('.chip.on').forEach(c=>JSON.parse(c.dataset.g).forEach(n=>{let t=okT(n);t&&s.add(t)}));return[...s]}
 function chips(){let y=$('#yr').value,m=RM[y]||{},h='';terms().forEach(t=>(m[t]||[]).forEach(n=>{let g=chipGen(n),ok=g.some(okT);h+=`<button class="chip${ok?' on':' na'}" data-g='${JSON.stringify(g)}' title="${ok?'':'No question type for this yet, or Higher only'}"><small>T${t}</small> ${n}</button>`}));$('#chips').innerHTML=mode=='r'&&y?h+'<button id="ca">All</button><button id="cn">None</button>':'';$('#tmd summary').textContent='Terms: '+(terms().length==6?'all':terms().join(', ')||'none')}
-function setMode(m){mode=m;subs();$('#ga').classList.toggle('act',m=='s');$('#gb').classList.toggle('act',m=='r');chips()}
-const label=()=>(tier=='H'?'Higher':'Foundation')+' · '+(mode=='s'?ST[+$('#sd').value]+' – '+$('#topic').selectedOptions[0].text.replace(' ›','')+($('#sub').style.display!='none'&&+$('#sub').value>=0?' – '+$('#sub').selectedOptions[0].text:''):($('#yr').value||'')+' – term'+(terms().length>1?'s ':' ')+terms().join(', '));
+function setMode(m){mode=m;subs();$('#ga').classList.toggle('act',m=='s');$('#gb').classList.toggle('act',m=='r');$('#mix').classList.toggle('act',m=='x');chips()}
+const label=()=>(tier=='H'?'Higher':'Foundation')+' · '+(mode=='x'?'Custom mix ('+mixN()+')':mode=='s'?ST[+$('#sd').value]+' – '+$('#topic').selectedOptions[0].text.replace(' ›','')+($('#sub').style.display!='none'&&+$('#sub').value>=0?' – '+$('#sub').selectedOptions[0].text:''):($('#yr').value||'')+' – term'+(terms().length>1?'s ':' ')+terms().join(', '));
 function fit(){let c=$('#cols');if(!$('#fit').checked){c.style.setProperty('--fs',fs+'px');return}let f=44;c.style.setProperty('--fs',f+'px');while(f>9&&document.documentElement.scrollHeight>innerHeight+1){f--;c.style.setProperty('--fs',f+'px')}fs=f}
 let ctx={g:[]};
 const sig=q=>String(q).replace(/<[^>]*>/g,'').replace(/\d+(\.\d+)?/g,'#');
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
-function mk(L,used,k){let g=ctx.g,q,a,t=0;do{[q,a]=g[t==0&&k!=null?k:R(0,g.length-1)](L);t++}while($('#var').checked&&used.has(sig(q))&&t<14);return[q,a]}
+function mk(L,used,k){let g=ctx.g,q,a,t=0;do{[q,a]=g[t==0&&k!=null?k:P(alw(g,L))](L);t++}while($('#var').checked&&used.has(sig(q))&&t<14);return[fixroot(q),fixroot(a)]}
+const fixroot=h=>String(h).replace(/√(\w+)/g,(m,x)=>sq(x));
 function gen(){let n=+$('#n').value,av=pool(),H=tier=='H',cl=+$('#cl').value,ls=cl?[cl]:[1,2,3],c=$('#cols'),sb=mode=='s'&&$('#sub').style.display!='none'?+$('#sub').value:-1;c.className=ls.length==1?'one':'';
-if(!av.length){c.innerHTML='<p style="padding:1em">'+(mode=='r'&&!$('#yr').value?'Choose a year group, then terms and topics.':'No question types are available for these topics at this tier. Choose other topics or switch tier.')+'</p>';return}
+if(!av.length){c.innerHTML='<p style="padding:1em">'+(mode=='x'?'Open Mix topics and tick one or more topics or sub-topics.':mode=='r'&&!$('#yr').value?'Choose a year group, then terms and topics.':'No question types are available for these topics at this tier. Choose other topics or switch tier.')+'</p>';return}
 let tv=mode=='s'?+$('#topic').value:-1,t0=tv>=0?T[tv]:null;
-ctx.g=sb>=0?[L=>t0.sub[sb][1](L,H)]:t0&&t0.sub.length&&!t0.sub[0][3]?t0.sub.filter(x=>H||!x[2]).map(x=>L=>x[1](L,H)):av.map(t=>L=>t.f(H)[L-1]());
-c.innerHTML=ls.map(L=>{let used=new Set,h='',ord=shuf([...ctx.g.keys()]);for(let i=0;i<n;i++){let[q,a]=mk(L,used,ord[i%ord.length]);used.add(sig(q));h+=`<li data-l="${L}"><b class=qn title="Click to swap this question">${i+1}.</b><div class=q>${q}</div><div class=a>${a}</div></li>`}return`<section class=col data-l="${L}" style="--c:var(--c${L})"><h2>Level ${L}: ${['Secure','Developing','Challenge'][L-1]}</h2><ol>${h}</ol></section>`}).join('');$('#pt').textContent='Maths Skills Checker – '+label();fit()}
+ctx.g=mode=='x'?mixG(H):sb>=0?[L=>t0.sub[sb][1](L,H)]:av.flatMap(t=>gl(t,H));
+c.innerHTML=ls.map(L=>{let used=new Set,h='',ord=shuf(alw(ctx.g,L));for(let i=0;i<n;i++){let[q,a]=mk(L,used,ord[i%ord.length]);used.add(sig(q));h+=`<li data-l="${L}"><b class=qn title="Click to swap this question">${i+1}.</b><div class=q>${q}</div><div class=a>${a}</div></li>`}return`<section class=col data-l="${L}" style="--c:var(--c${L})"><h2>Level ${L}: ${['Secure','Developing','Challenge'][L-1]}</h2><ol>${h}</ol></section>`}).join('');$('#pt').textContent='Maths Skills Checker – '+label();fit()}
 $('#n').innerHTML=[...Array(10)].map((_,i)=>`<option${i==4?' selected':''}>${i+1}</option>`).join('');
 $('#sd').onchange=()=>{topics();setMode('s');gen()};
 $('#topic').onchange=()=>{setMode('s');gen()};$('#sub').onchange=gen;
-$('#yr').onchange=()=>{let y=$('#yr').value;if(/Foundation/.test(y)){tier='F';mark('#tiers button','t','F')}if(/Higher/.test(y)){tier='H';mark('#tiers button','t','H')}setMode('r');topics();gen()};
+$('#mixbody').onchange=e=>{let i=e.target;if(i.dataset.t!=null)i.checked?selT.add(i.dataset.t):selT.delete(i.dataset.t);else i.checked?selS.add(i.dataset.s):selS.delete(i.dataset.s);mixSum();setMode('x');gen()};
+$('#mixbody').onclick=e=>{if(e.target.id=='mclr'){selT.clear();selS.clear();mixBuild();gen()}};
+$('#yr').onchange=()=>{let y=$('#yr').value;if(/Foundation/.test(y)){tier='F';mark('#tiers button','t','F')}if(/Higher/.test(y)){tier='H';mark('#tiers button','t','H')}setMode('r');topics();mixBuild();gen()};
 $('#tmd').onchange=()=>{setMode('r');gen()};
-$('#tiers').onclick=e=>{let t=e.target.dataset.t;if(!t)return;tier=t;mark('#tiers button','t',t);topics();chips();gen()};
+$('#tiers').onclick=e=>{let t=e.target.dataset.t;if(!t)return;tier=t;mark('#tiers button','t',t);topics();chips();mixBuild();gen()};
 $('#n').onchange=$('#cl').onchange=$('#go').onclick=gen;
 $('#chips').onclick=e=>{let b=e.target.closest('button');if(!b)return;if(b.id=='ca'||b.id=='cn')document.querySelectorAll('.chip:not(.na)').forEach(c=>c.classList.toggle('on',b.id=='ca'));else if(b.classList.contains('chip')&&!b.classList.contains('na'))b.classList.toggle('on');else return;gen()};
 $('#cols').onclick=e=>{let li=e.target.closest('li');if(!li)return;if(e.target.closest('.qn')){let used=new Set([...li.parentElement.querySelectorAll('.q')].map(x=>sig(x.innerHTML))),[q,a]=mk(+li.dataset.l,used);li.querySelector('.q').innerHTML=q;li.querySelector('.a').innerHTML=a;li.classList.remove('show');fit();return}li.classList.toggle('show')};
@@ -624,5 +934,5 @@ let b;try{b=await makePdf(ans)}catch(e){m.textContent='Could not make a PDF here
 try{await d.save({filename:'maths-'+(ans?'answers':'worksheet')+'.pdf',data:b});m.textContent='PDF ready.'}catch(e){m.textContent=e&&e.code=='declined'?'Download cancelled.':'Could not save: '+(e&&e.message||e)}}
 $('#pw').onclick=()=>dlPdf(0);$('#pa').onclick=()=>dlPdf(1);
 onafterprint=()=>document.body.classList.remove('ws','pa');
-topics();chips();gen();
+topics();chips();mixBuild();gen();
 </script></body></html>
