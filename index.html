@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1387,6 +1386,62 @@ document.addEventListener('click',e=>{if(!e.target.isConnected)return;document.q
 
 ;(function(){const M={"go": "k-gen", "exb": "k-exam", "sa": "k-ans", "pw": "k-pdf", "pa": "k-pdf", "mclr": "k-clr", "sbclr": "k-clr", "tpclr": "k-clr", "pwclr": "k-clr", "ruclr": "k-clr", "rlclr": "k-clr", "excl": "k-clr", "exbk": "k-pdf", "bkb": "k-bk", "exwp": "k-view", "exbp": "k-view", "tmt": "k-sel", "sdall": "k-sel", "exsa": "k-sel", "zo": "k-view", "zi": "k-view", "hb": "k-view", "fl": "k-view"};const paint=r=>{for(const id in M){const b=r.querySelector('#'+id);if(b&&!b.classList.contains('k'))b.classList.add('k',M[id])}r.querySelectorAll('.exs').forEach(b=>b.classList.add('k','k-ans'))};paint(document);new MutationObserver(()=>paint(document)).observe(document.body,{childList:true,subtree:true})})();
 ;(function(){const t=document.getElementById('totop');const u=()=>{t.classList.toggle('show',(window.scrollY||document.documentElement.scrollTop||0)>500)};addEventListener('scroll',u,{passive:true});t.onclick=()=>scrollTo({top:0,behavior:'smooth'});u()})();
-</script></body></html>
-
+</script><style>
+#tm{position:fixed;left:14px;bottom:14px;z-index:60;font-family:inherit;color:var(--fg)}
+#tm *{box-sizing:border-box}
+#tmBtn{font-size:16px;font-weight:700;padding:9px 16px;border-radius:999px;border:3px solid #6b3fa0;background:var(--bg);color:#6b3fa0;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);font-variant-numeric:tabular-nums}
+#tm.run #tmBtn{background:#6b3fa0;color:#fff}
+#tm.low #tmBtn{background:var(--c3);border-color:var(--c3);color:#fff}
+#tm.done #tmBtn{animation:tmf .6s steps(2) infinite}
+@keyframes tmf{50%{background:var(--c3);color:#fff;border-color:var(--c3)}}
+#tmP{display:none;position:absolute;left:0;bottom:52px;width:min(320px,calc(100vw - 28px));background:var(--bg);border:3px solid #6b3fa0;border-radius:16px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+#tm.open #tmP{display:block}
+#tmD{font-size:56px;font-weight:800;text-align:center;line-height:1.1;font-variant-numeric:tabular-nums;color:#6b3fa0}
+#tm.low #tmD{color:var(--c2)}#tm.done #tmD{color:var(--c3)}
+.tmr{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center}
+.tmr button{font-size:15px;font-weight:700;padding:7px 12px;border-radius:10px;border:2px solid #6b3fa0;background:var(--bg);color:#6b3fa0;cursor:pointer}
+.tmr button.go{background:var(--c1);border-color:var(--c1);color:#fff;min-width:96px}
+.tmr button.go.p{background:var(--c2);border-color:var(--c2)}
+.tmr button.rs{border-color:var(--c3);color:var(--c3)}
+#tmC{width:64px;font-size:15px;padding:6px;border-radius:10px;border:2px solid var(--bd);background:var(--bg);color:var(--fg);text-align:center}
+#tmX{position:absolute;top:2px;right:6px;border:0;background:none;color:var(--mu);font-size:22px;cursor:pointer}
+#tmB{display:none;position:fixed;inset:0;z-index:100;background:#12151f;color:#fff;align-items:center;justify-content:center;flex-direction:column;gap:24px}
+#tmB.on{display:flex}
+#tmB .big{font-size:min(30vw,38vh);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+#tmB.low .big{color:var(--c2)}#tmB.done .big{color:#ff7b72;animation:tmf2 .6s steps(2) infinite}
+@keyframes tmf2{50%{opacity:.25}}
+#tmB .tmr button{font-size:22px;padding:10px 22px;background:#1b2030;color:#fff;border-color:#9aa3b8}
+#tmB .tmr button.go{background:var(--c1);border-color:var(--c1)}#tmB .tmr button.go.p{background:var(--c2);border-color:var(--c2)}
+@media print{#tm,#tmB{display:none!important}}
+</style>
+<div id="tm"><button id="tmBtn" title="Classroom countdown timer">⏱ Timer</button>
+<div id="tmP" role="dialog" aria-label="Timer"><button id="tmX" title="Close" aria-label="Close timer">×</button><div id="tmD">05:00</div>
+<div class="tmr" id="tmPre"><button data-m="1">1 min</button><button data-m="2">2 min</button><button data-m="3">3 min</button><button data-m="5">5 min</button><button data-m="10">10 min</button><button data-m="15">15 min</button></div>
+<div class="tmr"><button data-d="-60">−1 min</button><input id="tmC" type="number" min="1" max="180" placeholder="min" aria-label="Custom minutes"><button id="tmSet">Set</button><button data-d="60">+1 min</button></div>
+<div class="tmr"><button class="go" id="tmGo">Start</button><button class="rs" id="tmRs">Reset</button><button id="tmFs" title="Full-screen timer for the projector">Big screen</button></div></div></div>
+<div id="tmB"><div class="big" id="tmBig">05:00</div><div class="tmr"><button class="go" id="tmGo2">Start</button><button class="rs" id="tmRs2">Reset</button><button id="tmEx">Close</button></div></div>
+<script>
+(()=>{const $=s=>document.querySelector(s),T=$('#tm'),B=$('#tmB');let len=300,rem=300,end=0,iv=0,fin=false;const t0=document.title;
+const fmt=s=>{s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+function beep(){try{const a=new(window.AudioContext||window.webkitAudioContext)();[0,.35,.7,1.05,1.4].forEach(d=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);const t=a.currentTime+d;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.4,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.28);o.start(t);o.stop(t+.3)})}catch(e){}}
+function draw(){const s=iv?(end-Date.now())/1000:rem,f=fmt(s),low=(iv||rem<len)&&s<=10&&s>0;$('#tmD').textContent=f;$('#tmBig').textContent=f;$('#tmBtn').textContent=(iv||rem<len||fin)?'⏱ '+f:'⏱ Timer';
+T.classList.toggle('run',!!iv);T.classList.toggle('low',low);T.classList.toggle('done',fin);B.classList.toggle('low',low);B.classList.toggle('done',fin);
+for(const id of['#tmGo','#tmGo2']){const g=$(id);g.textContent=iv?'Pause':(rem<len&&rem>0?'Resume':'Start');g.classList.toggle('p',!!iv)}
+document.title=iv?f+' – '+t0:t0}
+function tick(){const s=(end-Date.now())/1000;if(s<=0){clearInterval(iv);iv=0;rem=0;fin=true;beep();draw();return}draw()}
+function start(){if(iv)return;if(rem<=0){rem=len}fin=false;end=Date.now()+rem*1000;iv=setInterval(tick,250);draw()}
+function pause(){if(!iv)return;rem=Math.max(0,(end-Date.now())/1000);clearInterval(iv);iv=0;draw()}
+function setLen(s){clearInterval(iv);iv=0;fin=false;len=rem=Math.max(10,Math.min(10800,s));draw()}
+function adj(d){if(iv){end+=d*1000;if(end<=Date.now())end=Date.now()+1000;len=Math.max(len,(end-Date.now())/1000)}else{rem=Math.max(10,Math.min(10800,rem+d));len=Math.max(len,rem);fin=false}draw()}
+$('#tmBtn').onclick=()=>T.classList.toggle('open');$('#tmX').onclick=()=>T.classList.remove('open');
+for(const g of['#tmGo','#tmGo2'])$(g).onclick=()=>iv?pause():start();
+for(const g of['#tmRs','#tmRs2'])$(g).onclick=()=>setLen(len);
+document.querySelectorAll('#tmPre button').forEach(b=>b.onclick=()=>{setLen(+b.dataset.m*60);start()});
+document.querySelectorAll('#tm [data-d]').forEach(b=>b.onclick=()=>adj(+b.dataset.d));
+$('#tmSet').onclick=()=>{const v=parseFloat($('#tmC').value);if(v>0){setLen(v*60);start()}};
+$('#tmC').addEventListener('keydown',e=>{if(e.key==='Enter')$('#tmSet').click()});
+$('#tmFs').onclick=()=>{B.classList.add('on');T.classList.remove('open')};$('#tmEx').onclick=()=>B.classList.remove('on');
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){B.classList.remove('on');T.classList.remove('open')}});
+document.addEventListener('visibilitychange',()=>{if(iv)tick()});draw()})();
+</script>
 </body></html>
