@@ -1929,8 +1929,8 @@ try{await lpLoadEx();await Promise.all(lpSes().map(s=>ldA(s)).map(p=>p.catch(()=
 const D=slBuild(),css=document.querySelector('style').textContent;
 ifr=document.createElement('iframe');ifr.style.cssText='position:fixed;left:-9999px;top:0;width:1280px;height:720px;border:0';document.body.appendChild(ifr);
 const doc=ifr.contentDocument;doc.open();doc.write('<!doctype html><html><head><meta charset="utf-8"><style>'+css+'</style></head><body style="margin:0;background:#fff"><div id="slo"><div class="slc"></div><div class="slb" style="display:none"><span class="slp"></span></div></div></body></html>');doc.close();
-const o=doc.getElementById('slo'),out=[];let k=0,tot=0;D.forEach(d=>tot+=1+(slMax(d)>0?1:0));
-for(const d of D){const states=slMax(d)>0?[0,slMax(d)]:[0];
+const o=doc.getElementById('slo'),out=[];let k=0,tot=0;D.forEach(d=>tot+=1+slMax(d));
+for(const d of D){const states=[...Array(slMax(d)+1).keys()];
 for(const S of states){slPaint(o,d,S);m.textContent='Building PowerPoint… '+(++k)+' / '+tot;await new Promise(r=>setTimeout(r,0));
 let c=o.cloneNode(true);c.style.cssText=(o.style.cssText||'')+';position:absolute;left:0;top:0;width:1280px;height:720px;';
 let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720"><foreignObject width="1280" height="720"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1280px;height:720px;position:relative;background:#fff"><style>${css}</style>${new XMLSerializer().serializeToString(c)}</div></foreignObject></svg>`;
