@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GCSE Exam Questions</title>
 <style>
-:root{color-scheme:dark;--bg:#14171a;--card:#1f2428;--ink:#e8e8e4;--mut:#9aa4aa;--acc:#6bb3e0;--line:#343c42;--e:#7bc47f;--m:#e0a040;--h:#f08a82}
+:root{color-scheme:dark;--bg:#14171a;--card:#1f2428;--ink:#e8e8e4;--mut:#9aa4aa;--acc:#6bb3e0;--line:#343c42;--e:#7bc47f;--m:#e0a040;--h:#f08a82;--cn:#6bb3e0;--ca:#c39bd3;--cr:#e0a040;--cg:#7bc47f;--cp:#f08a82;--cs:#5fc9c0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Georgia,serif}
 header{padding:18px 20px 0;border-bottom:1px solid var(--line);background:linear-gradient(#1b2025,var(--bg))}h1{margin:0 0 14px;font:400 26px/1.2 Georgia,serif;letter-spacing:.04em;color:var(--ink)}h1 .hl{color:var(--acc);font-weight:700}
 .tabs{display:flex;gap:4px;flex-wrap:wrap}.tabs button{font:600 14px sans-serif;padding:8px 16px;border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;background:none;color:var(--mut);cursor:pointer}
@@ -15,6 +15,9 @@ aside{flex:1 1 250px;max-width:330px}main{flex:3 1 400px;min-width:0}
 .chip{display:inline-block;margin:2px;padding:4px 9px;border:1.5px solid var(--line);border-radius:14px;font:13px sans-serif;cursor:pointer;background:none;color:var(--ink);text-align:left}
 .chip.on{background:var(--acc);color:var(--bg);border-color:var(--acc)}
 .chip.sec{font-size:12px}
+.chip.cn{border-color:var(--cn);color:var(--cn)}.chip.ca{border-color:var(--ca);color:var(--ca)}.chip.cr{border-color:var(--cr);color:var(--cr)}.chip.cg{border-color:var(--cg);color:var(--cg)}.chip.cp{border-color:var(--cp);color:var(--cp)}.chip.cs{border-color:var(--cs);color:var(--cs)}
+.chip.cn.on{background:var(--cn);color:var(--bg)}.chip.ca.on{background:var(--ca);color:var(--bg)}.chip.cr.on{background:var(--cr);color:var(--bg)}.chip.cg.on{background:var(--cg);color:var(--bg)}.chip.cp.on{background:var(--cp);color:var(--bg)}.chip.cs.on{background:var(--cs);color:var(--bg)}
+.lg{font:12px sans-serif;margin-bottom:6px;line-height:1.7}.lg b{margin-right:10px;white-space:nowrap}
 select,input{font:14px sans-serif;padding:4px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:4px}
 select{max-width:100%}
 button.act,a.act{text-decoration:none;display:inline-block;font:600 14px sans-serif;padding:8px 12px;border:0;border-radius:6px;background:var(--acc);color:var(--bg);cursor:pointer;margin:2px 0}
@@ -22,11 +25,12 @@ button.act,a.act{text-decoration:none;display:inline-block;font:600 14px sans-se
 .q.sel{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
 .meta{font:12px sans-serif;color:var(--mut);display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
 .tag{padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:var(--acc);border-color:var(--acc)}
+.tag.cn{color:var(--cn);border-color:var(--cn)}.tag.ca{color:var(--ca);border-color:var(--ca)}.tag.cr{color:var(--cr);border-color:var(--cr)}.tag.cg{color:var(--cg);border-color:var(--cg)}.tag.cp{color:var(--cp);border-color:var(--cp)}.tag.cs{color:var(--cs);border-color:var(--cs)}
 .tag.fb{color:var(--mut);border-color:var(--line)}
 .d1{color:var(--e)}.d2{color:var(--m)}.d3{color:var(--h)}
 .qi{display:block;max-width:100%;height:auto;background:#fff;border-radius:4px}
 .ans{display:none;margin-top:8px}.q.show .ans{display:block}
-h3.ch{font:600 15px sans-serif;margin:18px 0 8px;color:var(--acc)}
+h3.ch{font:600 15px sans-serif;margin:18px 0 8px;color:var(--acc)}h3.ch.cn{color:var(--cn)}h3.ch.ca{color:var(--ca)}h3.ch.cr{color:var(--cr)}h3.ch.cg{color:var(--cg)}h3.ch.cp{color:var(--cp)}h3.ch.cs{color:var(--cs)}
 .row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .hint{font:13px sans-serif;color:var(--mut)}
 #sheet{display:none}
@@ -40,7 +44,7 @@ body.ws>*:not(#sheet){display:none}body.ws #sheet{display:block;background:#fff;
 <header><h1><span class="hl">GCSE Maths</span> Past Exam Question Selector</h1><div class="tabs" id="tabs"></div></header>
 <div class="wrap">
 <aside>
-<div class="box"><h3>Textbook chapter</h3><div class="hint" id="bkname" style="margin-bottom:6px"></div><div id="topics"></div></div>
+<div class="box"><h3>Textbook chapter</h3><div class="hint" id="bkname" style="margin-bottom:6px"></div><div class="lg"><b style="color:var(--cn)">&#9632; Number</b> <b style="color:var(--ca)">&#9632; Algebra</b> <b style="color:var(--cr)">&#9632; Ratio &amp; proportion</b> <b style="color:var(--cg)">&#9632; Geometry &amp; measures</b> <b style="color:var(--cp)">&#9632; Probability</b> <b style="color:var(--cs)">&#9632; Statistics</b></div><div id="topics"></div></div>
 <div class="box" id="secbox" style="display:none"><h3>Section (optional)</h3><div id="secs"></div></div>
 <div class="box"><h3>Difficulty</h3><div id="diffs"></div><div class="hint" style="margin-top:6px">Estimated from where the question sits in its paper.</div></div>
 <div class="box"><h3>Whole paper / marks</h3>
@@ -71,6 +75,9 @@ const D=EX.map(x=>{let sec=(EXSEC[x.f]||[]).filter(c=>c[0]==x.t).map(c=>c.slice(
  if(!sec.length){const s=new Set();(x.g||[]).forEach(g=>(TOP2SEC[x.t][g]||[]).forEach(c=>s.add(c)));sec=[...s];fb=sec.length>0}
  const fr=(x.q-.5)/(MAXQ[x.s+'|'+x.p+'|'+x.t]||1);
  return Object.assign({},x,{sec,fb,ch:[...new Set(sec.map(c=>+c.split('.')[0]))].sort((a,b)=>a-b),d:fr<1/3?1:fr<2/3?2:3})});
+const STR={F:{1:'n',2:'g',3:'s',4:'g',5:'n',6:'n',7:'n',8:'a',9:'a',10:'r',11:'g',12:'g',13:'p',14:'g',15:'a',16:'r',17:'r',18:'s',19:'g',20:'g',21:'a',22:'g',23:'g',24:'p',25:'n',26:'a',27:'a'},
+ H:{1:'n',2:'n',3:'s',4:'a',5:'r',6:'g',7:'g',8:'a',9:'g',10:'a',11:'g',12:'g',13:'p',14:'n',15:'a',16:'n',17:'a',18:'s',19:'p',20:'g',21:'r',22:'g',23:'a',24:'a',25:'g'}};
+const sc=(t,c)=>'c'+((STR[t]||{})[c]||'n');
 const dn=['','Easy','Medium','Hard'];
 const plab=q=>`${q.s} Paper ${q.p} ${TN[q.t]}`,lab=q=>plab(q)+' Q'+q.q;
 const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -92,14 +99,14 @@ const img=q=>window.EXI&&EXI[q.f]?`<img class="qi" src="${EXI[q.f]}" alt="${esc(
 function build(){
  tabs.innerHTML=['F','H'].map(t=>`<button class="${t==lv?'on':''}" data-l="${t}">${TN[t]} (${D.filter(q=>q.t==t).length})</button>`).join('');
  const Q=cur(),B=BK[lv];bkname.textContent='Collins '+B.name;
- topics.innerHTML=B.ch.map(([c,cn])=>{const n=Q.filter(q=>q.ch.includes(c)).length;return n?`<button class="chip${fT.has(c)?' on':''}" data-t="${c}">${c}. ${esc(cn)} (${n})</button>`:''}).join('');
+ topics.innerHTML=B.ch.map(([c,cn])=>{const n=Q.filter(q=>q.ch.includes(c)).length;return n?`<button class="chip ${sc(lv,c)}${fT.has(c)?' on':''}" data-t="${c}">${c}. ${esc(cn)} (${n})</button>`:''}).join('');
  diffs.innerHTML=[1,2,3].map(n=>`<button class="chip${fD.has(n)?' on':''}" data-d="${n}"><span class="d${n}">●</span> ${dn[n]}</button>`).join('');
  const ps=[...new Set(Q.map(plab))].sort((a,b)=>{const qa=Q.find(q=>plab(q)==a),qb=Q.find(q=>plab(q)==b);return sesK(qb.s)-sesK(qa.s)||qa.s.localeCompare(qb.s)||qa.p-qb.p});
  pp.innerHTML='<option value="">All papers (filter by chapter)</option>'+ps.map(p=>`<option${p==pp.value?' selected':''}>${esc(p)}</option>`).join('');
  secBuild()}
 function secBuild(){const Q=cur(),B=BK[lv];
  if(!fT.size||pp.value){secbox.style.display='none';return}secbox.style.display='';
- secs.innerHTML=B.ch.filter(([c])=>fT.has(c)).map(([c,cn,ss])=>ss.map(([code,sn])=>{const n=Q.filter(q=>q.sec.includes(code)).length;return n?`<button class="chip sec${fS.has(code)?' on':''}" data-s="${code}">${code} ${esc(sn)} (${n})</button>`:''}).join('')).join('')||'<span class="hint">No sections with questions.</span>'}
+ secs.innerHTML=B.ch.filter(([c])=>fT.has(c)).map(([c,cn,ss])=>ss.map(([code,sn])=>{const n=Q.filter(q=>q.sec.includes(code)).length;return n?`<button class="chip sec ${sc(lv,c)}${fS.has(code)?' on':''}" data-s="${code}">${code} ${esc(sn)} (${n})</button>`:''}).join('')).join('')||'<span class="hint">No sections with questions.</span>'}
 document.addEventListener('click',e=>{
  const l=e.target.closest('[data-l]');if(l){lv=l.dataset.l;fT.clear();fS.clear();pp.value='';save();build();SHOWN=60;render();return}
  const c=e.target.closest('.chip');if(!c)return;
@@ -124,7 +131,7 @@ function addAll(){const on=PL.every(f=>basket.includes(f));basket=basket.filter(
 const firstCh=q=>{const c=q.ch.filter(c=>!fT.size||fT.has(c));return c.length?c[0]:(q.ch[0]||99)};
 function card(q){const op=OPEN.has(q.f)&&q.a&&window.EXI&&EXI[q.a];return`<div class="q${basket.includes(q.f)?' sel':''}${op?' show':''}" id="q_${q.f}">
  <div class="meta"><b>${esc(lab(q))}</b><span>${q.m} mark${q.m>1?'s':''}</span><span class="d${q.d}">${dn[q.d]}</span>
- ${q.sec.slice(0,4).map(c=>`<span class="tag${q.fb?' fb':''}" title="${q.fb?'Matched from the question topic':'Textbook section'}">${c} ${esc(SECN[q.t+c]||'')}</span>`).join('')}${q.sec.length>4?`<span class="tag">+${q.sec.length-4}</span>`:''}</div>
+ ${q.sec.slice(0,4).map(c=>`<span class="tag ${q.fb?'fb':sc(q.t,+c.split('.')[0])}" title="${q.fb?'Matched from the question topic':'Textbook section'}">${c} ${esc(SECN[q.t+c]||'')}</span>`).join('')}${q.sec.length>4?`<span class="tag">+${q.sec.length-4}</span>`:''}</div>
  ${img(q)}<div class="ans"${op?' data-done=1':''}>${op?`<img class="qi" style="border:1px solid #ccc" src="${EXI[q.a]}" alt="Mark scheme">`:''}</div>
  <div class="row"><button class="act" onclick="tog('${q.f}')">${basket.includes(q.f)?'Remove':'Add to worksheet'}</button>
  <button class="act" style="background:var(--mut)" onclick="ms('${q.f}')">Mark scheme</button></div></div>`}
@@ -140,7 +147,7 @@ function render(){
  PL=L.map(q=>q.f);const all=PL.length&&PL.every(f=>basket.includes(f)),marks=L.reduce((s,q)=>s+(q.m||0),0);
  shint.innerHTML=L.length?`${L.length} question${L.length>1?'s':''} &middot; ${marks} marks${PM?' &middot; shown in question order':''} <button class="act" style="margin-left:8px;padding:5px 10px;font-size:13px" onclick="addAll()">${all?'Remove all of these from worksheet':(PM?'Add whole paper':'Add all '+L.length)+' to worksheet'}</button>`:'No questions match. Try another chapter, fewer filters, or different search words.';
  let lc=null,h='';
- L.slice(0,SHOWN).forEach(q=>{if(!PM){const c=firstCh(q);if(c!==lc){lc=c;h+=`<h3 class="ch">${c==99?'Other':'Chapter '+c+': '+esc(CHN[lv+c]||'')}</h3>`}}h+=card(q)});
+ L.slice(0,SHOWN).forEach(q=>{if(!PM){const c=firstCh(q);if(c!==lc){lc=c;h+=`<h3 class="ch ${c==99?'':sc(lv,c)}">${c==99?'Other':'Chapter '+c+': '+esc(CHN[lv+c]||'')}</h3>`}}h+=card(q)});
  if(L.length>SHOWN)h+=`<button class="act" onclick="SHOWN+=60;render()">Show ${Math.min(60,L.length-SHOWN)} more (${L.length-SHOWN} left)</button>`;
  list.innerHTML=h}
 // ---- worksheet ----
