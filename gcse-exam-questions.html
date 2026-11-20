@@ -27,7 +27,7 @@ button.act,a.act{text-decoration:none;display:inline-block;font:600 14px sans-se
 .tag{padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:var(--acc);border-color:var(--acc)}
 .tag.cn{color:var(--cn);border-color:var(--cn)}.tag.ca{color:var(--ca);border-color:var(--ca)}.tag.cr{color:var(--cr);border-color:var(--cr)}.tag.cg{color:var(--cg);border-color:var(--cg)}.tag.cp{color:var(--cp);border-color:var(--cp)}.tag.cs{color:var(--cs);border-color:var(--cs)}
 .tag.fb{color:var(--mut);border-color:var(--line)}
-.d1{color:var(--e)}.d2{color:var(--m)}.d3{color:var(--h)}
+.g1{color:var(--e)}.g2{color:var(--m)}.g3{color:var(--h)}.gb{font-weight:700}.cb{padding:1px 7px;border-radius:10px;border:1px solid var(--mut);color:var(--ink)}.cb.nc{border-color:var(--h);color:var(--h)}
 .qi{display:block;max-width:100%;height:auto;background:#fff;border-radius:4px}
 .ans{display:none;margin-top:8px}.q.show .ans{display:block}
 h3.ch{font:600 15px sans-serif;margin:18px 0 8px;color:var(--acc)}h3.ch.cn{color:var(--cn)}h3.ch.ca{color:var(--ca)}h3.ch.cr{color:var(--cr)}h3.ch.cg{color:var(--cg)}h3.ch.cp{color:var(--cp)}h3.ch.cs{color:var(--cs)}
@@ -40,13 +40,25 @@ body.ws>*:not(#sheet){display:none}body.ws #sheet{display:block;background:#fff;
 .sbar input:focus{outline:none;border-color:var(--acc)}.sbar svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mut)}
 .shint{font:12px sans-serif;color:var(--mut);margin:0 2px 14px}
 #load{font:15px sans-serif;color:var(--mut);padding:30px 6px}
+.sim{margin-top:10px;border:1.5px dashed var(--ca);border-radius:8px;padding:10px}
+.sim .sh{font:12px sans-serif;color:var(--ca);margin-bottom:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.eqp{background:#fff;color:#111;border-radius:6px;padding:10px 14px;font:15px/1.5 "Segoe UI",Arial,sans-serif;--c:#1f5f8b;--bd:#c9d0dc;overflow-x:auto}
+.eqp.ms2{background:#f3f7fb;margin-top:8px;border-left:4px solid #1f5f8b}
+.eqp .wk{font-weight:500;line-height:1.45;font-size:.92em;color:#111}.eqp .wk .st{margin:.15em 0}.eqp .wk .st b{color:var(--c);margin-right:.35em}.eqp .wk .pl{font-weight:700;margin-top:.4em;color:var(--c)}.eqp .wk .fin{font-weight:700;color:var(--c);margin:.25em 0 .1em}
+.eqp .emk{display:block;text-align:right;font-size:.8em;opacity:.75;font-weight:600}
+.eqp .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;font-size:.95em;line-height:1.15}.eqp .fr i{font-style:normal;padding:0 .25em}.eqp .fr i:first-child{border-bottom:.08em solid currentColor}
+.eqp .t{border-collapse:collapse;margin-top:.3em;font-size:.85em}.eqp .t td,.eqp .t th{border:1px solid var(--bd);padding:2px 8px;text-align:center}
+.eqp svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
+.eqp .v{display:inline-flex;flex-direction:column;border:solid currentColor;border-width:0 .09em;border-radius:.4em;padding:0 .3em;line-height:1.1;text-align:center;vertical-align:middle}.eqp .v i{font-style:normal}
+.sim .act{font-size:13px;padding:6px 10px}
 </style></head><body>
 <header><h1><span class="hl">GCSE Maths</span> Past Exam Question Selector</h1><div class="tabs" id="tabs"></div></header>
 <div class="wrap">
 <aside>
 <div class="box"><h3>Textbook chapter</h3><div class="hint" id="bkname" style="margin-bottom:6px"></div><div class="lg"><b style="color:var(--cn)">&#9632; Number</b> <b style="color:var(--ca)">&#9632; Algebra</b> <b style="color:var(--cr)">&#9632; Ratio &amp; proportion</b> <b style="color:var(--cg)">&#9632; Geometry &amp; measures</b> <b style="color:var(--cp)">&#9632; Probability</b> <b style="color:var(--cs)">&#9632; Statistics</b></div><div id="topics"></div></div>
 <div class="box" id="secbox" style="display:none"><h3>Section (optional)</h3><div id="secs"></div></div>
-<div class="box"><h3>Difficulty</h3><div id="diffs"></div><div class="hint" style="margin-top:6px">Estimated from where the question sits in its paper.</div></div>
+<div class="box"><h3>GCSE grade</h3><div id="grades"></div><div class="hint" style="margin-top:6px">Choose one or more. Grades are estimated from where the question sits in its paper (Foundation 1–5, Higher 4–9).</div></div>
+<div class="box"><h3>Calculator</h3><div id="calcs"></div></div>
 <div class="box"><h3>Whole paper / marks</h3>
 <select id="pp"></select>
 <div class="hint" style="margin:6px 0 10px">Pick a paper to show all its questions in order (other filters are ignored).</div>
@@ -74,16 +86,17 @@ for(const t in BK)BK[t].ch.forEach(([c,cn,ss])=>{CHN[t+c]=cn;ss.forEach(([code,s
 const D=EX.map(x=>{let sec=(EXSEC[x.f]||[]).filter(c=>c[0]==x.t).map(c=>c.slice(1)),fb=false;
  if(!sec.length){const s=new Set();(x.g||[]).forEach(g=>(TOP2SEC[x.t][g]||[]).forEach(c=>s.add(c)));sec=[...s];fb=sec.length>0}
  const fr=(x.q-.5)/(MAXQ[x.s+'|'+x.p+'|'+x.t]||1);
- return Object.assign({},x,{sec,fb,ch:[...new Set(sec.map(c=>+c.split('.')[0]))].sort((a,b)=>a-b),d:fr<1/3?1:fr<2/3?2:3})});
+ const H=x.t=='H',gr=Math.min(H?9:5,Math.max(H?4:1,Math.round(H?4+fr*5:1+fr*4)));
+ return Object.assign({},x,{sec,fb,ch:[...new Set(sec.map(c=>+c.split('.')[0]))].sort((a,b)=>a-b),gr,calc:x.p!='1'})});
 const STR={F:{1:'n',2:'g',3:'s',4:'g',5:'n',6:'n',7:'n',8:'a',9:'a',10:'r',11:'g',12:'g',13:'p',14:'g',15:'a',16:'r',17:'r',18:'s',19:'g',20:'g',21:'a',22:'g',23:'g',24:'p',25:'n',26:'a',27:'a'},
  H:{1:'n',2:'n',3:'s',4:'a',5:'r',6:'g',7:'g',8:'a',9:'g',10:'a',11:'g',12:'g',13:'p',14:'n',15:'a',16:'n',17:'a',18:'s',19:'p',20:'g',21:'r',22:'g',23:'a',24:'a',25:'g'}};
 const sc=(t,c)=>'c'+((STR[t]||{})[c]||'n');
-const dn=['','Easy','Medium','Hard'];
+const gcls=g=>g<=3?'g1':g<=6?'g2':'g3',cname=q=>q.calc?'Calculator':'Non-calculator';
 const plab=q=>`${q.s} Paper ${q.p} ${TN[q.t]}`,lab=q=>plab(q)+' Q'+q.q;
 const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 // ---- state ----
 let S={};try{S=JSON.parse(localStorage.getItem('gcseqs')||'{}')}catch(e){}
-let basket=(S.b||[]).filter(f=>D.some(q=>q.f==f)),lv=S.l||'F',fT=new Set(),fS=new Set(),fD=new Set(),SHOWN=60,PL=[];
+let basket=(S.b||[]).filter(f=>D.some(q=>q.f==f)),lv=S.l||'F',fT=new Set(),fS=new Set(),fG=new Set(),fC=new Set(),SHOWN=60,PL=[];
 function save(){try{localStorage.setItem('gcseqs',JSON.stringify({b:basket,l:lv}))}catch(e){}}
 const cur=()=>D.filter(q=>q.t==lv);
 // ---- loading images ----
@@ -100,7 +113,9 @@ function build(){
  tabs.innerHTML=['F','H'].map(t=>`<button class="${t==lv?'on':''}" data-l="${t}">${TN[t]} (${D.filter(q=>q.t==t).length})</button>`).join('');
  const Q=cur(),B=BK[lv];bkname.textContent='Collins '+B.name;
  topics.innerHTML=B.ch.map(([c,cn])=>{const n=Q.filter(q=>q.ch.includes(c)).length;return n?`<button class="chip ${sc(lv,c)}${fT.has(c)?' on':''}" data-t="${c}">${c}. ${esc(cn)} (${n})</button>`:''}).join('');
- diffs.innerHTML=[1,2,3].map(n=>`<button class="chip${fD.has(n)?' on':''}" data-d="${n}"><span class="d${n}">●</span> ${dn[n]}</button>`).join('');
+ const G=lv=='H'?[4,5,6,7,8,9]:[1,2,3,4,5];
+ grades.innerHTML=G.map(g=>`<button class="chip${fG.has(g)?' on':''}" data-g="${g}"><span class="${gcls(g)}">●</span> Grade ${g} (${Q.filter(q=>q.gr==g).length})</button>`).join('');
+ calcs.innerHTML=[['n','Non-calculator (Paper 1)',false],['c','Calculator (Papers 2 & 3)',true]].map(([k,t,v])=>`<button class="chip${fC.has(k)?' on':''}" data-c="${k}">${t} (${Q.filter(q=>q.calc==v).length})</button>`).join('');
  const ps=[...new Set(Q.map(plab))].sort((a,b)=>{const qa=Q.find(q=>plab(q)==a),qb=Q.find(q=>plab(q)==b);return sesK(qb.s)-sesK(qa.s)||qa.s.localeCompare(qb.s)||qa.p-qb.p});
  pp.innerHTML='<option value="">All papers (filter by chapter)</option>'+ps.map(p=>`<option${p==pp.value?' selected':''}>${esc(p)}</option>`).join('');
  secBuild()}
@@ -108,18 +123,19 @@ function secBuild(){const Q=cur(),B=BK[lv];
  if(!fT.size||pp.value){secbox.style.display='none';return}secbox.style.display='';
  secs.innerHTML=B.ch.filter(([c])=>fT.has(c)).map(([c,cn,ss])=>ss.map(([code,sn])=>{const n=Q.filter(q=>q.sec.includes(code)).length;return n?`<button class="chip sec ${sc(lv,c)}${fS.has(code)?' on':''}" data-s="${code}">${code} ${esc(sn)} (${n})</button>`:''}).join('')).join('')||'<span class="hint">No sections with questions.</span>'}
 document.addEventListener('click',e=>{
- const l=e.target.closest('[data-l]');if(l){lv=l.dataset.l;fT.clear();fS.clear();pp.value='';save();build();SHOWN=60;render();return}
+ const l=e.target.closest('[data-l]');if(l){lv=l.dataset.l;fT.clear();fS.clear();fG.clear();pp.value='';save();build();SHOWN=60;render();return}
  const c=e.target.closest('.chip');if(!c)return;
  if(c.dataset.t){const k=+c.dataset.t;if(fT.has(k)){fT.delete(k);[...fS].filter(s=>+s.split('.')[0]==k).forEach(s=>fS.delete(s))}else fT.add(k);secBuild()}
  else if(c.dataset.s){const k=c.dataset.s;fS.has(k)?fS.delete(k):fS.add(k)}
- else if(c.dataset.d){const k=+c.dataset.d;fD.has(k)?fD.delete(k):fD.add(k)}
+ else if(c.dataset.g){const k=+c.dataset.g;fG.has(k)?fG.delete(k):fG.add(k)}
+ else if(c.dataset.c){const k=c.dataset.c;fC.has(k)?fC.delete(k):fC.add(k)}
  c.classList.toggle('on');SHOWN=60;render()});
 pp.onchange=()=>{secBuild();SHOWN=60;render()};maxm.oninput=()=>render();
 let sT=0;sq.addEventListener('input',()=>{clearTimeout(sT);sT=setTimeout(()=>{SHOWN=60;render()},150)});
 sq.addEventListener('keydown',e=>{if(e.key==='Escape'){sq.value='';render()}});
 // ---- search over chapter, section and topic names and paper labels ----
 const norm=x=>(x||'').toLowerCase().replace(/[‘’']/g,'').replace(/[^a-z0-9%]+/g,' ').trim();
-const HAY=new Map(D.map(q=>[q.f,' '+norm([lab(q),...q.ch.map(c=>CHN[q.t+c]),...q.sec.map(c=>SECN[q.t+c]),...(q.g||[])].join(' '))+' ']));
+const HAY=new Map(D.map(q=>[q.f,' '+norm(['grade '+q.gr,cname(q),lab(q),...q.ch.map(c=>CHN[q.t+c]),...q.sec.map(c=>SECN[q.t+c]),...(q.g||[])].join(' '))+' ']));
 const sMatch=(q,ws)=>ws.every(w=>HAY.get(q.f).includes(' '+w)||HAY.get(q.f).includes(w));
 // ---- list ----
 function tog(f){const i=basket.indexOf(f);i<0?basket.push(f):basket.splice(i,1);save();render()}
@@ -130,19 +146,20 @@ function ms(f,b){const el=document.getElementById('q_'+f),q=D.find(x=>x.f==f);if
 function addAll(){const on=PL.every(f=>basket.includes(f));basket=basket.filter(f=>!PL.includes(f));if(!on)basket=basket.concat(PL);save();render()}
 const firstCh=q=>{const c=q.ch.filter(c=>!fT.size||fT.has(c));return c.length?c[0]:(q.ch[0]||99)};
 function card(q){const op=OPEN.has(q.f)&&q.a&&window.EXI&&EXI[q.a];return`<div class="q${basket.includes(q.f)?' sel':''}${op?' show':''}" id="q_${q.f}">
- <div class="meta"><b>${esc(lab(q))}</b><span>${q.m} mark${q.m>1?'s':''}</span><span class="d${q.d}">${dn[q.d]}</span>
+ <div class="meta"><b>${esc(lab(q))}</b><span>${q.m} mark${q.m>1?'s':''}</span><span class="gb ${gcls(q.gr)}">Grade ${q.gr}</span><span class="cb${q.calc?'':' nc'}">${q.calc?'&#128425; ':''}${cname(q)}</span>
  ${q.sec.slice(0,4).map(c=>`<span class="tag ${q.fb?'fb':sc(q.t,+c.split('.')[0])}" title="${q.fb?'Matched from the question topic':'Textbook section'}">${c} ${esc(SECN[q.t+c]||'')}</span>`).join('')}${q.sec.length>4?`<span class="tag">+${q.sec.length-4}</span>`:''}</div>
  ${img(q)}<div class="ans"${op?' data-done=1':''}>${op?`<img class="qi" style="border:1px solid #ccc" src="${EXI[q.a]}" alt="Mark scheme">`:''}</div>
  <div class="row"><button class="act" onclick="tog('${q.f}')">${basket.includes(q.f)?'Remove':'Add to worksheet'}</button>
- <button class="act" style="background:var(--mut)" onclick="ms('${q.f}')">Mark scheme</button></div></div>`}
+ <button class="act" style="background:var(--mut)" onclick="ms('${q.f}')">Mark scheme</button>
+ <button class="act" style="background:var(--ca)" onclick="sim('${q.f}')">Similar question</button></div>${SIMH[q.f]||''}</div>`}
 function render(){
  cnt.textContent=basket.length;tm.textContent=basket.reduce((s,f)=>s+(D.find(q=>q.f==f).m||0),0);
  if(!READY)return;
  const mx=+maxm.value||999,PM=!!pp.value,ws=norm(sq.value).split(' ').filter(w=>w.length>=2),SR=ws.length>0;
  let L;
  if(PM)L=cur().filter(q=>plab(q)===pp.value).sort((a,b)=>a.q-b.q);
- else if(!fT.size&&!SR){PL=[];shint.textContent='';list.innerHTML=`<div class="box"><h3>Choose a textbook chapter</h3><div class="hint">Pick one or more chapters on the left (or search above, or choose a whole paper) to see the ${TN[lv]} exam questions for them. Click <b>Mark scheme</b> under a question to see its mark scheme, and <b>Add to worksheet</b> to build a printable worksheet.</div></div>`;return}
- else L=cur().filter(q=>(!fT.size||q.ch.some(c=>fT.has(c)))&&(!fS.size||q.sec.some(c=>fS.has(c)))&&(!fD.size||fD.has(q.d))&&q.m<=mx&&(!SR||sMatch(q,ws)))
+ else if(!fT.size&&!SR&&!fG.size){PL=[];shint.textContent='';list.innerHTML=`<div class="box"><h3>Choose a textbook chapter</h3><div class="hint">Pick one or more chapters or grades on the left (or search above, or choose a whole paper) to see the ${TN[lv]} exam questions for them. Click <b>Mark scheme</b> under a question to see its mark scheme, and <b>Add to worksheet</b> to build a printable worksheet.</div></div>`;return}
+ else L=cur().filter(q=>(!fT.size||q.ch.some(c=>fT.has(c)))&&(!fS.size||q.sec.some(c=>fS.has(c)))&&(!fG.size||fG.has(q.gr))&&(!fC.size||fC.has(q.calc?'c':'n'))&&q.m<=mx&&(!SR||sMatch(q,ws)))
   .sort((a,b)=>firstCh(a)-firstCh(b)||sesK(b.s)-sesK(a.s)||a.p-b.p||a.q-b.q);
  PL=L.map(q=>q.f);const all=PL.length&&PL.every(f=>basket.includes(f)),marks=L.reduce((s,q)=>s+(q.m||0),0);
  shint.innerHTML=L.length?`${L.length} question${L.length>1?'s':''} &middot; ${marks} marks${PM?' &middot; shown in question order':''} <button class="act" style="margin-left:8px;padding:5px 10px;font-size:13px" onclick="addAll()">${all?'Remove all of these from worksheet':(PM?'Add whole paper':'Add all '+L.length)+' to worksheet'}</button>`:'No questions match. Try another chapter, fewer filters, or different search words.';
@@ -150,6 +167,31 @@ function render(){
  L.slice(0,SHOWN).forEach(q=>{if(!PM){const c=firstCh(q);if(c!==lc){lc=c;h+=`<h3 class="ch ${c==99?'':sc(lv,c)}">${c==99?'Other':'Chapter '+c+': '+esc(CHN[lv+c]||'')}</h3>`}}h+=card(q)});
  if(L.length>SHOWN)h+=`<button class="act" onclick="SHOWN+=60;render()">Show ${Math.min(60,L.length-SHOWN)} more (${L.length-SHOWN} left)</button>`;
  list.innerHTML=h}
+// ---- similar questions from the skills app's exam-style generators ----
+const SIMH={};let SK=null;
+function skills(){if(SK)return SK;SK=new Promise((ok,no)=>{const f=document.createElement('iframe');f.src='index.html';f.style.cssText='position:absolute;width:10px;height:10px;left:-9999px;top:0;border:0';f.setAttribute('aria-hidden','true');f.tabIndex=-1;
+ const fail=m=>{SK=null;f.remove();no(new Error(m))};const to=setTimeout(()=>fail('timed out'),30000);
+ f.onload=()=>{try{const W=f.contentWindow,E=W.eval('EQN'),T=W.eval('T'),fx=W.eval('typeof fixroot=="function"?fixroot:(h=>h)');clearTimeout(to);ok({E,T,fx})}catch(e){clearTimeout(to);fail('blocked')}};document.body.appendChild(f)});return SK}
+function pickSim(K,q){const tops=q.g||[],H=q.t=='H';
+ let c=K.E.filter(e=>tops.includes(e.t)&&(!e.h||H));
+ if(c.length){const d=Math.min(...c.map(e=>Math.abs(e.g-q.gr)));const near=c.filter(e=>Math.abs(e.g-q.gr)<=d+0.5);const e=near[Math.floor(Math.random()*near.length)];
+  const[qq,aa]=e.f();return{h:K.fx(qq)+`<span class="emk">[${e.mk} mark${e.mk>1?'s':''}]</span>`,a:K.fx(aa),info:`Exam-style · ${e.t} · grade ${e.g} · ${e.mk} mark${e.mk>1?'s':''}`}}
+ // fallback: a skills question on the same topic at a matching level
+ const subs=[];tops.forEach(tn=>{const t=K.T.find(x=>x.n==tn);if(!t)return;t.sub.filter(x=>x[1]&&!x.rm&&!x.eq&&(H||!x[2])&&x.g0!=null).forEach(x=>subs.push([tn,x]))});
+ if(!subs.length)return null;
+ const d=Math.min(...subs.map(([,x])=>Math.max(0,Math.abs(q.gr-x.g0)-2)));const near=subs.filter(([,x])=>Math.max(0,Math.abs(q.gr-x.g0)-2)<=d);
+ const[tn,x]=near[Math.floor(Math.random()*near.length)],L=Math.min(3,Math.max(1,q.gr-x.g0+1));const[qq,aa]=x[1](L,H);
+ return{h:K.fx(qq),a:K.fx(aa),info:`Skills practice · ${tn} · ${x[0]}`}}
+async function sim(f){const q=D.find(x=>x.f==f),el=document.getElementById('q_'+f);let box=el.querySelector('.sim');
+ if(!box){el.insertAdjacentHTML('beforeend','<div class="sim"><div class="hint">Creating a similar question…</div></div>');box=el.querySelector('.sim')}
+ else box.innerHTML='<div class="hint">Creating a similar question…</div>';
+ let K;try{K=await skills()}catch(e){box.innerHTML=`<div class="hint">Similar questions use the GCSE Skills app (index.html), which must be in the same folder on your website. ${location.protocol=='file:'?'Browsers block this when the page is opened straight from your computer; it works once the files are on your site.':'It could not be loaded just now – please try again.'}</div>`;SIMH[f]=box.outerHTML;return}
+ let r=null;try{r=pickSim(K,q)}catch(e){r=null}
+ if(!r){box.innerHTML='<div class="hint">There is no exam-style or skills question type for this topic yet.</div>';SIMH[f]=box.outerHTML;return}
+ box.innerHTML=`<div class="sh"><b>Similar question</b><span>${esc(r.info)}</span></div><div class="eqp">${r.h}</div><div class="eqp ms2" style="display:none"><div style="font:600 12px sans-serif;color:#1f5f8b;margin-bottom:4px">MARK SCHEME</div>${r.a}</div>
+ <div class="row"><button class="act" style="background:var(--mut)" onclick="const m=this.closest('.sim').querySelector('.ms2');m.style.display=m.style.display=='none'?'':'none';SIMH['${f}']=this.closest('.sim').outerHTML">Mark scheme</button>
+ <button class="act" style="background:var(--ca)" onclick="sim('${f}')">Another one</button> <button class="act" style="background:var(--line);color:var(--ink)" onclick="delete SIMH['${f}'];this.closest('.sim').remove()">Hide</button></div>`;
+ SIMH[f]=box.outerHTML}
 // ---- worksheet ----
 function wsTitle(){const B=basket.map(f=>D.find(q=>q.f==f)),p0=plab(B[0]);
  if(B.every(q=>plab(q)===p0)&&D.filter(q=>plab(q)===p0).length==B.length)return'GCSE Maths – '+p0+' (whole paper)';
