@@ -81,6 +81,40 @@ details{position:relative}summary{cursor:pointer;padding:6px 12px;border:1px sol
 sup{font-size:.7em}
 svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
 .v{display:inline-flex;flex-direction:column;border:solid currentColor;border-width:0 .09em;border-radius:.4em;padding:0 .3em;line-height:1.1;text-align:center;vertical-align:middle}.v i{font-style:normal}
+.nogr .grd{display:none}
+
+/* ===== Slide theme (matches the lesson PowerPoints: teal title slide, Cambria headings, cards, red answers) ===== */
+#slo{--tl:#0E4D64;--pl:#EAF4F4;--pa:#CDE8E6;--am:#F4A259;--rd:#D9534F;--ink:#1B262C;background:#fff;color:var(--ink);border-top:0;font-family:Calibri,"Segoe UI",system-ui,sans-serif}
+#slo .slc{padding:4vmin 6vmin 3vmin;justify-content:flex-start;position:relative}
+#slo .slc::before{content:"";position:absolute;left:6vmin;right:6vmin;top:0;height:.9vmin;background:var(--c);border-radius:0 0 .6vmin .6vmin;opacity:.85}
+#slo.sltitle .slc{background:var(--tl);color:#fff;justify-content:center}
+#slo.sltitle .slc::before{display:none}
+#slo.sltitle .slt{text-align:left;padding:0 2vmin}
+#slo.sltitle .slh{font-family:Cambria,Georgia,serif;font-weight:700;color:#fff;font-size:9.5vmin;line-height:1.1}
+#slo.sltitle .sls{color:var(--pa);opacity:1;font-size:3.8vmin;margin:2vmin 0 1.5vmin}
+#slo.sltitle .sld{color:var(--am);font-size:3.6vmin;margin:0 0 4vmin;font-weight:700}
+#slo.sltitle .lph,#slo.sltitle .lpks{color:#fff}
+#slo.sltitle .lpks b{color:var(--am)}
+#slo .sltag,#slo .slsh{font-family:Cambria,Georgia,serif;font-weight:700;color:var(--tl);font-size:5.2vmin;line-height:1.15;margin:1.2vmin 0 2.6vmin;opacity:1}
+#slo .sltag small,#slo .slsh small{font-family:Calibri,"Segoe UI",sans-serif;font-size:.48em;font-weight:600;color:#6C757D;margin-left:2vmin;opacity:1}
+#slo .slsh{font-size:.95em}
+#slo .slg{gap:1.6vmin 2.4vmin}
+#slo .slr{background:var(--pl);border:0;border-radius:1.4vmin;padding:1.4vmin 2vmin;gap:0 1.6vmin;align-items:flex-start}
+#slo .slr>b{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border-radius:50%;background:var(--tl);color:#fff;font-size:.72em;margin-top:.12em}
+#slo .slr .sla{color:var(--rd);font-weight:700;margin:.4vmin 0 0 2.6em}
+#slo .slrq b{color:inherit}
+#slo .slq{background:var(--pl);border-radius:1.6vmin;padding:2.4vmin 3vmin}
+#slo .lpb{display:inline-block;background:var(--am);color:#fff;font-weight:700;border-radius:2vmin;padding:.4vmin 1.8vmin;margin-bottom:1.6vmin}
+#slo .sla{color:var(--rd)}
+#slo .sla:has(.wk){color:var(--ink);background:#fff;border-left:1vmin solid var(--pa);padding:1vmin 2vmin;margin-top:2.2vmin}
+#slo .wk .st{margin:.5vmin 0}
+#slo .wk .st b{display:inline-block;background:var(--am);color:#fff;border-radius:1.6vmin;padding:0 1.2vmin;margin-right:1.2vmin;font-size:.85em}
+#slo .wk .pl{color:var(--tl);font-family:Cambria,Georgia,serif}
+#slo .wk .fin{color:var(--rd)}
+#slo .exh{color:#6C757D;font-weight:600}
+#slo .slimg{border-radius:1vmin;box-shadow:0 0 0 1px #d5dae5}
+#slo .slb{background:#f4f8f8;border-top:1px solid var(--pa)}
+#slo .slb button{border-color:var(--pa);color:var(--tl)}
 </style></head><body>
 <div id="top" class="row r1"><h1>KS3 and KS4 Maths Question Generator</h1><div class="tabs" id="tabs"><button id="tabS" class="on" title="Generate skills questions for the whiteboard">Skills questions</button><button id="tabE" title="Past-paper exam questions and worksheets">Exam questions</button><button id="tabB" title="Termly review booklets">Termly booklets</button><button id="tabL" title="Build a ready-to-teach lesson from a topic, grades and lesson length">Lesson planner</button></div><div id="srch" style="position:relative;margin-left:auto"><input id="tsq" type="search" placeholder="🔍 Search topics (click several to mix)…" autocomplete="off" aria-label="Search for a topic" style="font:inherit;padding:6px 10px;border:1px solid var(--bd);border-radius:8px;width:230px;max-width:30vw;background:var(--bg);color:inherit"><div class="dd" id="tsr" style="display:none;max-height:60vh;overflow:auto;min-width:300px;gap:0;left:auto;right:0"></div></div><button id="hb">Hide controls</button></div>
 <div id="bar">
@@ -91,11 +125,11 @@ svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
 <div class="row r3"><span class="rl">2. Make</span><label>Questions per column <select id="n"></select></label> <label id="eqcl" style="display:none">Columns <select id="eqc"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label>
 <span class="gp" id="cl"><b>Levels</b><label><input type="checkbox" value="1" checked> 1</label><label><input type="checkbox" value="2" checked> 2</label><label><input type="checkbox" value="3" checked> 3</label></span>
 <button id="go">New questions</button><button id="skb" class="on" title="Show the three-level skills questions">Skills questions</button><button id="eqb" title="Show two exam-style question types (modelled on the real AQA papers) for the chosen topics">Exam-style questions</button><button id="sa">Show answers</button>
-<label><input type="checkbox" id="var" checked> Vary styles</label><label><input type="checkbox" id="fit" checked> Fit to page</label>
+<label><input type="checkbox" id="var" checked> Vary styles</label><label title="Show or hide GCSE grades on screen, in the PDFs, lesson plans and slides"><input type="checkbox" id="sgr" checked> Show grades</label><label><input type="checkbox" id="fit" checked> Fit to page</label>
 <span class="g"><button id="zo" aria-label="Smaller text">A−</button><button id="zi" aria-label="Larger text">A+</button></span>
 <button id="pw">Worksheet PDF</button><button id="pa">Answers PDF</button><span id="msg"></span></div>
 </div>
-<div id="lpbar" class="row"><span class="rl">Plan a lesson</span><span class="g" id="lpg" role="group" aria-label="GCSE grades"><button data-g="1">1</button><button data-g="2">2</button><button data-g="3">3</button><button data-g="4">4</button><button data-g="5">5</button><button data-g="6">6</button><button data-g="7">7</button><button data-g="8">8</button><button data-g="9">9</button></span><label>Length <select id="lpl" aria-label="Lesson length in minutes"></select> min</label><button id="lpgo" class="k k-gen">Plan lesson</button><button id="lpsa">Show answers</button><span class="g"><button id="lpzo" aria-label="Smaller text">A−</button><button id="lpzi" aria-label="Larger text">A+</button></span><button id="lpsl" class="k k-exam" title="Present the lesson as slides (click or arrow keys)">Slides</button><button id="lpsx" class="k k-exam" title="Download the slides as a PowerPoint (.pptx) file">PowerPoint</button><button id="lpw">Student sheet PDF</button><button id="lpa">Teacher PDF</button><button id="lpv">Preview student</button><button id="lpvt">Preview teacher</button><button id="lphb">Hide controls</button><span id="lpmsg"></span></div>
+<div id="lpbar" class="row"><span class="rl">Plan a lesson</span><span class="g" id="lpg" role="group" aria-label="GCSE grades"><button data-g="1">1</button><button data-g="2">2</button><button data-g="3">3</button><button data-g="4">4</button><button data-g="5">5</button><button data-g="6">6</button><button data-g="7">7</button><button data-g="8">8</button><button data-g="9">9</button></span><label>Length <select id="lpl" aria-label="Lesson length in minutes"></select> min</label><button id="lpgo" class="k k-gen">Plan lesson</button><label title="Show or hide GCSE grades in the lesson plan, PDFs and slides"><input type="checkbox" id="sgr2" checked> Show grades</label><button id="lpsa">Show answers</button><span class="g"><button id="lpzo" aria-label="Smaller text">A−</button><button id="lpzi" aria-label="Larger text">A+</button></span><button id="lpsl" class="k k-exam" title="Present the lesson as slides (click or arrow keys)">Slides</button><button id="lpsx" class="k k-exam" title="Download the slides as a PowerPoint (.pptx) file">PowerPoint</button><button id="lpw">Student sheet PDF</button><button id="lpa">Teacher PDF</button><button id="lpv">Preview student</button><button id="lpvt">Preview teacher</button><button id="lphb">Hide controls</button><span id="lpmsg"></span></div>
 <div id="tchips"></div><button id="fl">Show controls</button>
 <div id="ph"><span id="pt"></span><span>Name ____________ Date ________</span></div>
 <div id="sth"></div><div id="cols"></div>
@@ -103,6 +137,9 @@ svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
 <button id="totop" class="k k-gen" aria-label="Back to top">↑ Top</button>
 <script src="exdata.js"></script>
 <script>
+let SGR=true;try{SGR=localStorage.getItem('sgr')!=='0'}catch(e){}
+const NG=t=>SGR?String(t):String(t).replace(/(?:\s*·\s*)?(?:about )?Grades? \d+(?:[–-]\d+)?(?:, \d+)*/g,'').replace(/^\s*·\s*|\s*·\s*$/g,'').trim();
+
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),P=a=>a[R(0,a.length-1)],G=(a,b)=>b?G(b,a%b):Math.abs(a);
 const fr=(n,d)=>`<span class=fr><i>${n}</i><i>${d}</i></span>`,sf=(n,d)=>{let g=G(n,d);n/=g;d/=g;return d==1?n:fr(n,d)};
 const up=(b,e)=>`${b}<sup>${e}</sup>`,X2=up('x',2),mn=s=>String(s).replace(/-/g,'−'),nf=n=>n.toLocaleString('en-GB').replace(/,/g,' ');
@@ -1767,7 +1804,7 @@ if(pick.length<K){let rest=shuf(av.filter(o=>!pick.includes(o)));while(pick.leng
 pick.sort((a,b)=>a.e.g-b.e.g);
 c.className=pick.length==1?'one':pick.length==2?'two':pick.length==4?'n4':pick.length>=5?'n5':'';
 c.innerHTML=pick.map((o,k)=>{let used=new Set,h='';for(let i=0;i<n;i++){let[q,a]=eqOne(o.e,used);used.add(sig(q));h+=`<li data-l="${k%3+1}" data-e="${o.i}"><b class=qn title="Click to swap this question">${i+1}.</b><div class=q>${q}</div><div class=a>${a}</div></li>`}
-return`<section class=col data-l="${k%3+1}" style="--c:var(--c${k%3+1})"><h2>${o.e.t}: ${o.e.n}<small>Exam-style · Grade ${o.e.g} · ${o.e.mk} mark${o.e.mk>1?'s':''} each</small></h2><ol>${h}</ol></section>`}).join('');
+return`<section class=col data-l="${k%3+1}" style="--c:var(--c${k%3+1})"><h2>${o.e.t}: ${o.e.n}<small>Exam-style<span class=grd> · Grade ${o.e.g}</span> · ${o.e.mk} mark${o.e.mk>1?'s':''} each</small></h2><ol>${h}</ol></section>`}).join('');
 $('#pt').textContent='KS3 and KS4 Maths Question Generator – Exam-style: '+label();fit()}
 function setEq(on){eqm=on;$('#eqcl').style.display=on?'':'none';$('#eqb').classList.toggle('on',eqm);$('#skb').classList.toggle('on',!eqm);['cl','var'].forEach(i=>{let e=$('#'+i);e=e.closest('label')||e;e.style.display=eqm||exm?'none':''});if(!eqm)$('#cols').className='';gen()}
 function gen(){tcPaint();if(lpm){renderLesson();return}if(exm){renderEx();return}if(eqm){renderEq();return}let n=+$('#n').value,av=pool(),H=tier=='H',ls=[...document.querySelectorAll('#cl input:checked')].map(i=>+i.value),c=$('#cols');if(!ls.length)ls=[1,2,3];c.className=ls.length==1?'one':ls.length==2?'two':'';
@@ -1781,7 +1818,7 @@ else if(H)B=[['4–5',4,5],['6–7',6,7],['8–9',8,9]];
 else B=[['1–2',1,2],['3–4',3,4],['5–6',5,6]];
 if(gsel.size)B=gsBands();
 let o={};B.forEach((b,i)=>{let gs=(b[1]+b[2])/2>=6?hi:lo;o[i+1]={pool:colPool(gs,b[1],b[2]),lab:b[0]}});return o})();
-c.innerHTML=ls.map(L=>{let used=new Set,h='',ord=colOrd(ctx.c[L].pool);for(let i=0;i<n;i++){let[q,a]=mk(L,used,ord[i%ord.length]);used.add(sig(q));h+=`<li data-l="${L}"><b class=qn title="Click to swap this question">${i+1}.</b><div class=q>${q}</div><div class=a>${a}</div></li>`}return`<section class=col data-l="${L}" style="--c:var(--c${L})"><h2>Level ${L}: ${['Secure','Developing','Challenge'][L-1]} · Grade${/[–]|and/.test(ctx.c[L].lab)?'s':''} ${ctx.c[L].lab}</h2><ol>${h}</ol></section>`}).join('');$('#pt').textContent='KS3 and KS4 Maths Question Generator – '+label();fit()}
+c.innerHTML=ls.map(L=>{let used=new Set,h='',ord=colOrd(ctx.c[L].pool);for(let i=0;i<n;i++){let[q,a]=mk(L,used,ord[i%ord.length]);used.add(sig(q));h+=`<li data-l="${L}"><b class=qn title="Click to swap this question">${i+1}.</b><div class=q>${q}</div><div class=a>${a}</div></li>`}return`<section class=col data-l="${L}" style="--c:var(--c${L})"><h2>Level ${L}: ${['Secure','Developing','Challenge'][L-1]} <span class=grd> · Grade${/[–]|and/.test(ctx.c[L].lab)?'s':''} ${ctx.c[L].lab}</span></h2><ol>${h}</ol></section>`}).join('');$('#pt').textContent='KS3 and KS4 Maths Question Generator – '+label();fit()}
 $('#n').innerHTML=[...Array(10)].map((_,i)=>`<option${i==4?' selected':''}>${i+1}</option>`).join('');
 $('#sdbody').onchange=e=>{let i=e.target;if(i.dataset.sd==null)return;i.checked?sdS.add(i.dataset.sd):sdS.delete(i.dataset.sd);topicsUI();setMode('s');gen()};
 $('#sdbody').onclick=e=>{if(e.target.id=='sdall'){let all=sdS.size==ST.length;ST.forEach((_,i)=>all?sdS.delete(String(i)):sdS.add(String(i)));strUI();setMode('s');gen()}};
@@ -1818,7 +1855,7 @@ js.forEach((j,i)=>{let p=3+3*i,PW=j.pw||595,PH=j.ph||842,cs=`q ${PW} 0 0 ${PH} 0
 let x=len,tot=3*n+3;add(`xref\n0 ${tot}\n0000000000 65535 f \n`);for(let k=1;k<tot;k++)add(String(off[k]).padStart(10,'0')+' 00000 n \n');add(`trailer\n<< /Size ${tot} /Root 1 0 R >>\nstartxref\n${x}\n%%EOF`);
 let out=new Uint8Array(len),p=0;parts.forEach(b=>{out.set(b,p);p+=b.length});return out}
 async function makePdf(ans){const W=794,Hp=1123,css=document.querySelector('style').textContent,one=$('#cols').classList.contains('one'),two=$('#cols').classList.contains('two'),c4=$('#cols').classList.contains('n4'),c5=$('#cols').classList.contains('n5'),colr=['#12803f','#b86e00','#b3261e'];
-let cols=[...$('#cols').querySelectorAll('section')].map(s=>({c:colr[s.dataset.l-1],h:s.querySelector('h2').textContent,li:[...s.querySelectorAll('li')].map(l=>({n:l.querySelector('.qn').textContent,q:l.querySelector('.q').innerHTML,a:l.querySelector('.a').innerHTML}))}));
+let cols=[...$('#cols').querySelectorAll('section')].map(s=>({c:colr[s.dataset.l-1],h:(()=>{let c=s.querySelector('h2').cloneNode(true);if(!SGR)c.querySelectorAll('.grd').forEach(e=>e.remove());return c.textContent})(),li:[...s.querySelectorAll('li')].map(l=>({n:l.querySelector('.qn').textContent,q:l.querySelector('.q').innerHTML,a:l.querySelector('.a').innerHTML}))}));
 const wrap=(f,t)=>{let d=document.createElement('div');d.className='wsx '+(ans?'k':'w')+(one?' one':two?' two':c4?' n4':c5?' n5':'');d.style.cssText=`position:absolute;left:-9999px;top:0;width:${W}px;box-sizing:border-box`;d.innerHTML=`<div class="ph"><span>${$('#pt').textContent}</span><span>Name ____________ Date ________</span></div><div class="cs">${cols.map(k=>`<section style="--c:${k.c}"><h2>${k.h}</h2><ol>${k.li.slice(f,t).map(x=>`<li><b class="qn">${x.n}</b><div class="q">${x.q}</div><div class="a">${x.a}</div></li>`).join('')}</ol></section>`).join('')}</div>`;return d};
 let full=wrap(0,99);document.body.appendChild(full);let hs=[...full.querySelectorAll('section')].map(s=>[...s.querySelectorAll('li')].map(l=>l.offsetHeight)),top=full.querySelector('.ph').offsetHeight+full.querySelector('h2').offsetHeight+50;full.remove();
 let pg=[],i=0,N=Math.max(...hs.map(a=>a.length));while(i<N){let j=i,tot=hs.map(()=>0);while(j<N){let nt=hs.map((a,k)=>tot[k]+(a[j]||0));if(Math.max(...nt)+top>Hp-30&&j>i)break;tot=nt;j++}pg.push([i,j]);i=j}
@@ -1919,7 +1956,7 @@ const LPLEN=[50,100];
 const lpTopics=()=>{let n=exTopics();return T.filter(x=>n.has(x.n))},lpTopic=()=>lpTopics()[0]||T[0],lpNames=()=>mode=='x'&&bk&&bk.on&&bkChosen().length&&bkChosen().length<=3?bkChosen().map(x=>x.t).join(' + '):mode=='s'&&tpS.size&&tpS.size<=4?[...tpS].join(' + '):label().replace(/^(Higher|Foundation) · /,''),lpG=H=>mode=='x'?mixG(H,false):mode=='s'?strG(H,false):rG(H,false);
 const lpTier=()=>tier=='H'||Math.max(...lp.g)>=6?'H':'F';
 const lpGr=()=>{let g=[...lp.g].sort((a,b)=>a-b);if(!g.length)g=[4];let c=g.every((x,i)=>!i||x==g[i-1]+1);return g.length==1?'Grade '+g[0]:'Grades '+(c?g[0]+'–'+g[g.length-1]:g.join(', '))};
-const lpTitle=()=>lpNames()+(lp.s?' – '+lp.s:'')+' lesson · '+lpGr()+' · '+lp.m+' min';
+const lpTitle=()=>lpNames()+(lp.s?' – '+lp.s:'')+' lesson'+(SGR?' · '+lpGr():'')+' · '+lp.m+' min';
 function lpBands(){let g=[...lp.g].sort((a,b)=>a-b);if(!g.length)g=[4];if(g.length==1){let x=g[0];g=[...new Set([Math.max(1,x-1),x,Math.min(9,x+1)])]}
 let nb=Math.min(3,g.length),o=[];for(let k=0;k<nb;k++){let sl=g.slice(Math.round(k*g.length/nb),Math.round((k+1)*g.length/nb));o.push({lo:sl[0],hi:sl[sl.length-1]})}
 const L=nb==3?[1,2,3]:[1,3];o.forEach((b,i)=>{b.L=L[i];b.name=['','Secure','Developing','Challenge'][b.L]});return o}
@@ -1964,8 +2001,8 @@ const lpLi=(it,pdf,si,ii)=>{const da=si==null?'':` data-si=${si} data-ii=${ii}`;
 if(it.k=='pp'){let x=it.x,src=pdf?exImg(x):EXI[x.f],ms=x.a&&EXI[x.a]?`<img alt="Mark scheme" src="${EXI[x.a]}">`:(x.a?'':'Mark scheme not available for this question.');
 return`<li class="pp" data-f="${x.f}"${da}><b class=qn title="Tap the number to swap this question">${it.n}.</b><div class=q><div class=exh><span>${x.s} Paper ${x.p} ${x.t=='H'?'Higher':'Foundation'}</span><span>Q${x.q}</span><span>[${x.m} mark${x.m>1?'s':''}]</span></div><img alt="Past-paper question" src="${src}"></div><div class=a>${ms}</div></li>`}
 return`<li class="${it.cls||''}"${da}><b class=qn title="Tap the number to swap this question">${it.n}.</b><div class=q>${it.lab?`<div class=lpb>${it.lab}</div>`:''}${it.q}${it.sp?`<div class=sp style="height:${Math.max(3,(it.mk||2)*1.7)}em"></div>`:''}</div><div class=a>${it.a}</div></li>`};
-const lpSecH=s=>`<h2>${s.title}<small>${s.sub} · ${s.min} min</small></h2>${s.note?`<div class=tn>Teacher note: ${s.note}</div>`:''}`;
-function lpHead(p){let tot=p.secs.reduce((a,s)=>a+s.min,0);return`<div class=lph><div class=lph1><b>${p.t}${p.s?' – '+p.s:''}</b><span>${p.gr} · ${p.tier=='H'?'Higher':'Foundation'} · ${p.m} minute lesson</span></div><div class=lpt>${p.secs.map(s=>`<span style="flex:${s.min};background:${s.col}" title="${s.title}">${s.min>=6?s.title.split(':')[0].replace('Practice – ','').replace(/Level (\d).*/,'Level $1')+' '+s.min:s.min}</span>`).join('')}</div>${p.skills.length?`<div class=lpks><b>Key skills:</b> ${p.skills.join(' · ')}</div>`:''}</div>`}
+const lpSecH=s=>`<h2>${s.title}<small>${NG(s.sub)?NG(s.sub)+' · ':''}${s.min} min</small></h2>${s.note?`<div class=tn>Teacher note: ${s.note}</div>`:''}`;
+function lpHead(p){let tot=p.secs.reduce((a,s)=>a+s.min,0);return`<div class=lph><div class=lph1><b>${p.t}${p.s?' – '+p.s:''}</b><span>${SGR?p.gr+' · ':''}${p.tier=='H'?'Higher':'Foundation'} · ${p.m} minute lesson</span></div><div class=lpt>${p.secs.map(s=>`<span style="flex:${s.min};background:${s.col}" title="${s.title}">${s.min>=6?s.title.split(':')[0].replace('Practice – ','').replace(/Level (\d).*/,'Level $1')+' '+s.min:s.min}</span>`).join('')}</div>${p.skills.length?`<div class=lpks><b>Key skills:</b> ${p.skills.join(' · ')}</div>`:''}</div>`}
 function lpPageHtml(p,pdf){return lpHead(p)+p.secs.map((s,si)=>`<section class=lps style="--c:${s.col}">${lpSecH(s)}<ol>${s.items.map((i,ii)=>lpLi(i,pdf,si,ii)).join('')}</ol></section>`).join('')}
 function lpUnits(p){let u=[lpHead(p)];p.secs.forEach(s=>{s.items.forEach((i,k)=>{u.push(k==0?`<section class=lps style="--c:${s.col}">${lpSecH(s)}<ol>${lpLi(i,true)}</ol></section>`:`<section class="lps cont" style="--c:${s.col}"><ol>${lpLi(i,true)}</ol></section>`)})});return u}
 function lpLoadEx(){if(window.EXI)return Promise.resolve();if(!window.EXL){window.EXL=Promise.all(EXDATA.EXQF.map(f=>new Promise((ok,no)=>{let s=document.createElement('script');s.src=f;s.onload=ok;s.onerror=no;document.head.appendChild(s)})));window.EXL.catch(()=>{window.EXL=null})}return window.EXL}
@@ -2019,20 +2056,20 @@ let slD=[],slI=0,slS=0;
 const slMax=d=>d.steps!=null?d.steps:(d.a?1:0);
 const slDate=()=>{let d=new Date(),n=d.getDate(),sf=(n%100>10&&n%100<14)||n%10>3?'th':['th','st','nd','rd'][n%10];return d.toLocaleDateString('en-GB',{weekday:'long'})+' '+n+sf+' '+d.toLocaleDateString('en-GB',{month:'long',year:'numeric'})};
 function slBuild(){const p=lp.plan,o=[];
-o.push({col:'#0e7490',h:`<div class=slt><div class=slh>${p.t}${p.s?' – '+p.s:''}</div><div class=sls>${p.gr} · ${p.tier=='H'?'Higher':'Foundation'} · ${p.m} minute lesson</div><div class=sld>${slDate()}</div>${lpHead(p).replace(/<div class=lph1>.*?<\/div>(?=<div class=lpt>)/,'')}</div>`});
-p.secs.forEach(s=>{const hd=`<div class=slsh>${s.title}<small>${s.sub} · ${s.min} min</small></div>`;let grp=[];
-const flush=()=>{if(!grp.length)return;let nq=grp.filter(i=>i.k!='raw').length;o.push({col:s.col,grp:1,steps:nq,h:`${hd}<div class="slg${nq>4?' g2':''}">${grp.map(i=>i.k=='raw'?`<div class=slraw>${i.h}</div>`:`<div class=slr><b>${i.n}.</b><div class=slrq>${i.q}</div><div class=sla>${i.a}</div></div>`).join('')}</div>`});grp=[]};
+o.push({col:'#0e7490',title:1,h:`<div class=slt><div class=slh>${p.t}${p.s?' – '+p.s:''}</div><div class=sls>${SGR?p.gr+' · ':''}${p.tier=='H'?'Higher':'Foundation'} · ${p.m} minute lesson</div><div class=sld>${slDate()}</div>${lpHead(p).replace(/<div class=lph1>.*?<\/div>(?=<div class=lpt>)/,'')}</div>`});
+p.secs.forEach(s=>{const hd=`<div class=slsh>${s.title}<small>${NG(s.sub)?NG(s.sub)+' · ':''}${s.min} min</small></div>`;let grp=[];
+const flush=()=>{if(!grp.length)return;let nq=grp.filter(i=>i.k!='raw').length;o.push({col:s.col,grp:1,steps:nq,h:`${hd}<div class="slg${nq>4?' g2':''}">${grp.map(i=>i.k=='raw'?`<div class=slraw>${i.h}</div>`:`<div class=slr><b>${i.n}</b><div class=slrq>${i.q}</div><div class=sla>${i.a}</div></div>`).join('')}</div>`});grp=[]};
 s.items.forEach(i=>{if(i.k=='q'||i.k=='raw'){grp.push(i);return}flush();
 if(i.k=='pp'){let x=i.x,ms=x.a&&EXI[x.a]?`<img class=slimg alt="Mark scheme" src="${EXI[x.a]}">`:'';o.push({col:s.col,tag:s.title,n:i.n,pp:1,h:`<div class=exh><span>${x.s} Paper ${x.p} ${x.t=='H'?'Higher':'Foundation'}</span><span>Q${x.q}</span><span>[${x.m} mark${x.m>1?'s':''}]</span></div><img class=slimg alt="Question" src="${EXI[x.f]}">`,a:ms||'<div class=sla2>Mark scheme not available for this question.</div>'});return}
 let d={col:s.col,tag:s.title,n:i.n,h:`${i.lab?`<div class=lpb>${i.lab}</div>`:''}<div class=slq>${i.q}</div>`,a:`<div class=sla>${i.a}</div>`};
 if(/class=wk/.test(i.a)){let t=document.createElement('div');t.innerHTML=i.a;d.steps=t.querySelectorAll('.st,.fin,.pl').length}
 o.push(d)});flush()});
 return o}
-function slPaint(o,d,S){o.style.setProperty('--c',d.col);
+function slPaint(o,d,S){o.style.setProperty('--c',d.col);o.classList.toggle('sltitle',!!d.title);
 let body=d.h;
 if(d.a){if(d.pp)body=S>=1?d.a:d.h;else body+=d.a}
-o.querySelector('.slc').innerHTML=(d.tag?`<div class=sltag>${d.tag}${d.n?' · Q'+d.n:''}</div>`:'')+body;
-if(d.a&&!d.pp&&!d.grp){let a=o.querySelector('.sla');if(a){if(d.steps!=null){[...a.querySelectorAll('.st,.fin,.pl')].forEach((e,k)=>{if(k>=S)e.style.visibility='hidden'})}else if(S<1)a.style.visibility='hidden'}}
+o.querySelector('.slc').innerHTML=(d.tag?`<div class=sltag>${d.tag}${d.n?'<small>Question '+d.n+'</small>':''}</div>`:'')+body;
+if(d.a&&!d.pp&&!d.grp){let a=o.querySelector('.sla');if(a){if(d.steps!=null){[...a.querySelectorAll('.st,.fin,.pl')].forEach((e,k)=>{if(k>=S)e.style.visibility='hidden'});if(S<1)a.style.visibility='hidden'}else if(S<1)a.style.visibility='hidden'}}
 if(d.grp)[...o.querySelectorAll('.slr .sla')].forEach((e,k)=>{if(k>=S)e.style.visibility='hidden'});{let c=o.querySelector('.slc'),f=5;c.style.fontSize=f+'vmin';while(c.scrollHeight>c.clientHeight+1&&f>1.6){f-=.2;c.style.fontSize=f+'vmin'}}}
 function slRender(){const d=slD[slI],o=$('#slo'),max=slMax(d);slPaint(o,d,slS);
 o.querySelector('.slp').textContent=(slI+1)+' / '+slD.length+(max?(slS>=max?' · answer shown':' · click to reveal'):'');}
@@ -2098,6 +2135,11 @@ $('#lpsx').onclick=slExport;
 
 $('#lpw').onclick=()=>lpSave(0);$('#lpa').onclick=()=>lpSave(1);$('#lpv').onclick=()=>lpPrev(0);$('#lpvt').onclick=()=>lpPrev(1);
 
+
+/* ===== Show/hide grades (screen, PDFs, lesson plans, slides) ===== */
+function sgrApply(){document.body.classList.toggle('nogr',!SGR);['#sgr','#sgr2'].forEach(i=>{let e=$(i);if(e)e.checked=SGR})}
+['#sgr','#sgr2'].forEach(i=>{let e=$(i);if(e)e.onchange=()=>{SGR=e.checked;try{localStorage.setItem('sgr',SGR?'1':'0')}catch(x){}sgrApply();if(lpm&&lp.plan)renderLesson()}});
+sgrApply();
 
 /* ===== Grade-level selector (Skills, Exam and Booklet tabs) ===== */
 const gsel=new Set();
