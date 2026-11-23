@@ -83,38 +83,40 @@ svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
 .v{display:inline-flex;flex-direction:column;border:solid currentColor;border-width:0 .09em;border-radius:.4em;padding:0 .3em;line-height:1.1;text-align:center;vertical-align:middle}.v i{font-style:normal}
 .nogr .grd{display:none}
 
-/* ===== Slide theme (matches the lesson PowerPoints: teal title slide, Cambria headings, cards, red answers) ===== */
-#slo{--tl:#0E4D64;--pl:#EAF4F4;--pa:#CDE8E6;--am:#F4A259;--rd:#D9534F;--ink:#1B262C;background:#fff;color:var(--ink);border-top:0;font-family:Calibri,"Segoe UI",system-ui,sans-serif}
-#slo .slc{padding:4vmin 6vmin 3vmin;justify-content:flex-start;position:relative}
-#slo .slc::before{content:"";position:absolute;left:6vmin;right:6vmin;top:0;height:.9vmin;background:var(--c);border-radius:0 0 .6vmin .6vmin;opacity:.85}
-#slo.sltitle .slc{background:var(--tl);color:#fff;justify-content:center}
-#slo.sltitle .slc::before{display:none}
-#slo.sltitle .slt{text-align:left;padding:0 2vmin}
-#slo.sltitle .slh{font-family:Cambria,Georgia,serif;font-weight:700;color:#fff;font-size:9.5vmin;line-height:1.1}
-#slo.sltitle .sls{color:var(--pa);opacity:1;font-size:3.8vmin;margin:2vmin 0 1.5vmin}
-#slo.sltitle .sld{color:var(--am);font-size:3.6vmin;margin:0 0 4vmin;font-weight:700}
-#slo.sltitle .lph,#slo.sltitle .lpks{color:#fff}
-#slo.sltitle .lpks b{color:var(--am)}
-#slo .sltag,#slo .slsh{font-family:Cambria,Georgia,serif;font-weight:700;color:var(--tl);font-size:5.2vmin;line-height:1.15;margin:1.2vmin 0 2.6vmin;opacity:1}
-#slo .sltag small,#slo .slsh small{font-family:Calibri,"Segoe UI",sans-serif;font-size:.48em;font-weight:600;color:#6C757D;margin-left:2vmin;opacity:1}
-#slo .slsh{font-size:.95em}
-#slo .slg{gap:1.6vmin 2.4vmin}
-#slo .slr{background:var(--pl);border:0;border-radius:1.4vmin;padding:1.4vmin 2vmin;gap:0 1.6vmin;align-items:flex-start}
-#slo .slr>b{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border-radius:50%;background:var(--tl);color:#fff;font-size:.72em;margin-top:.12em}
-#slo .slr .sla{color:var(--rd);font-weight:700;margin:.4vmin 0 0 2.6em}
+
+
+/* ===== Slide theme: matches the lesson PowerPoints (navy title, serif headings, stage pills, grey cards, green answers) ===== */
+#slo{--nv:#1B2440;--cd:#F1F4F8;--bl:#2F55C9;--gn:#167A5B;--gy:#5A6378;background:#fff;color:var(--nv);border-top:0;font-family:Calibri,"Segoe UI",system-ui,sans-serif}
+#slo .slc{padding:3.6vmin 5.5vmin 7vmin;justify-content:flex-start;position:relative}
+#slo .slhd{display:flex;align-items:flex-start;justify-content:space-between;gap:3vmin;margin:0 0 2.6vmin}
+#slo .slttl{font-family:Cambria,Georgia,serif;font-weight:700;color:var(--nv);font-size:1.25em;line-height:1.15}
+#slo .slpill{flex:0 0 auto;color:#fff;font-weight:700;font-size:3.1vmin;border-radius:3.4vmin;padding:1vmin 3.4vmin;min-width:12vmin;text-align:center;line-height:1.1}
+#slo .slpill small{display:block;font-size:.7em;font-weight:600;opacity:.9}
+#slo .slft{position:absolute;left:5.5vmin;right:5.5vmin;bottom:2vmin;display:flex;justify-content:space-between;font-size:1.9vmin;color:var(--gy)}
+#slo.sltitle .slc{background:var(--nv);color:#fff;justify-content:center;padding:6vmin 7vmin}
+#slo.sltitle .slt{text-align:left}
+#slo.sltitle .slh{font-family:Cambria,Georgia,serif;font-weight:700;color:#fff;font-size:9vmin;line-height:1.1}
+#slo.sltitle .sls{color:#DDE2EC;opacity:1;font-size:3.6vmin;margin:2vmin 0 1vmin}
+#slo.sltitle .sld{color:#DDE2EC;font-size:3vmin;margin:0 0 4vmin;font-weight:400}
+#slo.sltitle .lph,#slo.sltitle .lpks{color:#DDE2EC}
+#slo.sltitle .lpks b{color:#fff}
+#slo .slg{gap:1.8vmin 2.4vmin}
+#slo .slr{background:var(--cd);border:0;border-radius:1.2vmin;padding:1.6vmin 2vmin;gap:0 1.6vmin;align-items:flex-start}
+#slo .slr>b{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--bl);color:#fff;font-size:.7em;margin-top:.12em}
 #slo .slrq b{color:inherit}
-#slo .slq{background:var(--pl);border-radius:1.6vmin;padding:2.4vmin 3vmin}
-#slo .lpb{display:inline-block;background:var(--am);color:#fff;font-weight:700;border-radius:2vmin;padding:.4vmin 1.8vmin;margin-bottom:1.6vmin}
-#slo .sla{color:var(--rd)}
-#slo .sla:has(.wk){color:var(--ink);background:#fff;border-left:1vmin solid var(--pa);padding:1vmin 2vmin;margin-top:2.2vmin}
-#slo .wk .st{margin:.5vmin 0}
-#slo .wk .st b{display:inline-block;background:var(--am);color:#fff;border-radius:1.6vmin;padding:0 1.2vmin;margin-right:1.2vmin;font-size:.85em}
-#slo .wk .pl{color:var(--tl);font-family:Cambria,Georgia,serif}
-#slo .wk .fin{color:var(--rd)}
-#slo .exh{color:#6C757D;font-weight:600}
-#slo .slimg{border-radius:1vmin;box-shadow:0 0 0 1px #d5dae5}
-#slo .slb{background:#f4f8f8;border-top:1px solid var(--pa)}
-#slo .slb button{border-color:var(--pa);color:var(--tl)}
+#slo .slr .sla{color:var(--gn);font-weight:700;margin:.8vmin 0 0 2.5em}
+#slo .slq{background:var(--cd);border-radius:1.2vmin;padding:2.4vmin 3vmin}
+#slo .sla{color:var(--gn)}
+#slo .sla:has(.wk){color:var(--nv);background:#fff;border:1px solid #DDE2EC;border-radius:1.2vmin;padding:1.6vmin 2.4vmin;margin-top:2vmin}
+#slo .wk .st{margin:.6vmin 0}
+#slo .wk .st b{display:inline-block;background:var(--bl);color:#fff;border-radius:1.6vmin;padding:0 1.2vmin;margin-right:1.2vmin;font-size:.85em}
+#slo .wk .pl{color:var(--nv);font-family:Cambria,Georgia,serif}
+#slo .wk .fin{color:var(--gn)}
+#slo .exh{color:var(--gy);font-weight:600}
+#slo .slimg{border-radius:1vmin;box-shadow:0 0 0 1px #DDE2EC;max-height:62vh}
+#slo .lpconf{color:var(--nv)}
+#slo .slb{background:#F1F4F8;border-top:1px solid #DDE2EC}
+#slo .slb button{border-color:#DDE2EC;color:var(--nv)}
 </style></head><body>
 <div id="top" class="row r1"><h1>KS3 and KS4 Maths Question Generator</h1><div class="tabs" id="tabs"><button id="tabS" class="on" title="Generate skills questions for the whiteboard">Skills questions</button><button id="tabE" title="Past-paper exam questions and worksheets">Exam questions</button><button id="tabB" title="Termly review booklets">Termly booklets</button><button id="tabL" title="Build a ready-to-teach lesson from a topic, grades and lesson length">Lesson planner</button></div><div id="srch" style="position:relative;margin-left:auto"><input id="tsq" type="search" placeholder="🔍 Search topics (click several to mix)…" autocomplete="off" aria-label="Search for a topic" style="font:inherit;padding:6px 10px;border:1px solid var(--bd);border-radius:8px;width:230px;max-width:30vw;background:var(--bg);color:inherit"><div class="dd" id="tsr" style="display:none;max-height:60vh;overflow:auto;min-width:300px;gap:0;left:auto;right:0"></div></div><button id="hb">Hide controls</button></div>
 <div id="bar">
@@ -2057,18 +2059,21 @@ const slMax=d=>d.steps!=null?d.steps:(d.a?1:0);
 const slDate=()=>{let d=new Date(),n=d.getDate(),sf=(n%100>10&&n%100<14)||n%10>3?'th':['th','st','nd','rd'][n%10];return d.toLocaleDateString('en-GB',{weekday:'long'})+' '+n+sf+' '+d.toLocaleDateString('en-GB',{month:'long',year:'numeric'})};
 function slBuild(){const p=lp.plan,o=[];
 o.push({col:'#0e7490',title:1,h:`<div class=slt><div class=slh>${p.t}${p.s?' – '+p.s:''}</div><div class=sls>${SGR?p.gr+' · ':''}${p.tier=='H'?'Higher':'Foundation'} · ${p.m} minute lesson</div><div class=sld>${slDate()}</div>${lpHead(p).replace(/<div class=lph1>.*?<\/div>(?=<div class=lpt>)/,'')}</div>`});
-p.secs.forEach(s=>{const hd=`<div class=slsh>${s.title}<small>${NG(s.sub)?NG(s.sub)+' · ':''}${s.min} min</small></div>`;let grp=[];
-const flush=()=>{if(!grp.length)return;let nq=grp.filter(i=>i.k!='raw').length;o.push({col:s.col,grp:1,steps:nq,h:`${hd}<div class="slg${nq>4?' g2':''}">${grp.map(i=>i.k=='raw'?`<div class=slraw>${i.h}</div>`:`<div class=slr><b>${i.n}</b><div class=slrq>${i.q}</div><div class=sla>${i.a}</div></div>`).join('')}</div>`});grp=[]};
+const STG=(s,lab)=>s.id=='st'?['Do now','#D99A1E']:s.id=='te'?(lab=='Your turn'?['We do','#167A5B']:['I do','#2F55C9']):s.id=='pl'?['Exit','#B8325E']:['You do','#B8325E'];
+p.secs.forEach(s=>{const hd='';let grp=[];
+const flush=()=>{if(!grp.length)return;let nq=grp.filter(i=>i.k!='raw').length;o.push({col:s.col,ttl:s.title,stg:STG(s),min:s.min,grp:1,steps:nq,h:`${hd}<div class="slg${nq>4?' g2':''}">${grp.map(i=>i.k=='raw'?`<div class=slraw>${i.h}</div>`:`<div class=slr><b>${i.n}</b><div class=slrq>${i.q}</div><div class=sla>${i.a}</div></div>`).join('')}</div>`});grp=[]};
 s.items.forEach(i=>{if(i.k=='q'||i.k=='raw'){grp.push(i);return}flush();
-if(i.k=='pp'){let x=i.x,ms=x.a&&EXI[x.a]?`<img class=slimg alt="Mark scheme" src="${EXI[x.a]}">`:'';o.push({col:s.col,tag:s.title,n:i.n,pp:1,h:`<div class=exh><span>${x.s} Paper ${x.p} ${x.t=='H'?'Higher':'Foundation'}</span><span>Q${x.q}</span><span>[${x.m} mark${x.m>1?'s':''}]</span></div><img class=slimg alt="Question" src="${EXI[x.f]}">`,a:ms||'<div class=sla2>Mark scheme not available for this question.</div>'});return}
-let d={col:s.col,tag:s.title,n:i.n,h:`${i.lab?`<div class=lpb>${i.lab}</div>`:''}<div class=slq>${i.q}</div>`,a:`<div class=sla>${i.a}</div>`};
+if(i.k=='pp'){let x=i.x,ms=x.a&&EXI[x.a]?`<img class=slimg alt="Mark scheme" src="${EXI[x.a]}">`:'';o.push({col:s.col,ttl:'Exam question',stg:STG(s),min:s.min,n:i.n,pp:1,h:`<div class=exh><span>${x.s} Paper ${x.p} ${x.t=='H'?'Higher':'Foundation'}</span><span>Q${x.q}</span><span>[${x.m} mark${x.m>1?'s':''}]</span></div><img class=slimg alt="Question" src="${EXI[x.f]}">`,a:ms||'<div class=sla2>Mark scheme not available for this question.</div>'});return}
+let d={col:s.col,ttl:i.lab||s.title,stg:STG(s,i.lab),min:s.min,n:i.n,h:`<div class=slq>${i.q}</div>`,a:`<div class=sla>${i.a}</div>`};
 if(/class=wk/.test(i.a)){let t=document.createElement('div');t.innerHTML=i.a;d.steps=t.querySelectorAll('.st,.fin,.pl').length}
 o.push(d)});flush()});
+const ft=(p.tier=='H'?'Higher':'Foundation')+' Maths  |  '+p.t+(p.s?' – '+p.s:'');o.forEach((d,k)=>{d.no=k+1;d.ft=ft});
 return o}
 function slPaint(o,d,S){o.style.setProperty('--c',d.col);o.classList.toggle('sltitle',!!d.title);
 let body=d.h;
 if(d.a){if(d.pp)body=S>=1?d.a:d.h;else body+=d.a}
-o.querySelector('.slc').innerHTML=(d.tag?`<div class=sltag>${d.tag}${d.n?'<small>Question '+d.n+'</small>':''}</div>`:'')+body;
+const mx=slMax(d),ansd=mx>0&&S>=mx,pl=d.stg?(ansd?['Answers','#167A5B']:d.stg):null;
+o.querySelector('.slc').innerHTML=(d.ttl?`<div class=slhd><div class=slttl>${d.ttl}</div>${pl?`<div class=slpill style="background:${pl[1]}">${pl[0]}${pl[0]!='Answers'&&d.min?`<small>${d.min} min</small>`:''}</div>`:''}</div>`:'')+body+(d.title?'':`<div class=slft><span>${d.ft||''}</span><span>${d.no||''}</span></div>`);
 if(d.a&&!d.pp&&!d.grp){let a=o.querySelector('.sla');if(a){if(d.steps!=null){[...a.querySelectorAll('.st,.fin,.pl')].forEach((e,k)=>{if(k>=S)e.style.visibility='hidden'});if(S<1)a.style.visibility='hidden'}else if(S<1)a.style.visibility='hidden'}}
 if(d.grp)[...o.querySelectorAll('.slr .sla')].forEach((e,k)=>{if(k>=S)e.style.visibility='hidden'});{let c=o.querySelector('.slc'),f=5;c.style.fontSize=f+'vmin';while(c.scrollHeight>c.clientHeight+1&&f>1.6){f-=.2;c.style.fontSize=f+'vmin'}}}
 function slRender(){const d=slD[slI],o=$('#slo'),max=slMax(d);slPaint(o,d,slS);
