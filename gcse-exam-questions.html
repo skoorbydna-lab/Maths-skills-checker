@@ -49,6 +49,7 @@ body.ws>*:not(#sheet){display:none}body.ws #sheet{display:block;background:#fff;
 .eqp .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;font-size:.95em;line-height:1.15}.eqp .fr i{font-style:normal;padding:0 .25em}.eqp .fr i:first-child{border-bottom:.08em solid currentColor}
 .eqp .t{border-collapse:collapse;margin-top:.3em;font-size:.85em}.eqp .t td,.eqp .t th{border:1px solid var(--bd);padding:2px 8px;text-align:center}
 .eqp svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
+.eqp svg{font-size:22px}
 .eqp .v{display:inline-flex;flex-direction:column;border:solid currentColor;border-width:0 .09em;border-radius:.4em;padding:0 .3em;line-height:1.1;text-align:center;vertical-align:middle}.eqp .v i{font-style:normal}
 .sim .act{font-size:13px;padding:6px 10px}
 </style></head><body>
@@ -171,8 +172,8 @@ function render(){
 const SIMH={};let SK=null;
 function skills(){if(SK)return SK;SK=new Promise((ok,no)=>{const f=document.createElement('iframe');f.src='index.html';f.style.cssText='position:absolute;width:10px;height:10px;left:-9999px;top:0;border:0';f.setAttribute('aria-hidden','true');f.tabIndex=-1;
  const fail=m=>{SK=null;f.remove();no(new Error(m))};const to=setTimeout(()=>fail('timed out'),30000);
- f.onload=()=>{try{const W=f.contentWindow,E=W.eval('EQN'),T=W.eval('T'),fx=W.eval('typeof fixroot=="function"?fixroot:(h=>h)');clearTimeout(to);ok({E,T,fx})}catch(e){clearTimeout(to);fail('blocked')}};document.body.appendChild(f)});return SK}
-function pickSim(K,q){const tops=q.g||[],H=q.t=='H';
+ f.onload=()=>{try{const W=f.contentWindow,sn=W.eval('typeof simNext=="function"?simNext:null'),E=W.eval('EQN'),T=W.eval('T'),fx=W.eval('typeof fixroot=="function"?fixroot:(h=>h)');clearTimeout(to);ok({E,T,fx,sn})}catch(e){clearTimeout(to);fail('blocked')}};document.body.appendChild(f)});return SK}
+function pickSim(K,q){if(K.sn)return K.sn(q);const tops=q.g||[],H=q.t=='H';
  let c=K.E.filter(e=>tops.includes(e.t)&&(!e.h||H));
  if(c.length){const d=Math.min(...c.map(e=>Math.abs(e.g-q.gr)));const near=c.filter(e=>Math.abs(e.g-q.gr)<=d+0.5);const e=near[Math.floor(Math.random()*near.length)];
   const[qq,aa]=e.f();return{h:K.fx(qq)+`<span class="emk">[${e.mk} mark${e.mk>1?'s':''}]</span>`,a:K.fx(aa),info:`Exam-style · ${e.t} · grade ${e.g} · ${e.mk} mark${e.mk>1?'s':''}`}}

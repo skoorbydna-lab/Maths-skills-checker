@@ -117,6 +117,11 @@ svg text{fill:currentColor;stroke:none;font:14px "Segoe UI",sans-serif}
 #slo .lpconf{color:var(--nv)}
 #slo .slb{background:#F1F4F8;border-top:1px solid #DDE2EC}
 #slo .slb button{border-color:#DDE2EC;color:var(--nv)}
+.exc .simbox:not(:empty){margin-top:.6em;border:1.5px dashed #8a6bbf;border-radius:8px;padding:.6em .8em;background:#fbf9ff}
+.simh{font-size:.8em;color:#5b3f8f;margin-bottom:.3em}.simh span{color:#6c757d;margin-left:.4em}
+.simq{font-size:.95em}.simq svg{font-size:1.35em}.sima{margin-top:.5em;padding:.4em .6em;background:#f3f7fb;border-left:3px solid #1f5f8b;font-size:.9em}.simt{font-weight:700;font-size:.75em;color:#1f5f8b;text-transform:uppercase}
+.simb{margin-top:.4em}.simb button{font-size:.8em}
+.exsim{background:#8a6bbf!important;color:#fff!important;border-color:#8a6bbf!important}
 </style></head><body>
 <div id="top" class="row r1"><h1>KS3 and KS4 Maths Question Generator</h1><div class="tabs" id="tabs"><button id="tabS" class="on" title="Generate skills questions for the whiteboard">Skills questions</button><button id="tabE" title="Past-paper exam questions and worksheets">Exam questions</button><button id="tabB" title="Termly review booklets">Termly booklets</button><button id="tabL" title="Build a ready-to-teach lesson from a topic, grades and lesson length">Lesson planner</button></div><div id="srch" style="position:relative;margin-left:auto"><input id="tsq" type="search" placeholder="🔍 Search topics (click several to mix)…" autocomplete="off" aria-label="Search for a topic" style="font:inherit;padding:6px 10px;border:1px solid var(--bd);border-radius:8px;width:230px;max-width:30vw;background:var(--bg);color:inherit"><div class="dd" id="tsr" style="display:none;max-height:60vh;overflow:auto;min-width:300px;gap:0;left:auto;right:0"></div></div><button id="hb">Hide controls</button></div>
 <div id="bar">
@@ -1791,7 +1796,399 @@ const exLabel=()=>{if(mode=='r'){let y=$('#yr').value;if(!y)return label();let t
 const exTitle=()=>exPaper&&!bkm?'Exam paper – '+exPaperName():mode=='r'&&!$('#yr').value?(bkm?'Termly review booklet':'Exam questions – choose a year group, strand or mix'):(bkm?'Termly review booklet – ':'Exam questions – ')+exLabel();
 function exInfo(){let k=exSel.size,w=bkm?'booklet':'worksheet',x=bkm&&k?` · pages ${Math.min(100,Math.round(bkLay(EX.filter(x=>exSel.has(x.f))).used*100))}% full`:'';return(k?`${k} selected for the ${w}${x}`:`None selected: the ${w} will use the questions shown`)+(bkWarn?` <span style="color:#b3261e">Can't fit any more</span>`:'')}
 function renderEx(){if(!window.EXI){$('#cols').className='ex';$('#cols').innerHTML='<div class=exn>Loading past-paper questions…</div>';if(!window.EXL){window.EXL=Promise.all(EXDATA.EXQF.map(f=>new Promise((ok,no)=>{let s=document.createElement('script');s.src=f;s.onload=ok;s.onerror=no;document.head.appendChild(s)})))}window.EXL.then(()=>{if(exm)renderEx()}).catch(()=>{window.EXL=null;$('#cols').innerHTML='<div class=exn>Could not load the past-paper images.</div>'});return}let c=$('#cols'),n=+$('#n').value,set=exTopics(),t=tier,m=EX.filter(x=>x.t==t&&((bk&&bk.on&&mode=='x'&&bk.book==t&&bkChosen().length)?bkQ(x):x.g.some(g=>set.has(g)))&&exGok(x));c.className='ex';bkSync();let srt=l=>[...l].sort((a,b)=>a.s<b.s?1:a.s>b.s?-1:a.p-b.p||a.q-b.q),base=m,pick;if(bkm||exAllm){let key=[...set].sort().join()+t+(bkOnly?'o':'');if(key!=bkKey){bkKey=key;bkN=30}base=bkm&&bkOnly?srt(EX.filter(x=>exSel.has(x.f))):srt(m);pick=base.slice(0,bkN)}else pick=shuf(m).slice(0,n);if(exPaper&&!bkm){let[s0,p0,t0]=exPaper.split('|');base=m=EX.filter(x=>x.s==s0&&x.p==p0&&x.t==t0).sort((a,b)=>a.q-b.q);pick=base;t=t0}exShown=pick;if(bkm&&bkAuto){bkAuto=false;if(!exSel.size)pick.slice(0,4).forEach(x=>exSel.add(x.f))}
-c.innerHTML=`<h2 class=ext>${exTitle()}</h2><div class=exn>${bkm?'':exPaperSel()+(exPaper?` <span class=expsum>${base.length} questions · ${base.reduce((a,x)=>a+(x.m||0),0)} marks</span> <button id=expx>Back to topic questions</button>`:'')+'<br>'}${(bkm||exAllm?base.length:m.length)?`Showing ${pick.length} of ${bkm||exAllm?base.length:m.length} ${bkm&&bkOnly?'ticked':'past-paper'} question${(bkm||exAllm?base.length:m.length)>1?'s':''} (${t=='H'?'Higher':'Foundation'} tier). ${exAllm||bkm||exPaper?'':'Press <b>New questions</b> to reshuffle. '}Click a question to enlarge it, tick <b>Add to ${bkm?'booklet':'worksheet'}</b> to choose it for the ${bkm?'booklet (questions keep their full width; ticking stops when the two middle pages are full)':'PDF'}.<br>${bkm||exPaper?'':`<label><input type=checkbox id=exall${exAllm?' checked':''}> Show all matching questions, 30 at a time</label>`} ${bkm?`<button id=exonly>${bkOnly?'Show all matching questions':'Show only ticked ('+exSel.size+')'}</button> `:''}<button id=exsa>Select all shown</button> <button id=excl>Clear selection</button> ${bkm?'':'<button id=exwp>Preview worksheet</button> <button id=exwpdf>Worksheet PDF</button> <button id=exmp>Preview mark scheme</button> <button id=exms>Mark scheme PDF</button>'} <b id=exinfo>${exInfo()}</b>${bkm?`<br><span class=bkp><b>Review booklet</b> (A5, 4 pages) – title <input id=bkt value="${esc(bkS.t)}"> topics <input id=bkp value="${esc(bkS.p)}"> <label><input type=checkbox id=bkl${bkS.l?' checked':''}> A4 print layout (fold)</label> <button id=exbp>Preview booklet</button> <button id=exbk>Review booklet PDF</button> <button id=exbq>Preview solutions</button> <button id=exbs>Booklet solutions PDF</button></span>`:''}`:(bkm&&bkOnly?'Nothing is ticked yet. Press Show all matching questions and tick some.':bkm&&!$('#yr').value?'Choose a year group (and term) from the route map above to build a booklet.':'No past-paper questions match these topics at this tier yet. Try other topics or switch tier.')}</div>`+pick.map(x=>`<div class=exc><div class=exh><span>AQA 8300 ${x.s}</span><span>Paper ${x.p} ${x.t=='H'?'Higher':'Foundation'}</span><span>Q${x.q}</span>${x.m?`<span>${x.m} mark${x.m>1?'s':''}</span>`:''}<span>${x.g.slice(0,3).join(' · ')}</span><label class=exsel><input type=checkbox data-f="${x.f}"${exSel.has(x.f)?' checked':''}> Add to ${bkm?'booklet':'worksheet'}</label></div><img loading=lazy src="${EXI[x.f]}" width=${x.w} height=${x.h} alt="${x.s} paper ${x.p} question ${x.q}">${x.a?`<button class=exs data-a="${x.a}" data-s="${x.s}">Show answer</button><div class=exa></div>`:''}</div>`).join('')+((bkm||exAllm)&&pick.length<base.length?`<div class=exn style="text-align:center"><button id=exmore>Show next ${Math.min(30,base.length-pick.length)} (${base.length-pick.length} more)</button></div>`:'');$('#pt').textContent=exTitle();if(document.body.classList.contains('ans'))exAll(true)}
+c.innerHTML=`<h2 class=ext>${exTitle()}</h2><div class=exn>${bkm?'':exPaperSel()+(exPaper?` <span class=expsum>${base.length} questions · ${base.reduce((a,x)=>a+(x.m||0),0)} marks</span> <button id=expx>Back to topic questions</button>`:'')+'<br>'}${(bkm||exAllm?base.length:m.length)?`Showing ${pick.length} of ${bkm||exAllm?base.length:m.length} ${bkm&&bkOnly?'ticked':'past-paper'} question${(bkm||exAllm?base.length:m.length)>1?'s':''} (${t=='H'?'Higher':'Foundation'} tier). ${exAllm||bkm||exPaper?'':'Press <b>New questions</b> to reshuffle. '}Click a question to enlarge it, tick <b>Add to ${bkm?'booklet':'worksheet'}</b> to choose it for the ${bkm?'booklet (questions keep their full width; ticking stops when the two middle pages are full)':'PDF'}.<br>${bkm||exPaper?'':`<label><input type=checkbox id=exall${exAllm?' checked':''}> Show all matching questions, 30 at a time</label>`} ${bkm?`<button id=exonly>${bkOnly?'Show all matching questions':'Show only ticked ('+exSel.size+')'}</button> `:''}<button id=exsa>Select all shown</button> <button id=excl>Clear selection</button> ${bkm?'':'<button id=exwp>Preview worksheet</button> <button id=exwpdf>Worksheet PDF</button> <button id=exmp>Preview mark scheme</button> <button id=exms>Mark scheme PDF</button>'} <b id=exinfo>${exInfo()}</b>${bkm?`<br><span class=bkp><b>Review booklet</b> (A5, 4 pages) – title <input id=bkt value="${esc(bkS.t)}"> topics <input id=bkp value="${esc(bkS.p)}"> <label><input type=checkbox id=bkl${bkS.l?' checked':''}> A4 print layout (fold)</label> <button id=exbp>Preview booklet</button> <button id=exbk>Review booklet PDF</button> <button id=exbq>Preview solutions</button> <button id=exbs>Booklet solutions PDF</button></span>`:''}`:(bkm&&bkOnly?'Nothing is ticked yet. Press Show all matching questions and tick some.':bkm&&!$('#yr').value?'Choose a year group (and term) from the route map above to build a booklet.':'No past-paper questions match these topics at this tier yet. Try other topics or switch tier.')}</div>`+pick.map(x=>`<div class=exc><div class=exh><span>AQA 8300 ${x.s}</span><span>Paper ${x.p} ${x.t=='H'?'Higher':'Foundation'}</span><span>Q${x.q}</span>${x.m?`<span>${x.m} mark${x.m>1?'s':''}</span>`:''}<span>${x.g.slice(0,3).join(' · ')}</span><label class=exsel><input type=checkbox data-f="${x.f}"${exSel.has(x.f)?' checked':''}> Add to ${bkm?'booklet':'worksheet'}</label></div><img loading=lazy src="${EXI[x.f]}" width=${x.w} height=${x.h} alt="${x.s} paper ${x.p} question ${x.q}">${x.a?`<button class=exs data-a="${x.a}" data-s="${x.s}">Show answer</button>`:''}<button class="exs exsim" data-f="${x.f}">Similar question</button>${x.a?`<div class=exa></div>`:''}<div class=simbox></div></div>`).join('')+((bkm||exAllm)&&pick.length<base.length?`<div class=exn style="text-align:center"><button id=exmore>Show next ${Math.min(30,base.length-pick.length)} (${base.length-pick.length} more)</button></div>`:'');$('#pt').textContent=exTitle();if(document.body.classList.contains('ans'))exAll(true)}
+
+
+
+
+
+
+/* ===== Exam-style question types with diagrams (batch 2, modelled on AQA papers) ===== */
+(()=>{
+const DS='style="stroke-dasharray:4 3;stroke-width:1"',TH='style="stroke-width:1"';
+const P2=(pts,z)=>'M'+pts.map(p=>(+p[0]).toFixed(1)+' '+(+p[1]).toFixed(1)).join('L')+(z?'Z':'');
+const pth=(d,st='')=>`<path d="${d}" ${st}/>`;
+const T1=(x,y,s,a='middle',fs)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a}"${fs?` style="font-size:${fs}px"`:''}>${s}</text>`;
+const nrm=(x,y)=>{const l=Math.hypot(x,y)||1;return[x/l,y/l]};
+// right-angle marker at V with legs along unit vectors u and v (screen coords)
+const RA=(V,u,v,s=9)=>pth(P2([[V[0]+u[0]*s,V[1]+u[1]*s],[V[0]+u[0]*s+v[0]*s,V[1]+u[1]*s+v[1]*s],[V[0]+v[0]*s,V[1]+v[1]*s]]),TH);
+// angle arc at V between directions to A and B (smaller angle), optional label
+const ARC=(V,A,B,r=18,lab,lr)=>{const u=nrm(A[0]-V[0],A[1]-V[1]),v=nrm(B[0]-V[0],B[1]-V[1]),cr=u[0]*v[1]-u[1]*v[0],p1=[V[0]+u[0]*r,V[1]+u[1]*r],p2=[V[0]+v[0]*r,V[1]+v[1]*r];
+ let s=pth(`M${p1[0].toFixed(1)} ${p1[1].toFixed(1)}A${r} ${r} 0 0 ${cr>0?1:0} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`,TH);
+ if(lab!=null){const b=nrm(u[0]+v[0],u[1]+v[1]),R2=lr||r+13;s+=T1(V[0]+b[0]*R2,V[1]+b[1]*R2+4,lab)}return s};
+const mid=(A,B,ox=0,oy=0)=>[(A[0]+B[0])/2+ox,(A[1]+B[1])/2+oy];
+const lbl=(A,B,s,off=8,flip)=>{const n=nrm(-(B[1]-A[1]),B[0]-A[0]),k=flip?-1:1,m=mid(A,B),e=[n[0]*off*k,n[1]*off*k];return T1(m[0]+e[0],m[1]+e[1]+(e[1]>3?10:e[1]<-3?-3:4),s,e[0]>3?'start':e[0]<-3?'end':'middle')};
+const SVP=(w,h,b,l=46,t=16)=>sv(w+l+50,h+t+22,`<g transform="translate(${l} ${t})">${b}</g>`);
+const f1=v=>(+v).toFixed(1);
+const pi=Math.PI,d1=v=>+v.toFixed(1),d2=v=>+v.toFixed(2);
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+// square grid: x0..x1, y0..y1 (maths coords), s px per unit
+const GRID=(x0,x1,y0,y1,s,body,o={})=>{const W=(x1-x0)*s,H=(y1-y0)*s,X=x=>(x-x0)*s,Y=y=>(y1-y)*s;let g='';
+ for(let x=x0;x<=x1;x++)g+=`M${X(x)} 0V${H}`;for(let y=y0;y<=y1;y++)g+=`M0 ${Y(y)}H${W}`;
+ let b=pth(g,'style="stroke-width:.35;opacity:.55"');const ax=x0<=0&&x1>=0,ay=y0<=0&&y1>=0;
+ if(ax)b+=pth(`M${X(0)} 0V${H}`,'style="stroke-width:1.2"');if(ay)b+=pth(`M0 ${Y(0)}H${W}`,'style="stroke-width:1.2"');
+ const st=o.step||1;if(!o.nolab){for(let x=x0;x<=x1;x++)if(x&&x%st==0)b+=T1(X(x),(ay?Y(0):H)+12,mn(x),'middle',10);for(let y=y0;y<=y1;y++)if(y&&y%st==0)b+=T1((ax?X(0):0)-4,Y(y)+3.5,mn(y),'end',10);
+  if(ax&&ay)b+=T1(X(0)-4,Y(0)+12,'O','end',10);if(ay)b+=T1(W+8,Y(0)+4,'x','start',11);if(ax)b+=T1(X(0),-5,'y','middle',11)}
+ return sv(W,H,b+body(X,Y))};
+const poly=(pts,X,Y,st='')=>pth(P2(pts.map(([x,y])=>[X(x),Y(y)]),1),st);
+const cv=(a,b)=>vec(a,b);
+
+// ---------------- Area and perimeter ----------------
+EQ('Area and perimeter','compound L-shape: perimeter and area',3,4,()=>{let W=R(9,16),H=R(6,12),w=R(2,W-5),h=R(2,H-3),k=Math.min(190/W,120/H);
+ const p=[[0,0],[W-w,0],[W-w,h],[W,h],[W,H],[0,H]].map(([x,y])=>[x*k,y*k]);
+ let s=pth(P2(p,1))+lbl(p[0],p[1],`${W-w} cm`,-7)+lbl(p[3],p[4],`${H-h} cm`,-7)+lbl(p[4],p[5],`${W} cm`,-7)+lbl(p[5],p[0],`${H} cm`,-7)+RA(p[5],[1,0],[0,-1]);
+ return[pt('Work out the perimeter of the shape.','Work out the area of the shape.')+`<div style="font-size:.85em">All corners are right angles. Not drawn accurately.</div>`+SVP(W*k,H*k,s),
+  wp(['a',[`Missing horizontal side: ${W} − ${W-w} = ${w} cm`,`Missing vertical side: ${H} − ${H-h} = ${h} cm`,`Add all six sides: ${W-w} + ${h} + ${w} + ${H-h} + ${W} + ${H}`],`${2*(W+H)} cm`],
+     ['b',[`Whole rectangle minus the missing corner: ${W} × ${H} − ${w} × ${h}`,`= ${W*H} − ${w*h}`],`${W*H-w*h} cm²`])]});
+EQ('Area and perimeter','trapezium area (diagram)',3,2,()=>{let a=R(4,10),b=a+R(2,8),h=R(3,9),k=Math.min(200/b,110/h),off=R(1,b-a-1)||1;
+ const p=[[0,h],[b,h],[off+a,0],[off,0]].map(([x,y])=>[x*k,y*k]),A2=(a+b)*h/2,rev=Math.random()<.4;
+ let s=pth(P2(p,1))+lbl(p[0],p[1],`${b} cm`,7)+lbl(p[3],p[2],`${a} cm`,-7)+pth(`M${p[3][0]} ${p[3][1]}V${p[0][1]}`,DS)+RA([p[3][0],p[0][1]],[1,0],[0,-1],7)+T1(p[3][0]+5,(p[3][1]+p[0][1])/2+4,rev?'h cm':`${h} cm`,'start');
+ return rev?[`The trapezium has an area of ${nf(A2)} cm². Work out the height h.`+SVP(b*k,h*k,s),ws([`Area = ½ × (a + b) × h, so ${A2} = ½ × (${a} + ${b}) × h`,`${A2} = ${(a+b)/2} × h`,`h = ${A2} ÷ ${(a+b)/2}`],`${h} cm`)]
+  :[`Work out the area of the trapezium.`+SVP(b*k,h*k,s),ws([`Area of a trapezium = ½ × (a + b) × h`,`= ½ × (${a} + ${b}) × ${h}`,`= ${(a+b)/2} × ${h}`],`${A2} cm²`)]});
+EQ('Area and perimeter','rectangle and semicircle: area and perimeter',5,5,()=>{let L=R(8,18),D=2*R(2,5),k=Math.min(150/(L+D/2),100/D),Lw=L*k,Dh=D*k;
+ let s=pth(`M0 0H${Lw}A${Dh/2} ${Dh/2} 0 0 1 ${Lw} ${Dh}H0Z`)+lbl([0,Dh],[Lw,Dh],`${L} cm`,7)+lbl([0,0],[0,Dh],`${D} cm`,7)+pth(`M${Lw} 0V${Dh}`,DS);
+ const A=L*D+pi*(D/2)**2/2,Pm=2*L+D+pi*D/2;
+ return[`The shape is a rectangle with a semicircle on one end.`+SVP(Lw+Dh/2,Dh,s)+pt('Work out the area of the shape. Give your answer to 1 decimal place.','Work out the perimeter of the shape. Give your answer to 1 decimal place.'),
+  wp(['a',[`Rectangle: ${L} × ${D} = ${L*D} cm²`,`Semicircle: radius = ${D/2}, area = ½ × π × ${D/2}² = ${d2(pi*(D/2)**2/2)}…`,`Total = ${L*D} + ${d2(pi*(D/2)**2/2)}…`],`${f1(A)} cm²`],
+     ['b',[`Straight edges: ${L} + ${L} + ${D} = ${2*L+D} cm`,`Curved edge = half the circumference = ½ × π × ${D} = ${d2(pi*D/2)}…`,`Total = ${2*L+D} + ${d2(pi*D/2)}…`],`${f1(Pm)} cm`])]});
+EQ('Area and perimeter','sector: area and perimeter',6,4,()=>{let r=R(4,12),t=P([40,60,72,80,100,120,135,150,210,240]),Rr=95,a=t*pi/180;
+ const O=[110,105],A=[O[0]+Rr,O[1]],B=[O[0]+Rr*Math.cos(a),O[1]-Rr*Math.sin(a)];
+ let s=pth(`M${O[0]} ${O[1]}L${A[0]} ${A[1]}A${Rr} ${Rr} 0 ${t>180?1:0} 0 ${B[0].toFixed(1)} ${B[1].toFixed(1)}Z`)+ARC(O,A,B,16,t>180?null:`${t}°`)+lbl(O,A,`${r} cm`,-11)+(t>180?T1(O[0]-6,O[1]+18,`${t}°`):'');
+ const Ar=t/360*pi*r*r,arc=t/360*2*pi*r;
+ return[`The diagram shows a sector of a circle, radius ${r} cm, angle ${t}°.`+sv(220,210,s)+pt('Work out the area of the sector. Give your answer to 1 decimal place.','Work out the perimeter of the sector. Give your answer to 1 decimal place.'),
+  wp(['a',[`Area = ${sf(t,360)} × π × ${r}²`,`= ${sf(t,360)} × ${d2(pi*r*r)}…`],`${f1(Ar)} cm²`],['b',[`Arc length = ${sf(t,360)} × 2 × π × ${r} = ${d2(arc)}…`,`Perimeter = arc + two radii = ${d2(arc)}… + ${2*r}`],`${f1(arc+2*r)} cm`])]},'H');
+
+// ---------------- Volume and surface area ----------------
+EQ('Volume and surface area','triangular prism: volume and surface area',5,5,()=>{let[b,h,c]=P([[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,6,10],[12,5,13]]),l=R(6,15),k=Math.min(100/b,95/h);
+ const A=[0,110],Bp=[b*k,110],C=[0,110-h*k],o=[95,-45],sh=p=>[p[0]+o[0],p[1]+o[1]];
+ let s=pth(P2([A,Bp,C],1))+pth(P2([Bp,sh(Bp),sh(C),C]))+pth(P2([sh(C),sh(Bp)]))+pth(P2([A,sh(A)]),DS)+pth(P2([sh(A),sh(Bp)]),DS)+pth(P2([sh(A),sh(C)]),DS)+RA(A,[1,0],[0,-1],8)
+  +lbl(A,Bp,`${b} cm`,7)+lbl(A,C,`${h} cm`,-7)+lbl(Bp,sh(Bp),`${l} cm`,7)+lbl(C,Bp,`${c} cm`,-7);
+ const V=b*h/2*l,SA=b*h+(b+h+c)*l;
+ return[`The diagram shows a triangular prism.`+SVP(b*k+95,112,`<g transform="translate(0 45)">${s}</g>`.replace('translate(0 45)','translate(0 0)'),46,60)+pt('Work out the volume of the prism.','Work out the total surface area of the prism.'),
+  wp(['a',[`Area of the triangular cross-section = ½ × ${b} × ${h} = ${b*h/2} cm²`,`Volume = cross-section × length = ${b*h/2} × ${l}`],`${V} cm³`],
+     ['b',[`Two triangles: 2 × ${b*h/2} = ${b*h} cm²`,`Three rectangles: ${b} × ${l} + ${h} × ${l} + ${c} × ${l} = ${(b+h+c)*l} cm²`,`Total = ${b*h} + ${(b+h+c)*l}`],`${SA} cm²`])]});
+EQ('Volume and surface area','cylinder: volume and curved surface area',5,4,()=>{let r=R(2,9),h=R(5,20),W=90,Hh=Math.min(130,Math.max(70,h/r*45));
+ const ry=14,x0=10,x1=x0+W,cx=(x0+x1)/2;
+ let s=`<ellipse cx="${cx}" cy="${ry}" rx="${W/2}" ry="${ry}"/>`+pth(`M${x0} ${ry}V${ry+Hh}M${x1} ${ry}V${ry+Hh}`)+pth(`M${x0} ${ry+Hh}A${W/2} ${ry} 0 0 0 ${x1} ${ry+Hh}`)+pth(`M${x0} ${ry+Hh}A${W/2} ${ry} 0 0 1 ${x1} ${ry+Hh}`,DS)
+  +pth(`M${cx} ${ry}H${x1}`,TH)+T1((cx+x1)/2,ry+11,`${r} cm`,'middle',10)+T1(x1+6,ry+Hh/2+4,`${h} cm`,'start');
+ const V=pi*r*r*h,C=2*pi*r*h;
+ return[`A cylinder has radius ${r} cm and height ${h} cm.`+sv(150,Hh+2*ry,s)+pt('Work out the volume of the cylinder. Give your answer to 1 decimal place.','Work out the curved surface area. Give your answer to 1 decimal place.'),
+  wp(['a',[`Volume = π r² h = π × ${r}² × ${h}`,`= ${r*r*h}π`],`${f1(V)} cm³`],['b',[`Curved surface area = 2 π r h = 2 × π × ${r} × ${h}`,`= ${2*r*h}π`],`${f1(C)} cm²`])]});
+
+// ---------------- Pythagoras and trigonometry (diagrams) ----------------
+const RTD=(o)=>{const A=[30,120],B=[220,120],C=[30,40+R(0,20)],q=[];let s=pth(P2([A,B,C],1))+RA(A,[1,0],[0,-1],9);
+ if(o.ang)s+=ARC(B,A,C,24,o.ang,40);if(o.opp)s+=T1(22,(A[1]+C[1])/2+4,o.opp,'end');if(o.adj)s+=T1((A[0]+B[0])/2,136,o.adj);if(o.hyp)s+=lbl(C,B,o.hyp,-8);return SVP(220,90,`<g transform="translate(-30 -35)">${s}</g>`,58,4)};
+EQ('Pythagoras','Pythagoras with a diagram',4,3,()=>{let a=R(4,15),b=R(4,15),hyp=Math.sqrt(a*a+b*b),findH=Math.random()<.55;
+ if(findH)return[`Work out the length x. Give your answer to 1 decimal place.`+RTD({opp:`${a} cm`,adj:`${b} cm`,hyp:'x'}),ws([`x is the hypotenuse, so x² = ${a}² + ${b}²`,`x² = ${a*a} + ${b*b} = ${a*a+b*b}`,`x = √(${a*a+b*b})`],`${f1(hyp)} cm`)];
+ let H=d1(hyp+R(1,4));return[`Work out the length x. Give your answer to 1 decimal place.`+RTD({opp:'x',adj:`${b} cm`,hyp:`${H} cm`}),ws([`x is a shorter side, so x² = ${H}² − ${b}²`,`x² = ${d2(H*H)} − ${b*b} = ${d2(H*H-b*b)}`,`x = √(${d2(H*H-b*b)})`],`${f1(Math.sqrt(H*H-b*b))} cm`)]});
+EQ('Trigonometry','find a side using trigonometry (diagram)',5,3,()=>{let t=R(25,65),r=t*pi/180,k=P(['sin','cos','tan']),side=R(5,20);
+ let o={ang:`${t}°`},st=[],ans;
+ if(k=='sin'){if(Math.random()<.5){o.hyp=`${side} cm`;o.opp='x';st=['Label: H = '+side+', O = x → SOH','sin θ = O ÷ H, so sin '+t+'° = x ÷ '+side,'x = '+side+' × sin '+t+'°'];ans=side*Math.sin(r)}else{o.opp=`${side} cm`;o.hyp='x';st=['Label: O = '+side+', H = x → SOH','sin '+t+'° = '+side+' ÷ x','x = '+side+' ÷ sin '+t+'°'];ans=side/Math.sin(r)}}
+ else if(k=='cos'){if(Math.random()<.5){o.hyp=`${side} cm`;o.adj='x';st=['Label: H = '+side+', A = x → CAH','cos '+t+'° = x ÷ '+side,'x = '+side+' × cos '+t+'°'];ans=side*Math.cos(r)}else{o.adj=`${side} cm`;o.hyp='x';st=['Label: A = '+side+', H = x → CAH','cos '+t+'° = '+side+' ÷ x','x = '+side+' ÷ cos '+t+'°'];ans=side/Math.cos(r)}}
+ else{if(Math.random()<.5){o.adj=`${side} cm`;o.opp='x';st=['Label: A = '+side+', O = x → TOA','tan '+t+'° = x ÷ '+side,'x = '+side+' × tan '+t+'°'];ans=side*Math.tan(r)}else{o.opp=`${side} cm`;o.adj='x';st=['Label: O = '+side+', A = x → TOA','tan '+t+'° = '+side+' ÷ x','x = '+side+' ÷ tan '+t+'°'];ans=side/Math.tan(r)}}
+ return[`Work out the length x. Give your answer to 1 decimal place.`+RTD(o),ws(st,`${f1(ans)} cm`)]});
+EQ('Trigonometry','find an angle using trigonometry (diagram)',5,3,()=>{let a=R(3,12),b=R(3,12),k=P(['tan','sin','cos']),o={ang:'θ'},st,ans;
+ if(k=='tan'){o.opp=`${a} cm`;o.adj=`${b} cm`;st=['Label: O = '+a+', A = '+b+' → TOA','tan θ = '+a+' ÷ '+b,'θ = tan⁻¹('+a+' ÷ '+b+')'];ans=Math.atan(a/b)}
+ else{let H=Math.max(a,b)+R(1,6),s2=Math.min(a,b);if(k=='sin'){o.opp=`${s2} cm`;o.hyp=`${H} cm`;st=['Label: O = '+s2+', H = '+H+' → SOH','sin θ = '+s2+' ÷ '+H,'θ = sin⁻¹('+s2+' ÷ '+H+')'];ans=Math.asin(s2/H)}else{o.adj=`${s2} cm`;o.hyp=`${H} cm`;st=['Label: A = '+s2+', H = '+H+' → CAH','cos θ = '+s2+' ÷ '+H,'θ = cos⁻¹('+s2+' ÷ '+H+')'];ans=Math.acos(s2/H)}}
+ return[`Work out the size of angle θ. Give your answer to 1 decimal place.`+RTD(o),ws(st,`${f1(ans*180/pi)}°`)]});
+
+// ---------------- Similar shapes ----------------
+EQ('Similar shapes','similar triangles: missing sides (diagram)',5,4,()=>{let k=P([1.5,2,2.5,3]),b=R(4,9),a=R(3,8),c=R(Math.max(a,b)-1,a+b-2);if(c<=Math.abs(a-b))c=Math.abs(a-b)+1;
+ const shape=[[0,0],[1,0],[.32,-.62]],tri=(x,w)=>shape.map(([u,v])=>[x+u*w,105+v*w]);
+ const T=tri(0,80),U=tri(120,80*Math.min(k,1.6));
+ let s=pth(P2(T,1))+pth(P2(U,1))+lbl(T[0],T[1],`${b} cm`,7)+lbl(T[0],T[2],`${a} cm`,-7)+lbl(T[1],T[2],'x',7)+lbl(U[0],U[1],`${d1(b*k)} cm`,7)+lbl(U[0],U[2],'y',-7)+lbl(U[1],U[2],`${d1(c*k)} cm`,7)
+  +T1((T[0][0]+T[1][0]+T[2][0])/3,(T[0][1]+T[1][1]+T[2][1])/3+5,'A','middle',12)+T1((U[0][0]+U[1][0]+U[2][0])/3,(U[0][1]+U[1][1]+U[2][1])/3+5,'B','middle',12);
+ return[`Triangles A and B are similar. Not drawn accurately.`+SVP(U[1][0],110,s,30,10)+pt('Work out the length x.','Work out the length y.'),
+  wp(['a',[`Scale factor = ${d1(b*k)} ÷ ${b} = ${k}`,`x = ${d1(c*k)} ÷ ${k}`],`${c} cm`],['b',[`y = ${a} × ${k}`],`${d1(a*k)} cm`])]});
+
+// ---------------- Angles ----------------
+EQ('Angles','angles in a triangle with algebra (diagram)',4,3,()=>{let x=R(10,30),a=R(5,40),b=R(5,30),c=x+a+2*x+b+3*x-180;if(3*x-c<10||c<0)c=0;
+ let e1=`x + ${a}`,e2=`2x + ${b}`,v3=180-(x+a)-(2*x+b),e3;if(v3<=0){x=20;a=10;b=10;v3=180-30-50}const k3=v3-3*x;e3=k3>=0?`3x + ${k3}`:`3x − ${-k3}`;
+ const A=[20,130],B=[230,130],C=[120,25];let s=pth(P2([A,B,C],1))+T1(A[0]+30,A[1]-8,e1+'°','start',12)+T1(B[0]-30,B[1]-8,e2+'°','end',12)+T1(C[0],C[1]+30,e3+'°','middle',12);
+ const ang=[x+a,2*x+b,3*x+k3];
+ return[`The diagram shows a triangle. All angles are in degrees.`+sv(250,140,s)+`Work out the size of the largest angle.`,
+  ws([`Angles in a triangle add to 180°: (${e1}) + (${e2}) + (${e3}) = 180`,`6x + ${a+b+k3} = 180`,`6x = ${180-a-b-k3}, so x = ${x}`,`Angles: ${ang.join('°, ')}°`],`${Math.max(...ang)}°`)]});
+EQ('Angles in parallel lines','parallel lines: find the angle and give a reason',3,2,()=>{let th=R(48,72),r=th*pi/180,u=[Math.cos(r),-Math.sin(r)];
+ const Pp=[150,55],Qq=[150-85/Math.tan(r),140],reg={TR:[[1,0],u],TL:[[-1,0],u],BR:[[1,0],[-u[0],-u[1]]],BL:[[-1,0],[-u[0],-u[1]]]},val=g=>(g=='TR'||g=='BL')?th:180-th;
+ const pairs=[['BL','TR','alternate angles are equal'],['BR','TL','alternate angles are equal'],['TR','TR','corresponding angles are equal'],['BL','BL','corresponding angles are equal'],['TL','TL','corresponding angles are equal'],['BL','TL','co-interior angles add up to 180°'],['BR','TR','co-interior angles add up to 180°']];
+ const[g1,g2,why]=P(pairs),lab=(V,g,t)=>{const[d1_,d2_]=reg[g],b=nrm(d1_[0]+d2_[0],d1_[1]+d2_[1]);return T1(V[0]+b[0]*24,V[1]+b[1]*24+4,t)+pth(`M${V[0]+d1_[0]*13} ${V[1]+d1_[1]*13}A13 13 0 0 ${g=='TR'||g=='BL'?0:1} ${V[0]+d2_[0]*13} ${V[1]+d2_[1]*13}`,TH)};
+ const L1=Pp[1],L2=Qq[1],ext=60;let s=pth(`M10 ${L1}H260M10 ${L2}H260`)+pth(`M${Pp[0]+u[0]*ext} ${Pp[1]+u[1]*ext}L${Qq[0]-u[0]*ext} ${Qq[1]-u[1]*ext}`)
+  +pth(`M228 ${L1-5}l6 5l-6 5M228 ${L2-5}l6 5l-6 5`,TH)+lab(Pp,g1,`${val(g1)}°`)+lab(Qq,g2,'x');
+ return[`The two horizontal lines are parallel.`+sv(270,190,s.replace(/NaN/g,'0'))+`Work out the size of angle x. Give a reason for your answer.`,ws([`The marked angles are ${why.split(' are')[0].split(' add')[0]}`,why.includes('180')?`x = 180° − ${val(g1)}°`:`x = ${val(g1)}°`,`Reason: ${why}`],`x = ${val(g2)}°`)]});
+
+// ---------------- Circle theorems ----------------
+EQ('Circle theorems','angle at the centre (diagram)',6,3,()=>{let t=R(25,70),Rr=80,O=[100,100],a1=(200+R(-10,10))*pi/180,a2=a1+2*t*pi/180,a3=(a1+a2)/2+pi+R(-15,15)*pi/180;
+ const pt_=a=>[O[0]+Rr*Math.cos(a),O[1]-Rr*Math.sin(a)],A=pt_(a1),B=pt_(a2),C=pt_(a3),ask=Math.random()<.5;
+ let s=`<circle cx="${O[0]}" cy="${O[1]}" r="${Rr}"/>`+pth(P2([A,O,B]))+pth(P2([A,C,B]))+`<circle cx="${O[0]}" cy="${O[1]}" r="2" fill="currentColor"/>`+T1(O[0]+8,O[1]+14,'O')
+  +ARC(O,A,B,16,ask?`${2*t}°`:'x')+ARC(C,A,B,22,ask?'x':`${t}°`)+T1(A[0]-10,A[1]+4,'A','end')+T1(B[0]+10,B[1]+4,'B','start')+T1(C[0]+(C[0]<O[0]?-8:8),C[1]+(C[1]<O[1]?-4:12),'C',C[0]<O[0]?'end':'start');
+ return[`A, B and C are points on a circle, centre O.`+sv(200,200,s)+`Work out the size of angle x. Give a reason for your answer.`,ask?ws([`The angle at the centre is twice the angle at the circumference`,`x = ${2*t}° ÷ 2`],`x = ${t}°`):ws([`The angle at the centre is twice the angle at the circumference`,`x = 2 × ${t}°`],`x = ${2*t}°`)]},'H');
+
+// ---------------- Bearings ----------------
+EQ('Bearings','back bearing (diagram)',4,2,()=>{let b=P([R(30,150),R(200,330)]),r=b*pi/180,A=[120,95],L=70,B=[A[0]+L*Math.sin(r),A[1]-L*Math.cos(r)];
+ let s=pth(`M${A[0]} ${A[1]}V${A[1]-50}M${B[0]} ${B[1]}V${B[1]-40}`,TH)+T1(A[0],A[1]-54,'N')+T1(B[0],B[1]-44,'N')+pth(P2([A,B]))+`<circle cx="${A[0]}" cy="${A[1]}" r="2" fill="currentColor"/><circle cx="${B[0]}" cy="${B[1]}" r="2" fill="currentColor"/>`+T1(A[0]-8,A[1]+14,'A')+T1(B[0]+8,B[1]+14,'B')
+  +ARC(A,[A[0],A[1]-30],B,18,null);
+ const back=(b+180)%360,pad=v=>String(v).padStart(3,'0');
+ return[`The bearing of B from A is ${pad(b)}°.`+sv(240,190,s)+`Work out the bearing of A from B.`,ws([`Back bearing: ${b<180?'add':'subtract'} 180°`,`${pad(b)}° ${b<180?'+':'−'} 180° = ${pad(back)}°`],`${pad(back)}°`)]});
+
+// ---------------- Graphs on a grid ----------------
+EQ('Straight-line graphs','equation of a line from its graph',5,3,()=>{let m=P([1,2,3,-1,-2,.5,-.5]),c=R(-3,3),f=x=>m*x+c;
+ let pts=[];for(let x=-5;x<=5;x+=.5){const y=f(x);if(y>=-5&&y<=5)pts.push([x,y])}if(pts.length<2){m=1;c=0;pts=[[-5,-5],[5,5]]}
+ const ip=[];for(let x=-5;x<=5;x++){const y=f(x);if(Number.isInteger(y)&&y>=-5&&y<=5)ip.push([x,y])}const p1=ip[0]||[0,c],p2=ip[ip.length-1]||[1,c+m];
+ const svg=GRID(-5,5,-5,5,17,(X,Y)=>pth(P2([pts[0],pts[pts.length-1]].map(([x,y])=>[X(x),Y(y)])),'style="stroke-width:2"')+T1(X(pts[pts.length-1][0])+6,Y(pts[pts.length-1][1])+(m>0?10:-4),'L','start',12));
+ const ms=m==.5?'½':m==-.5?'−½':m==1?'':m==-1?'−':mn(m),eq=`y = ${ms}x${c?(c>0?' + ':' − ')+Math.abs(c):''}`;
+ return[`Find the equation of line L.`+svg,ws([`Two points on the line: (${mn(p1[0])}, ${mn(p1[1])}) and (${mn(p2[0])}, ${mn(p2[1])})`,`Gradient = change in y ÷ change in x = ${mn(p2[1]-p1[1])} ÷ ${p2[0]-p1[0]} = ${m==.5?'½':m==-.5?'−½':mn(m)}`,`The line crosses the y-axis at ${mn(c)}`],eq)]});
+EQ('Quadratic graphs','read roots and turning point from a graph',5,3,()=>{let p=R(-3,2),q=p+P([2,4,6]),f=x=>(x-p)*(x-q),tx_=(p+q)/2,ty=f(tx_),b=-(p+q),c=p*q;
+ const x0=p-1,x1=q+1,y0=Math.floor(ty)-1,y1=Math.max(f(x0),f(x1));
+ let d='';for(let x=x0;x<=x1+1e-9;x+=.1)d+=(d?'L':'M')+'{X'+x+'} {Y'+f(x)+'}';
+ const svg=GRID(x0,x1,y0,y1,Math.min(20,220/(x1-x0)),(X,Y)=>pth(d.replace(/\{X([-\d.e]+)\}/g,(m,v)=>X(+v).toFixed(1)).replace(/\{Y([-\d.e]+)\}/g,(m,v)=>Y(+v).toFixed(1)),'style="stroke-width:2"'),{step:y1-y0>12?2:1});
+ const eq=`y = x²${b?(b>0?' + ':' − ')+(Math.abs(b)==1?'':Math.abs(b))+'x':''}${c?(c>0?' + ':' − ')+Math.abs(c):''}`;
+ return[`The graph of ${eq} is drawn.`+svg+pt(`Write down the roots of ${eq.replace('y = ','')} = 0`,'Write down the coordinates of the turning point.'),
+  wp(['a',['The roots are where the graph crosses the x-axis'],`x = ${mn(p)} and x = ${mn(q)}`],['b',['The turning point is the minimum point, halfway between the roots',`x = ${tx_}, y = ${mn(ty)}`],`(${mn(tx_)}, ${mn(ty)})`])]});
+EQ('Recognising graphs','match equations to graph sketches',5,3,()=>{const K=[['y = 2x + 1',x=>2*x+1],['y = x² − 4',x=>x*x-4],['y = x³',x=>x*x*x],['y = 1 ÷ x',x=>1/x],['y = −x²',x=>-x*x],['y = 5 − 2x',x=>5-2*x]],pick=shuffle(K).slice(0,4),Ls='ABCD';
+ const mini=(f,i)=>{let d='',seg=[];for(let x=-3;x<=3.001;x+=.05){if(Math.abs(x)<.06&&f===K[3][1]){if(d)seg.push(d);d='';continue}const y=f(x);if(y<-5||y>5){if(d){seg.push(d);d=''}continue}d+=(d?'L':'M')+(i*80+35+x*10).toFixed(1)+' '+(40-y*7).toFixed(1)}if(d)seg.push(d);
+  return pth(`M${i*80} 40H${i*80+70}M${i*80+35} 4V76`,TH)+seg.map(z=>pth(z,'style="stroke-width:2"')).join('')+T1(i*80+35,94,Ls[i])};
+ const order=shuffle(pick.map((k,i)=>i));
+ return[`Here are four graph sketches.`+sv(310,96,pick.map((k,i)=>mini(k[1],i)).join(''))+`Match each equation to its graph.<br>${order.map(i=>pick[i][0]).join(' &nbsp;&nbsp; ')}`,
+  ws([`Straight lines are linear (y = mx + c); a U or ∩ shape is quadratic; an S shape is cubic; two separate curves is the reciprocal 1 ÷ x`],order.map(i=>`${pick[i][0]} → ${Ls[i]}`).join('; '))]});
+EQ('Transformations','describe a translation or reflection (grid)',3,2,()=>{const base=P([[[0,0],[2,0],[2,1],[1,1],[1,3],[0,3]],[[0,0],[3,0],[0,2]],[[0,0],[2,0],[2,2],[1,3],[0,2]]]);
+ for(let t=0;t<200;t++){const ox=R(-5,2),oy=R(-5,2),A=base.map(([x,y])=>[x+ox,y+oy]),kind=P(['T','x','y','yx']);let B,ans,st;
+  if(kind=='T'){const a=R(-6,6),b=R(-6,6);if(!a&&!b)continue;B=A.map(([x,y])=>[x+a,y+b]);ans=`Translation by the vector `+cv(a,b);st=[`Every point moves ${Math.abs(a)} ${a<0?'left':'right'} and ${Math.abs(b)} ${b<0?'down':'up'}`]}
+  else if(kind=='x'){const k=R(-3,3);B=A.map(([x,y])=>[2*k-x,y]);ans=`Reflection in the line x = ${mn(k)}`;st=[`Each point is the same distance from the vertical line x = ${mn(k)} on the other side`]}
+  else if(kind=='y'){const k=R(-3,3);B=A.map(([x,y])=>[x,2*k-y]);ans=`Reflection in the line y = ${mn(k)}`;st=[`Each point is the same distance from the horizontal line y = ${mn(k)} on the other side`]}
+  else{B=A.map(([x,y])=>[y,x]);ans='Reflection in the line y = x';st=['The x and y coordinates of each point swap']}
+  if(B.some(([x,y])=>Math.abs(x)>6||Math.abs(y)>6))continue;if(JSON.stringify(A)==JSON.stringify(B))continue;
+  const cen=s=>[s.reduce((a,p)=>a+p[0],0)/s.length,s.reduce((a,p)=>a+p[1],0)/s.length],ca=cen(A),cb=cen(B);
+  return[`Describe fully the single transformation that maps shape A onto shape B.`+GRID(-6,6,-6,6,15,(X,Y)=>poly(A,X,Y,'style="fill:currentColor;fill-opacity:.15"')+poly(B,X,Y,'style="fill:currentColor;fill-opacity:.35"')+T1(X(ca[0]),Y(ca[1])+4,'A','middle',11)+T1(X(cb[0]),Y(cb[1])+4,'B','middle',11)),ws(st,ans)]}
+ return['Describe fully the single transformation that maps A onto B.','Translation']});
+EQ('Transformations','describe a rotation (grid)',5,3,()=>{const base=P([[[1,1],[3,1],[3,2],[2,2],[2,4],[1,4]],[[1,1],[4,1],[1,3]]]);
+ for(let t=0;t<300;t++){const cx=R(-2,2),cy=R(-2,2),kind=P(['90c','90a','180']),rot=([x,y])=>{const dx=x-cx,dy=y-cy;return kind=='90c'?[cx+dy,cy-dx]:kind=='90a'?[cx-dy,cy+dx]:[cx-dx,cy-dy]};
+  const ox=R(-3,2),oy=R(-3,2),A=base.map(([x,y])=>[x+ox,y+oy]),B=A.map(rot);if([...A,...B].some(([x,y])=>Math.abs(x)>6||Math.abs(y)>6))continue;
+  const cen=s=>[s.reduce((a,p)=>a+p[0],0)/s.length,s.reduce((a,p)=>a+p[1],0)/s.length],ca=cen(A),cb=cen(B);
+  const nm=kind=='180'?'180°':kind=='90c'?'90° clockwise':'90° anticlockwise';
+  return[`Describe fully the single transformation that maps shape A onto shape B.`+GRID(-6,6,-6,6,15,(X,Y)=>poly(A,X,Y,'style="fill:currentColor;fill-opacity:.15"')+poly(B,X,Y,'style="fill:currentColor;fill-opacity:.35"')+T1(X(ca[0]),Y(ca[1])+4,'A','middle',11)+T1(X(cb[0]),Y(cb[1])+4,'B','middle',11)),
+   ws(['A rotation needs three things: the angle, the direction and the centre','Use tracing paper: the point that stays fixed is the centre'],`Rotation ${nm} about (${mn(cx)}, ${mn(cy)})`)]}
+ return['Describe the rotation.','Rotation']});
+EQ('Coordinates','fourth vertex and midpoint (grid)',3,3,()=>{for(let t=0;t<100;t++){const A=[R(-5,1),R(-5,1)],u=[R(2,5),R(-1,2)],v=[R(-1,2),R(2,5)],B=[A[0]+u[0],A[1]+u[1]],D=[A[0]+v[0],A[1]+v[1]],C=[B[0]+v[0],B[1]+v[1]];
+  if([B,C,D].some(([x,y])=>Math.abs(x)>6||Math.abs(y)>6))continue;const M=[(A[0]+C[0])/2,(A[1]+C[1])/2],f_=v=>mn(Number.isInteger(v)?v:v.toFixed(1));
+  return[`A, B and C are three vertices of a parallelogram ABCD.`+GRID(-6,6,-6,6,15,(X,Y)=>[['A',A],['B',B],['C',C]].map(([n,p])=>`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="2.5" fill="currentColor"/>`+T1(X(p[0])+5,Y(p[1])-5,n,'start',11)).join('')+pth(P2([A,B,C].map(([x,y])=>[X(x),Y(y)])),TH))
+   +pt('Write down the coordinates of D.','Work out the coordinates of the midpoint of AC.'),wp(['a',[`From B to C is ${cv(v[0],v[1])}, so do the same from A`],`D (${mn(D[0])}, ${mn(D[1])})`],['b',[`Midpoint = ((${mn(A[0])} + ${mn(C[0])}) ÷ 2, (${mn(A[1])} + ${mn(C[1])}) ÷ 2)`],`(${f_(M[0])}, ${f_(M[1])})`])]}
+ return['Coordinates','(0, 0)']});
+EQ('Vectors','column vectors from a grid',5,3,()=>{const nz=(l,h)=>{let v=0;while(!v)v=R(l,h);return v};let a=[nz(-3,3),nz(-3,3)],b=[nz(-3,3),nz(-3,3)];while(a[0]*b[1]==a[1]*b[0])b=[nz(-3,3),nz(-3,3)];
+ const arrow=(X,Y,o,v,n)=>{const p=[X(o[0]),Y(o[1])],q=[X(o[0]+v[0]),Y(o[1]+v[1])],u=nrm(q[0]-p[0],q[1]-p[1]);return pth(P2([p,q]),'style="stroke-width:2"')+pth(`M${q[0]-u[0]*8-u[1]*4} ${q[1]-u[1]*8+u[0]*4}L${q[0]} ${q[1]}L${q[0]-u[0]*8+u[1]*4} ${q[1]-u[1]*8-u[0]*4}`,'style="stroke-width:2"')+T1((p[0]+q[0])/2-u[1]*10,(p[1]+q[1])/2+u[0]*10+4,`<tspan font-weight="bold">${n}</tspan>`)};
+ const svg=GRID(0,10,0,7,17,(X,Y)=>arrow(X,Y,[1,3.5-a[1]/2|0],a,'a')+arrow(X,Y,[6,3.5-b[1]/2|0],b,'b'),{nolab:1});
+ return[`Vectors <b>a</b> and <b>b</b> are drawn on the grid.`+svg+pt(`Write <b>a</b> as a column vector.`,`Work out <b>a</b> + <b>b</b> as a column vector.`,`Work out 2<b>a</b> − <b>b</b> as a column vector.`),
+  wp(['a',['Count across (right is positive) then up (up is positive)'],cv(a[0],a[1])],['b',[`Add the tops and the bottoms: ${cv(a[0],a[1])} + ${cv(b[0],b[1])}`],cv(a[0]+b[0],a[1]+b[1])],['c',[`2${'a'.bold()} = ${cv(2*a[0],2*a[1])}`,`${cv(2*a[0],2*a[1])} − ${cv(b[0],b[1])}`],cv(2*a[0]-b[0],2*a[1]-b[1])])]},'H');
+
+// ---------------- Charts and statistics ----------------
+const AXES=(W,H,ymax,ystep,ylab,xlab,body)=>{const Y=v=>H-v/ymax*H;let g='';for(let v=0;v<=ymax+1e-9;v+=ystep)g+=pth(`M0 ${Y(v).toFixed(1)}H${W}`,'style="stroke-width:.35;opacity:.55"')+T1(-5,Y(v)+3.5,d2(v),'end',10);
+ return SVP(W,H+18,g+pth(`M0 0V${H}H${W}`,'style="stroke-width:1.2"')+(ylab?`<text x="-34" y="${H/2}" transform="rotate(-90 -34 ${H/2})" text-anchor="middle" style="font-size:11px">${ylab}</text>`:'')+(xlab?T1(W/2,H+26,xlab,'middle',11):'')+body(Y),46,8)};
+EQ('Bar charts and pie charts','dual bar chart',2,3,()=>{const cat=P([['Mon','Tue','Wed','Thu','Fri'],['Bus','Car','Walk','Bike'],['Red','Blue','Green','Yellow']]),A=cat.map(()=>R(1,9)*2),B=cat.map(()=>R(1,9)*2),ym=20,W=cat.length*50,H=140,gr_=P([['Boys','Girls'],['Year 7','Year 8']]);
+ const svg=AXES(W,H,ym,2,'Frequency','',Y=>cat.map((c,i)=>`<rect x="${i*50+8}" y="${Y(A[i])}" width="16" height="${H-Y(A[i])}" style="fill:currentColor;fill-opacity:.25"/><rect x="${i*50+24}" y="${Y(B[i])}" width="16" height="${H-Y(B[i])}" style="fill:currentColor;fill-opacity:.65"/>`+T1(i*50+24,H+13,c,'middle',10)).join(''))+`<div style="font-size:.85em">Key: light = ${gr_[0]}, dark = ${gr_[1]}</div>`;
+ const i=R(0,cat.length-1),j=(i+R(1,cat.length-1))%cat.length;
+ return[`The dual bar chart shows some information.`+svg+pt(`How many more ${gr_[0].toLowerCase()} than ${gr_[1].toLowerCase()} chose ${cat[i]}? (If fewer, write a negative number.)`,`Work out the total number of ${gr_[1].toLowerCase()}.`,`What fraction of the ${gr_[0].toLowerCase()} chose ${cat[j]}?`),
+  wp(['a',[`${gr_[0]}: ${A[i]}, ${gr_[1]}: ${B[i]}`],`${mn(A[i]-B[i])}`],['b',[`${B.join(' + ')}`],`${B.reduce((a,b)=>a+b,0)}`],['c',[`${A[j]} out of ${A.reduce((a,b)=>a+b,0)}`],sf(A[j],A.reduce((a,b)=>a+b,0))])]});
+EQ('Bar charts and pie charts','pie chart: angles to frequencies',3,3,()=>{const opts=[[90,120,60,90],[150,90,60,60],[180,90,45,45],[120,120,72,48],[100,140,80,40],[45,135,90,90]],an=shuffle(P(opts)),nm=shuffle(['Football','Netball','Swimming','Tennis','Rugby']).slice(0,4);
+ const den=360/an.reduce((g,a)=>G(g,a),0),N=den*R(1,4)*(den<12?3:1);let a0=-90,s='';const C=[100,95],Rr=85;
+ an.forEach((a,i)=>{const s1=a0*pi/180,s2=(a0+a)*pi/180,p1=[C[0]+Rr*Math.cos(s1),C[1]+Rr*Math.sin(s1)],p2=[C[0]+Rr*Math.cos(s2),C[1]+Rr*Math.sin(s2)],m=(a0+a/2)*pi/180;
+  s+=pth(`M${C[0]} ${C[1]}L${p1[0].toFixed(1)} ${p1[1].toFixed(1)}A${Rr} ${Rr} 0 ${a>180?1:0} 1 ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}Z`)+T1(C[0]+Math.cos(m)*Rr*.58,C[1]+Math.sin(m)*Rr*.58,nm[i],'middle',10)+T1(C[0]+Math.cos(m)*Rr*.58,C[1]+Math.sin(m)*Rr*.58+12,`${a}°`,'middle',10);a0+=a});
+ const i=R(0,3),j=(i+R(1,3))%4;
+ return[`${N} students were asked their favourite sport. The pie chart shows the results.`+sv(200,190,s)+pt(`How many students chose ${nm[i]}?`,`What fraction of the students chose ${nm[j]}? Give your answer in its simplest form.`),
+  wp(['a',[`${N} students share 360°, so 1 student = ${sf(360,N)}°`,`${an[i]} ÷ 360 × ${N}`],`${an[i]/360*N}`],['b',[`${an[j]} out of 360`],sf(an[j],360)])]});
+EQ('Venn diagrams','Venn diagram probabilities',4,3,()=>{const[nA,nB]=P([['Cats','Dogs'],['Tea','Coffee'],['French','Spanish'],['Football','Tennis']]),a=R(3,15),b=R(2,12),c=R(3,15),d=R(1,10),N=a+b+c+d;
+ let s=`<rect x="0" y="0" width="260" height="150"/><circle cx="100" cy="78" r="58"/><circle cx="165" cy="78" r="58"/>`+T1(12,16,'ξ','start')+T1(60,24,nA)+T1(205,24,nB)+T1(72,82,a)+T1(132,82,b)+T1(194,82,c)+T1(240,140,d);
+ return[`The Venn diagram shows information about ${N} people.`+sv(260,150,s)+pt(`A person is chosen at random. Work out the probability they like ${nA.toLowerCase()} <b>and</b> ${nB.toLowerCase()}.`,`Work out the probability they like ${nA.toLowerCase()}.`,`Work out the probability they like neither.`),
+  wp(['a',[`The overlap is ${b} out of ${N}`],sf(b,N)],['b',[`Everything inside the ${nA} circle: ${a} + ${b} = ${a+b}`],sf(a+b,N)],['c',[`Outside both circles: ${d}`],sf(d,N)])]});
+const TREE=(p,q,lab1,lab2)=>{let s='';const L1=[[10,85],[90,40],[90,130]],x2=200;const y2=[18,62,108,152];
+ s+=pth(`M10 85L90 40M10 85L90 130`)+T1(45,52,p[0],'end',11)+T1(45,124,p[1],'end',11)+T1(98,44,lab1,'start',11)+T1(98,134,lab2,'start',11);
+ [[40,0],[130,2]].forEach(([y,k],i)=>{s+=pth(`M135 ${y}L${x2} ${y2[k]}M135 ${y}L${x2} ${y2[k+1]}`)+T1(165,(y+y2[k])/2-3,q[i][0],'end',11)+T1(165,(y+y2[k+1])/2+12,q[i][1],'end',11)+T1(x2+6,y2[k]+4,lab1,'start',11)+T1(x2+6,y2[k+1]+4,lab2,'start',11)});return sv(250,170,s)};
+EQ('Combined events','tree diagram (with replacement)',5,4,()=>{const r=R(2,7),b=R(2,7),n=r+b,p=[`${r}/${n}`,`${b}/${n}`];
+ return[`A bag has ${r} red and ${b} blue counters. A counter is taken at random, its colour recorded, and it is replaced. Then a second counter is taken.`+TREE(p,[p,p],'Red','Blue')+pt('Work out the probability that both counters are red.','Work out the probability that the counters are different colours.'),
+  wp(['a',[`Multiply along the branches: ${fr(r,n)} × ${fr(r,n)}`],sf(r*r,n*n)],['b',[`Red then blue: ${fr(r,n)} × ${fr(b,n)} = ${fr(r*b,n*n)}`,`Blue then red: ${fr(b,n)} × ${fr(r,n)} = ${fr(r*b,n*n)}`,`Add: ${fr(2*r*b,n*n)}`],sf(2*r*b,n*n)])]});
+EQ('Combined events','tree diagram (without replacement)',6,4,()=>{const r=R(3,7),b=R(2,6),n=r+b;
+ return[`A bag has ${r} red and ${b} blue sweets. Sam takes a sweet at random and eats it. He then takes another sweet.`+TREE([`${r}/${n}`,`${b}/${n}`],[[`${r-1}/${n-1}`,`${b}/${n-1}`],[`${r}/${n-1}`,`${b-1}/${n-1}`]],'Red','Blue')+pt('Work out the probability that both sweets are the same colour.'),
+  ws([`Both red: ${fr(r,n)} × ${fr(r-1,n-1)} = ${fr(r*(r-1),n*(n-1))}`,`Both blue: ${fr(b,n)} × ${fr(b-1,n-1)} = ${fr(b*(b-1),n*(n-1))}`,`Add: ${fr(r*(r-1)+b*(b-1),n*(n-1))}`],sf(r*(r-1)+b*(b-1),n*(n-1)))]},'H');
+EQ('Cumulative frequency and box plots','compare two box plots',6,4,()=>{const bp=()=>{const mn_=R(10,30),q1=mn_+R(5,15),md=q1+R(4,12),q3=md+R(4,14),mx=q3+R(5,20);return[mn_,q1,md,q3,mx]},A=bp(),B=bp(),S=2.2,X=v=>v*S;
+ const one=(v,y,n)=>pth(`M${X(v[0])} ${y}H${X(v[1])}M${X(v[3])} ${y}H${X(v[4])}M${X(v[0])} ${y-6}V${y+6}M${X(v[4])} ${y-6}V${y+6}`)+`<rect x="${X(v[1])}" y="${y-12}" width="${X(v[3])-X(v[1])}" height="24"/>`+pth(`M${X(v[2])} ${y-12}V${y+12}`)+T1(-6,y+4,n,'end',11);
+ let ax='';for(let t=0;t<=100;t+=10)ax+=pth(`M${X(t)} 112V116`,TH)+T1(X(t),128,t,'middle',10);
+ const s=one(A,30,'Class A')+one(B,80,'Class B')+pth(`M0 112H${X(100)}`,TH)+ax+T1(X(50),144,'Test mark','middle',11);
+ return[`The box plots show the test marks of two classes.`+sv(X(100),146,s)+pt('Write down the median for each class.','Work out the interquartile range for each class.','Compare the marks of the two classes.'),
+  wp(['a',['The median is the line inside the box'],`A: ${A[2]}, B: ${B[2]}`],['b',[`IQR = upper quartile − lower quartile`,`A: ${A[3]} − ${A[1]} = ${A[3]-A[1]}`,`B: ${B[3]} − ${B[1]} = ${B[3]-B[1]}`],`A: ${A[3]-A[1]}, B: ${B[3]-B[1]}`],
+     ['c',[`On average, class ${A[2]>B[2]?'A':'B'} did better (higher median)`,`Class ${A[3]-A[1]<B[3]-B[1]?'A':'B'} was more consistent (smaller IQR)`],'One comparison of average and one of spread, in context'])]},'H');
+EQ('Histograms','histogram: frequencies from bars',7,4,()=>{const e=P([[0,10,20,40,60],[0,5,10,20,40],[10,20,30,50,80]]),fd=e.slice(1).map(()=>R(1,8)/2),w=e.slice(1).map((x,i)=>x-e[i]),f=fd.map((d,i)=>d*w[i]),W=e[4]-e[0],S=230/W,ym=Math.ceil(Math.max(...fd));
+ const svg=AXES(W*S,140,ym,.5,'Frequency density','Time (minutes)',Y=>fd.map((d,i)=>`<rect x="${(e[i]-e[0])*S}" y="${Y(d)}" width="${w[i]*S}" height="${140-Y(d)}" style="fill:currentColor;fill-opacity:.2"/>`).join('')+e.map(x=>T1((x-e[0])*S,153,x,'middle',10)).join(''));
+ const i=R(0,3),tot=f.reduce((a,b)=>a+b,0);
+ return[`The histogram shows the times taken by some people to finish a puzzle.`+svg+pt(`How many people took between ${e[i]} and ${e[i+1]} minutes?`,`How many people are shown in the histogram altogether?`),
+  wp(['a',[`Frequency = frequency density × class width = ${fd[i]} × ${w[i]}`],`${f[i]}`],['b',[`Add the frequencies of all the bars: ${f.join(' + ')}`],`${tot}`])]},'H');
+EQ('Distance-time graphs','read a distance-time graph',4,4,()=>{const d=R(4,12)*2,t1=P([20,30,40]),st=P([10,20,30]),t2=P([20,30,40,60]),T=t1+st+t2,W=Math.min(240,T*2.4),S=W/T,H=130,ym=Math.ceil(d/4)*4;
+ const X=t=>t*S,Y=v=>H-v/ym*H;let g='';for(let t=0;t<=T;t+=10)g+=pth(`M${X(t)} 0V${H}`,'style="stroke-width:.35;opacity:.55"')+(t%20==0?T1(X(t),H+12,t,'middle',10):'');for(let v=0;v<=ym;v+=ym/4)g+=pth(`M0 ${Y(v)}H${W}`,'style="stroke-width:.35;opacity:.55"')+T1(-5,Y(v)+3.5,v,'end',10);
+ const s=g+pth(`M0 0V${H}H${W}`,'style="stroke-width:1.2"')+pth(P2([[0,H],[X(t1),Y(d)],[X(t1+st),Y(d)],[X(T),H]]),'style="stroke-width:2"')+T1(W/2,H+26,'Time (minutes)','middle',11)+`<text x="-30" y="${H/2}" transform="rotate(-90 -30 ${H/2})" text-anchor="middle" style="font-size:11px">Distance from home (km)</text>`;
+ return[`Ali cycles from home to a park, stops, then cycles home. The graph shows his journey.`+SVP(W,H+18,s,46,8)+pt('How long did Ali stop at the park?','Work out Ali’s speed on the way to the park, in km/h.','What is the total distance Ali cycled?'),
+  wp(['a',['The flat part of the graph shows when he stopped'],`${st} minutes`],['b',[`${d} km in ${t1} minutes`,`${t1} minutes = ${sf(t1,60)} hour`,`Speed = ${d} ÷ ${t1/60==.5?'0.5':sf(t1,60)} `],`${d2(d/(t1/60))} km/h`],['c',[`There and back: ${d} + ${d}`],`${2*d} km`])]});
+EQ('Unit conversion (given rate)','conversion graph',3,3,()=>{const rate=P([1.2,1.25,1.15]),W=200,H=140,mx=50,ym=Math.ceil(mx*rate/10)*10,X=v=>v/mx*W,Y=v=>H-v/ym*H;let g='';
+ for(let v=0;v<=mx;v+=5)g+=pth(`M${X(v)} 0V${H}`,'style="stroke-width:.35;opacity:.55"')+(v%10==0?T1(X(v),H+12,v,'middle',10):'');for(let v=0;v<=ym;v+=10)g+=pth(`M0 ${Y(v)}H${W}`,'style="stroke-width:.35;opacity:.55"')+T1(-5,Y(v)+3.5,v,'end',10);
+ const s=g+pth(`M0 0V${H}H${W}`,'style="stroke-width:1.2"')+pth(`M0 ${H}L${X(mx)} ${Y(mx*rate)}`,'style="stroke-width:2"')+T1(W/2,H+26,'Pounds (£)','middle',11)+`<text x="-28" y="${H/2}" transform="rotate(-90 -28 ${H/2})" text-anchor="middle" style="font-size:11px">Euros (€)</text>`;
+ const a=R(2,8)*5,big=R(3,9)*100;
+ return[`The graph can be used to convert between pounds (£) and euros (€).`+SVP(W,H+18,s,46,8)+pt(`Use the graph to convert £${a} to euros.`,`Use the graph to convert £${big} to euros.`),
+  wp(['a',[`Go up from £${a} to the line, then across`],`€${d2(a*rate)}`],['b',[`£${big} is off the graph, so use a value you can read: £50 = €${d2(50*rate)}`,`£${big} = ${big/50} × £50, so ${big/50} × €${d2(50*rate)}`],`€${d2(big*rate)}`])]});
+
+// ---------------- Algebraic modelling (diagram) ----------------
+EQ('Algebraic modelling','rectangle with algebraic sides: perimeter',4,4,()=>{const a=R(2,4),b=R(1,7),c=R(1,3),d=R(1,6),x=R(2,8),P_=2*((a+c)*x+b+d);
+ const Lv=a*x+b,Wv=c*x+d,k=Math.min(180/Lv,100/Wv),s=`<rect x="0" y="0" width="${Lv*k}" height="${Wv*k}"/>`+T1(Lv*k/2,-6,`(${pl([a,'x'],[b,''])}) cm`)+T1(Lv*k+6,Wv*k/2+4,`(${pl([c,'x'],[d,''])}) cm`,'start');
+ return[`The perimeter of the rectangle is ${P_} cm.`+SVP(Lv*k+40,Wv*k,s,10,18)+pt('Work out the value of x.','Work out the area of the rectangle.'),
+  wp(['a',[`Perimeter = 2(${pl([a,'x'],[b,''])}) + 2(${pl([c,'x'],[d,''])}) = ${pl([2*(a+c),'x'],[2*(b+d),''])}`,`${pl([2*(a+c),'x'],[2*(b+d),''])} = ${P_}`,`${2*(a+c)}x = ${P_-2*(b+d)}, so x = ${x}`],`x = ${x}`],['b',[`Length = ${Lv} cm, width = ${Wv} cm`,`Area = ${Lv} × ${Wv}`],`${Lv*Wv} cm²`])]});
+
+// ---------------- Topics with no exam-style types yet (text) ----------------
+EQ('Growth and decay','depreciation over several years',5,3,()=>{const v=R(8,30)*1000,r=P([5,8,10,12,15,20]),n=R(2,5),m=1-r/100,res=v*m**n;
+ return[`A car is bought for £${nf(v)}. Its value decreases by ${r}% each year. Work out the value of the car after ${n} years. Give your answer to the nearest pound.`,
+  ws([`Multiplier for a ${r}% decrease = 1 − ${r/100} = ${m}`,`Value = ${nf(v)} × ${m}<sup>${n}</sup>`,`= ${nf(d2(res))}`],`£${nf(Math.round(res))}`)]});
+EQ('Growth and decay','how many years to pass a target',6,3,()=>{const v=R(2,9)*1000,r=P([3,4,5,6,8]),mlt=P([1.3,1.5,2]),m=1+r/100;let n=0,x=v;while(x<v*mlt){x*=m;n++}
+ return[`£${nf(v)} is invested at ${r}% compound interest per year. After how many whole years will the investment first be worth more than £${nf(v*mlt)}?`,
+  ws([`Multiplier = ${m}`,`After ${n-1} years: ${nf(v)} × ${m}<sup>${n-1}</sup> = £${nf(d2(v*m**(n-1)))}`,`After ${n} years: ${nf(v)} × ${m}<sup>${n}</sup> = £${nf(d2(v*m**n))}`],`${n} years`)]});
+EQ('Earnings, offers and tax','income tax with a personal allowance',4,3,()=>{const s=R(18,45)*1000,al=12570,tax=(s-al)*.2;
+ return[`Jo earns £${nf(s)} a year. She pays no tax on the first £12 570. She pays 20% tax on the rest. Work out how much tax Jo pays each year, and her take-home pay per month.`,
+  ws([`Taxable pay = ${nf(s)} − 12 570 = £${nf(s-al)}`,`Tax = 20% of ${nf(s-al)} = ${gbp(d2(tax))}`,`Take-home per year = ${nf(s)} − ${nf(d2(tax))} = ${gbp(d2(s-tax))}`,`Per month = ${nf(d2(s-tax))} ÷ 12`],`Tax ${gbp(d2(tax))}; ${gbp(d2((s-tax)/12))} per month`)]});
+EQ('Recurring decimals','recurring decimal to a fraction (algebra)',7,3,()=>{const k=P([1,2]);let num,den,txt,st;
+ if(k==1){let ab=R(10,98);while(ab%11==0)ab=R(10,98);const s=String(ab).padStart(2,'0');txt=`0.${s[0]}\u0307${s[1]}\u0307`;st=[`Let x = 0.${s}${s}${s}…`,`100x = ${s}.${s}${s}…`,`100x − x = ${ab}, so 99x = ${ab}`];num=ab;den=99}
+ else{const a=R(1,9);let b=R(1,9);while(b==a)b=R(1,9);txt=`0.${a}${b}\u0307`;st=[`Let x = 0.${a}${b}${b}${b}…`,`100x = ${a}${b}.${b}${b}…, 10x = ${a}.${b}${b}…`,`100x − 10x = ${a*10+b} − ${a} = ${a*9+b}, so 90x = ${a*9+b}`];num=a*9+b;den=90}
+ return[`Use algebra to show that ${txt} can be written as a fraction. Give the fraction in its simplest form.`,ws(st,sf(num,den))]},'H');
+// ================= Batch 3: types for the commonest weakly-matched question styles =================
+// ---- Ratio and proportion
+EQ('Ratio and proportion','share in a ratio and write as a fraction',3,3,()=>{const a=R(1,5),b=R(2,7),k=R(3,12),T=(a+b)*k,[n1,n2]=P([['Amy','Ben'],['Kai','Lily'],['Raj','Sara']]);
+ return[`${n1} and ${n2} share £${T} in the ratio ${a} : ${b}.<br>`+pt(`How much does ${n2} get?`,`What fraction of the money does ${n1} get?`,`How much more does ${n2} get than ${n1}?`),
+  wp(['a',[`Total parts = ${a} + ${b} = ${a+b}`,`One part = ${T} ÷ ${a+b} = £${k}`,`${n2}: ${b} × ${k}`],`£${b*k}`],['b',[`${n1} has ${a} part${a>1?'s':''} out of ${a+b}`],sf(a,a+b)],['c',[`${b} − ${a} = ${b-a} parts`,`${b-a} × ${k}`],`£${(b-a)*k}`])]});
+EQ('Ratio and proportion','recipe scaling and the limiting ingredient',4,4,()=>{const n=P([4,6,8]),it=[['flour',P([200,240,300]),'g'],['butter',P([100,120,150]),'g'],['eggs',P([2,3,4]),''],['milk',P([150,200,250]),'ml']],m=n*P([1.5,2,2.5]),have=it.map(([nm,q])=>q*R(3,6)+R(0,q-1));
+ const lim=it.map(([nm,q],i)=>Math.floor(have[i]/q)),mn_=Math.min(...lim),li=lim.indexOf(mn_);
+ const tb=`<table class=t><tr><th colspan=2>Recipe for ${n} people</th></tr>${it.map(([nm,q,u])=>`<tr><td>${nm}</td><td>${q} ${u}</td></tr>`).join('')}</table>`;
+ return[`Here is a recipe.`+tb+pt(`Work out how much ${it[0][0]} is needed for ${m} people.`,`Sam has ${it.map(([nm,q,u],i)=>`${have[i]} ${u} of ${nm}`.replace('  ',' ')).join(', ')}. What is the greatest number of people he can make the recipe for?`),
+  wp(['a',[`${m} ÷ ${n} = ${m/n}, so multiply by ${m/n}`,`${it[0][1]} × ${m/n}`],`${it[0][1]*m/n} ${it[0][2]}`],['b',[...it.map(([nm,q],i)=>`${nm}: ${have[i]} ÷ ${q} = ${d2(have[i]/q)} batches`),`The smallest is ${it[li][0]} (${mn_} full batches)`,`${mn_} × ${n}`],`${mn_*n} people`])]});
+// ---- Averages
+EQ('Averages','estimate the mean from grouped data',5,4,()=>{const w=P([10,5,20]),s0=P([0,10,20]),f=[R(2,9),R(4,14),R(5,16),R(2,10),R(1,6)],cls=f.map((_,i)=>[s0+i*w,s0+(i+1)*w]),mid=cls.map(([a,b])=>(a+b)/2),N=f.reduce((a,b)=>a+b,0),fx=f.map((v,i)=>v*mid[i]),S=fx.reduce((a,b)=>a+b,0);
+ const tb=`<table class=t><tr><th>Time, t (minutes)</th><th>Frequency</th></tr>${cls.map(([a,b],i)=>`<tr><td>${a} &lt; t ≤ ${b}</td><td>${f[i]}</td></tr>`).join('')}</table>`;
+ return[`The table shows the times ${N} people took to complete a task.`+tb+pt('Work out an estimate for the mean time.','Explain why your answer is only an estimate.'),
+  wp(['a',[`Midpoints: ${mid.join(', ')}`,`Frequency × midpoint: ${fx.join(' + ')} = ${S}`,`Mean ≈ ${S} ÷ ${N}`],`${d2(S/N)} minutes`],['b',['The exact times are not known; the midpoint of each group is used'],'Uses midpoints, not actual values'])]});
+EQ('Averages','combined mean of two groups',5,3,()=>{const n1=R(8,20),n2=R(8,20),m1=R(40,80),m2=R(40,80),T=n1*m1+n2*m2,[g1,g2]=P([['boys','girls'],['Class A','Class B'],['Year 10','Year 11']]);
+ return[`The mean test score of ${n1} ${g1} is ${m1}. The mean test score of ${n2} ${g2} is ${m2}. Work out the mean score of all ${n1+n2} students.`,
+  ws([`Total for ${g1}: ${n1} × ${m1} = ${n1*m1}`,`Total for ${g2}: ${n2} × ${m2} = ${n2*m2}`,`Overall mean = (${n1*m1} + ${n2*m2}) ÷ ${n1+n2} = ${T} ÷ ${n1+n2}`],`${d2(T/(n1+n2))}`)]});
+// ---- Fractions (diagram)
+EQ('Fractions','fraction of a shape shaded (grid)',2,2,()=>{const c=P([4,5,6,8]),r=P([2,3,4,5]),N=c*r;let k=R(1,N-1);while(G(k,N)==1&&Math.random()<.7)k=R(1,N-1);const cells=shuffle([...Array(N).keys()]).slice(0,k),S=24;
+ let s='';for(let i=0;i<N;i++){const x=i%c,y=(i/c|0);s+=`<rect x="${x*S}" y="${y*S}" width="${S}" height="${S}"${cells.includes(i)?' style="fill:currentColor;fill-opacity:.35"':''}/>`}
+ return[`Here is a shape made of equal squares.`+sv(c*S,r*S,s)+pt('What fraction of the shape is shaded? Give your answer in its simplest form.','What percentage of the shape is shaded?'),
+  wp(['a',[`${k} out of ${N} squares are shaded: ${fr(k,N)}`,G(k,N)>1?`Divide top and bottom by ${G(k,N)}`:'This is already in its simplest form'],sf(k,N)],['b',[`${k} ÷ ${N} × 100`],`${d2(k/N*100)}%`])]});
+// ---- Percentages
+EQ('Percentages','percentage change',4,3,()=>{const a=R(4,40)*5,p=P([5,10,12,15,20,25,30,35,40]),up=Math.random()<.5,b=a*(up?1+p/100:1-p/100),it=P(['The price of a bike','The value of a painting','The number of visitors']);
+ return[`${it} changes from ${a} to ${d2(b)}. Work out the percentage ${up?'increase':'decrease'}.`,ws([`Change = ${d2(b)} − ${a} = ${mn(d2(b-a))}`.replace('−−','−'),`Percentage change = change ÷ original × 100 = ${d2(Math.abs(b-a))} ÷ ${a} × 100`],`${p}% ${up?'increase':'decrease'}`)]});
+EQ('Percentages','compare two offers',4,3,()=>{const pr=R(12,60)*5,fA=P([[1,3],[1,4],[2,5],[1,5]]),pB=P([25,30,35,20,15]),A=pr*(1-fA[0]/fA[1]),B=pr*(1-pB/100);
+ return[`A jacket costs £${pr} in two shops. Shop A: ${fA[0]}/${fA[1]} off. Shop B: ${pB}% off. Which shop is cheaper, and by how much?`,
+  ws([`Shop A: ${fr(fA[0],fA[1])} of ${pr} = ${d2(pr*fA[0]/fA[1])}, price £${d2(A)}`,`Shop B: ${pB}% of ${pr} = ${d2(pr*pB/100)}, price £${d2(B)}`],A==B?'Both the same':`Shop ${A<B?'A':'B'} by £${d2(Math.abs(A-B)).toFixed?d2(Math.abs(A-B)).toFixed(2):''}`)]});
+// ---- Area (diagrams)
+EQ('Area and perimeter','shaded area: square minus circle',5,3,()=>{const s=2*R(3,10),r=s/2,A=s*s-pi*r*r,S=150;
+ const g=`<rect x="0" y="0" width="${S}" height="${S}" style="fill:currentColor;fill-opacity:.3"/><circle cx="${S/2}" cy="${S/2}" r="${S/2}" style="fill:#fff"/>`+T1(S/2,S+14,`${s} cm`);
+ return[`A circle fits exactly inside a square of side ${s} cm. Work out the shaded area. Give your answer to 1 decimal place.`+sv(S,S+16,g),ws([`Square: ${s} × ${s} = ${s*s} cm²`,`Circle radius = ${r} cm, area = π × ${r}² = ${d2(pi*r*r)}…`,`Shaded = ${s*s} − ${d2(pi*r*r)}…`],`${f1(A)} cm²`)]});
+EQ('Area and perimeter','triangle area or missing height (diagram)',3,2,()=>{const b=R(4,16),h=R(3,12),A=b*h/2,rev=Math.random()<.4,k=Math.min(180/b,100/h),ap=R(2,8)/10;
+ const p=[[0,h*k],[b*k,h*k],[b*k*ap,0]];let s=pth(P2(p,1))+pth(`M${p[2][0]} 0V${h*k}`,DS)+RA([p[2][0],h*k],[1,0],[0,-1],7)+lbl(p[0],p[1],`${b} cm`,7)+T1(p[2][0]+5,h*k/2+4,rev?'h':`${h} cm`,'start');
+ return rev?[`The triangle has area ${A} cm². Work out the height h.`+SVP(b*k,h*k,s),ws([`Area = ½ × base × height, so ${A} = ½ × ${b} × h`,`${A} = ${b/2}h`,`h = ${A} ÷ ${b/2}`],`${h} cm`)]:[`Work out the area of the triangle.`+SVP(b*k,h*k,s),ws([`Area = ½ × base × height`,`= ½ × ${b} × ${h}`],`${A} cm²`)]});
+// ---- Algebraic modelling (diagram)
+EQ('Algebraic modelling','function machine',2,3,()=>{const op1=P([['×',R(2,6)],['÷',R(2,5)]]),op2=P([['+',R(1,15)],['−',R(1,10)]]);let x=R(2,12);if(op1[0]=='÷')x=op1[1]*R(2,8);
+ const f=v=>{let a=op1[0]=='×'?v*op1[1]:v/op1[1];return op2[0]=='+'?a+op2[1]:a-op2[1]},out=f(x),y=op1[0]=='×'?R(3,10):op1[1]*R(3,9),outY=f(y);
+ const box=(X_,t)=>`<rect x="${X_}" y="10" width="60" height="34" rx="4"/>`+T1(X_+30,32,t),arr=X_=>pth(`M${X_} 27h18M${X_+12} 22l6 5l-6 5`,TH);
+ const s=T1(20,32,'Input')+arr(42)+box(64,`${op1[0]} ${op1[1]}`)+arr(126)+box(148,`${op2[0]} ${op2[1]}`)+arr(210)+T1(255,32,'Output');
+ const inv1=op2[0]=='+'?'−':'+',inv2=op1[0]=='×'?'÷':'×';
+ return[`Here is a function machine.`+sv(285,50,s)+pt(`Work out the output when the input is ${x}.`,`Work out the input when the output is ${outY}.`,`The input is n. Write an expression for the output.`),
+  wp(['a',[`${x} ${op1[0]} ${op1[1]} = ${op1[0]=='×'?x*op1[1]:x/op1[1]}`,`then ${op2[0]} ${op2[1]}`],`${out}`],['b',[`Work backwards: ${outY} ${inv1} ${op2[1]} = ${op2[0]=='+'?outY-op2[1]:outY+op2[1]}`,`then ${inv2} ${op1[1]}`],`${y}`],['c',['Apply the operations in order to n'],op1[0]=='×'?`${op1[1]}n ${op2[0]} ${op2[1]}`:`n ÷ ${op1[1]} ${op2[0]} ${op2[1]}`])]});
+EQ('Algebraic modelling','hire cost formula',3,3,()=>{const a=R(2,8)*5,b=R(3,12),h=R(2,8),C2=a+b*R(5,12),[it,u]=P([['a bike','hour'],['a van','hour'],['a boat','hour']]);
+ return[`The cost, £C, of hiring ${it} for h ${u}s is £${a} plus £${b} per ${u}.<br>`+pt('Write a formula for C in terms of h.',`Work out the cost of hiring it for ${h} ${u}s.`,`Mo pays £${C2}. For how many ${u}s did he hire it?`),
+  wp(['a',[`Fixed charge + rate × ${u}s`],`C = ${a} + ${b}h`],['b',[`C = ${a} + ${b} × ${h}`],`£${a+b*h}`],['c',[`${C2} = ${a} + ${b}h`,`${b}h = ${C2-a}`,`h = ${C2-a} ÷ ${b}`],`${(C2-a)/b} ${u}s`])]});
+// ---- Indices and substitution
+EQ('Indices','simplify using index laws',4,3,()=>{const a=R(2,9),b=R(2,9),c=R(2,5),d=R(2,4),p=R(6,12),q=R(2,p-2),k=R(2,5),m=R(2,6);
+ return[pt(`Simplify a${'<sup>'+a+'</sup>'} × a<sup>${b}</sup>`,`Simplify (b<sup>${c}</sup>)<sup>${d}</sup>`,`Simplify ${k*m}x<sup>${p}</sup> ÷ ${m}x<sup>${q}</sup>`),
+  wp(['a',['Multiplying: add the powers',`${a} + ${b} = ${a+b}`],`a<sup>${a+b}</sup>`],['b',['Power of a power: multiply the powers',`${c} × ${d} = ${c*d}`],`b<sup>${c*d}</sup>`],['c',[`Divide the numbers: ${k*m} ÷ ${m} = ${k}`,`Dividing: subtract the powers: ${p} − ${q} = ${p-q}`],`${k}x<sup>${p-q}</sup>`])]});
+EQ('Substitution and simplifying','substitute negative numbers',3,2,()=>{const a=R(2,6),b=-R(2,7),c=R(2,5);
+ return[`Work out the value of ${c}a² − ab when a = ${a} and b = ${mn(b)}.`,ws([`${c}a² = ${c} × ${a}² = ${c*a*a}`,`ab = ${a} × (${mn(b)}) = ${mn(a*b)}`,`${c*a*a} − (${mn(a*b)}) = ${c*a*a} + ${-a*b}`],`${c*a*a-a*b}`)]});
+// ---- Money
+EQ('Money and best buy','best buy: three sizes',4,3,()=>{const base=R(90,260)/100,sz=P([[250,500,750],[200,400,1000],[100,250,500]]),pr=sz.map((g,i)=>d2(g/100*base*(1-[0,.06,.12][i]+R(-6,6)/100)));
+ const per=sz.map((g,i)=>pr[i]/g*100),best=per.indexOf(Math.min(...per));
+ return[`Coffee is sold in three sizes: ${sz.map((g,i)=>`${g} g for £${pr[i].toFixed(2)}`).join(', ')}. Which size is the best value? You must show your working.`,
+  ws(sz.map((g,i)=>`${g} g: £${pr[i].toFixed(2)} ÷ ${g/100} = £${per[i].toFixed(3)} per 100 g`),`${sz[best]} g (cheapest per 100 g)`)]});
+// ---- Probability (diagrams)
+EQ('Basic probability','spinner: missing probability and expected frequency',3,3,()=>{const cs=['Red','Blue','Green','Yellow'],p=[R(1,3),R(1,3),R(1,3)].map(v=>v/10),x=+(1-p.reduce((a,b)=>a+b,0)).toFixed(1),n=P([50,100,200,40,60]);
+ if(x<=0)return['A spinner has P(red) = 0.2 and P(blue) = 0.5. Work out P(not blue).','0.5'];
+ const C=[60,60],Rr=55;let s='';[0,1,2,3].forEach(i=>{const a1=(i*90-90)*pi/180,a2=(i*90)*pi/180;s+=pth(`M${C[0]} ${C[1]}L${C[0]+Rr*Math.cos(a1)} ${C[1]+Rr*Math.sin(a1)}A${Rr} ${Rr} 0 0 1 ${C[0]+Rr*Math.cos(a2)} ${C[1]+Rr*Math.sin(a2)}Z`)+T1(C[0]+Math.cos((a1+a2)/2)*Rr*.55,C[1]+Math.sin((a1+a2)/2)*Rr*.55+4,cs[i][0],'middle',11)});
+ const tb=`<table class=t><tr><th>Colour</th>${cs.map(c=>`<td>${c}</td>`).join('')}</tr><tr><th>Probability</th>${p.map(v=>`<td>${v}</td>`).join('')}<td>x</td></tr></table>`;
+ return[`A biased spinner is red, blue, green or yellow.`+sv(120,120,s)+tb+pt('Work out the value of x.',`The spinner is spun ${n} times. How many times would you expect it to land on blue?`),
+  wp(['a',[`Probabilities add up to 1: x = 1 − (${p.join(' + ')})`],`${x}`],['b',[`${p[1]} × ${n}`],`${d2(p[1]*n)}`])]});
+EQ('Basic probability','two dice sample space',4,3,()=>{const op=P(['sum','difference']),k=op=='sum'?R(5,9):R(1,3),gt=op=='sum'?R(8,10):R(2,4);
+ let rows='<tr><th></th>'+[1,2,3,4,5,6].map(d=>`<th>${d}</th>`).join('')+'</tr>',c1=0,c2=0;
+ for(let a=1;a<=6;a++){rows+=`<tr><th>${a}</th>`;for(let b=1;b<=6;b++){const v=op=='sum'?a+b:Math.abs(a-b);if(v==k)c1++;if(v>=gt)c2++;rows+=`<td>${v}</td>`}rows+='</tr>'}
+ return[`Two fair dice are rolled and the ${op} of the scores is found. The sample space diagram shows all the outcomes.<table class=t>${rows}</table>`+pt(`Work out the probability that the ${op} is ${k}.`,`Work out the probability that the ${op} is at least ${gt}.`),
+  wp(['a',[`Count the cells showing ${k}: ${c1} out of 36`],sf(c1,36)],['b',[`Count the cells showing ${gt} or more: ${c2} out of 36`],sf(c2,36)])]});
+// ---- Measures
+EQ('Time and measures','density, mass and volume of a cuboid',4,3,()=>{const a=R(2,10),b=R(2,10),c=R(2,10),d=P([2.5,7.8,8.9,11.3,2.7,0.9,1.2]),V=a*b*c;
+ return[`A solid cuboid measures ${a} cm by ${b} cm by ${c} cm. It is made of material with density ${d} g/cm³. Work out the mass of the cuboid.`,
+  ws([`Volume = ${a} × ${b} × ${c} = ${V} cm³`,`Mass = density × volume = ${d} × ${V}`],`${d2(d*V)} g`)]});
+EQ('Bounds','error interval',4,2,()=>{const t=P(['nearest 10','nearest whole number','1 decimal place','nearest 100','truncated to a whole number']),x=t=='nearest 10'?R(3,90)*10:t=='nearest 100'?R(3,40)*100:t=='1 decimal place'?R(10,99)/10:R(5,95);
+ const h=t=='nearest 10'?5:t=='nearest 100'?50:t=='1 decimal place'?.05:.5;const lo=t.startsWith('trunc')?x:d2(x-h),hi=t.startsWith('trunc')?x+1:d2(x+h);
+ return[`The length of a rod is ${x} cm, ${t.startsWith('trunc')?'truncated to a whole number':'correct to the '+t.replace('nearest ','nearest ')}. Write down the error interval for the length, L.`.replace('correct to the 1 decimal place','correct to 1 decimal place'),
+  ws([t.startsWith('trunc')?'Truncating cuts off the decimal part, so L could be anything from '+x+' up to (but not including) '+(x+1):`Half of the rounding unit is ${h}`,`Lower bound ${lo}, upper bound ${hi}`],`${lo} ≤ L &lt; ${hi}`)]});
+EQ('Unit conversion (given rate)','metric unit conversions',2,3,()=>{const a=R(2,95)/10,b=R(150,4800),c=R(12,95)*10;
+ return[pt(`Change ${a} km into metres.`,`Change ${b} g into kilograms.`,`Change ${c} ml into litres.`),
+  wp(['a',['1 km = 1000 m, so multiply by 1000'],`${nf(d2(a*1000))} m`],['b',['1 kg = 1000 g, so divide by 1000'],`${d2(b/1000)} kg`],['c',['1 litre = 1000 ml, so divide by 1000'],`${d2(c/1000)} litres`])]});
+// ---- Inequalities (diagrams)
+EQ('Inequalities','write the inequality from a number line',3,2,()=>{const a=R(-4,1),b=a+R(2,5),ca=Math.random()<.5,cb=Math.random()<.5,S=26,X=v=>(v+5)*S;let s=pth(`M0 30H${10*S}`);
+ for(let v=-5;v<=5;v++)s+=pth(`M${X(v)} 25V35`,TH)+T1(X(v),50,mn(v),'middle',11);
+ s+=pth(`M${X(a)} 18H${X(b)}`,'style="stroke-width:2.5"')+`<circle cx="${X(a)}" cy="18" r="5" style="fill:${ca?'currentColor':'#fff'}"/><circle cx="${X(b)}" cy="18" r="5" style="fill:${cb?'currentColor':'#fff'}"/>`;
+ const ints=[];for(let v=a;v<=b;v++)if((v>a||ca)&&(v<b||cb))ints.push(mn(v));
+ return[`The inequality is shown on the number line.`+sv(10*S,52,s)+pt('Write down the inequality, using x.','List the integer values of x that satisfy it.'),
+  wp(['a',['A filled circle means the value is included (≤); an open circle means it is not (<)'],`${mn(a)} ${ca?'≤':'&lt;'} x ${cb?'≤':'&lt;'} ${mn(b)}`],['b',[`Integers in the interval`],ints.join(', ')])]});
+EQ('Inequalities','identify the region from inequalities (graph)',6,3,()=>{const a=R(-3,1),c=R(-2,0),b=Math.max(a,c)+R(2,4);
+ const V=a>c?[[a,c],[b,c],[b,b],[a,a]]:[[c,c],[b,c],[b,b]],cx=V.reduce((t,p)=>t+p[0],0)/V.length,cy=V.reduce((t,p)=>t+p[1],0)/V.length;
+ const svg=GRID(-5,5,-5,5,17,(X,Y)=>poly(V,X,Y,'style="fill:currentColor;fill-opacity:.25;stroke:none"')+pth(`M${X(a)} 0V${Y(-5)}M${X(b)} 0V${Y(-5)}M0 ${Y(c)}H${X(5)}M${X(-5)} ${Y(-5)}L${X(5)} ${Y(5)}`,'style="stroke-width:1.6"')
+  +T1(X(cx),Y(cy)+4,'R','middle',12)+T1(X(a)-3,Y(-5)-4,`x = ${mn(a)}`,'end',9)+T1(X(b)+3,Y(-5)-4,`x = ${b}`,'start',9)+T1(X(-5)+3,Y(c)-4,`y = ${mn(c)}`,'start',9)+T1(X(4.5)-6,Y(4.5),'y = x','end',9));
+ return[`The region R is shaded.`+svg+`Write down the inequalities that define R.`,ws([a>c?'R is to the right of x = '+mn(a)+', to the left of x = '+b+', above y = '+mn(c)+' and below y = x':'R is to the left of x = '+b+', above y = '+mn(c)+' and below y = x'],(a>c?`x &gt; ${mn(a)}, `:'')+`x &lt; ${b}, y &gt; ${mn(c)}, y &lt; x`)]},'H');
+
+// ---- Circle theorems and angles (diagrams)
+EQ('Circle theorems','tangent meets radius at 90° (diagram)',6,3,()=>{const t=R(20,60),O=[70,90],Rr=55,T_=[O[0],O[1]-Rr],Pp=[O[0]+Rr/Math.tan(t*pi/180),T_[1]];
+ const s=`<circle cx="${O[0]}" cy="${O[1]}" r="${Rr}"/>`+pth(`M${O[0]-60} ${T_[1]}H${Math.min(Pp[0]+30,300)}`)+pth(P2([O,T_]))+pth(P2([O,Pp]))+RA(T_,[1,0],[0,1],8)+`<circle cx="${O[0]}" cy="${O[1]}" r="2" fill="currentColor"/>`
+  +T1(O[0]-8,O[1]+14,'O')+T1(T_[0]-4,T_[1]-6,'T','end')+T1(Pp[0]+4,Pp[1]-6,'P','start')+ARC(Pp,T_,O,20,`${t}°`,36)+ARC(O,T_,Pp,14,'x',26);
+ return[`PT is a tangent to the circle, centre O, at T.`+sv(Math.min(Pp[0]+40,310),150,s)+`Work out the size of angle x. Give reasons for your answer.`,
+  ws(['A tangent meets a radius at 90°, so angle OTP = 90°',`Angles in a triangle add to 180°: x = 180 − 90 − ${t}`],`x = ${90-t}°`)]},'H');
+EQ('Circle theorems','cyclic quadrilateral (diagram)',6,2,()=>{const a=R(60,120),c=180-a,Rr=70,O=[90,90],ang=[200,300,20,110].map(v=>(v+R(-12,12))*pi/180),Pt=ang.map(t=>[O[0]+Rr*Math.cos(t),O[1]-Rr*Math.sin(t)]),nm='ABCD';
+ const s=`<circle cx="${O[0]}" cy="${O[1]}" r="${Rr}"/>`+pth(P2(Pt,1))+Pt.map((p,i)=>T1(p[0]+(p[0]<O[0]?-8:8),p[1]+(p[1]<O[1]?-4:12),nm[i],p[0]<O[0]?'end':'start')).join('')+ARC(Pt[0],Pt[3],Pt[1],18,`${a}°`,32)+ARC(Pt[2],Pt[1],Pt[3],18,'x',30);
+ return[`A, B, C and D are points on a circle.`+sv(180,180,s)+`Work out the size of angle x. Give a reason for your answer.`,ws(['Opposite angles of a cyclic quadrilateral add up to 180°',`x = 180 − ${a}`],`x = ${c}°`)]},'H');
+EQ('Angles','angles in a quadrilateral (diagram)',3,2,()=>{let a=R(60,130),b=R(60,130),c=R(50,120),x=360-a-b-c;if(x<35||x>170){a=95;b=80;c=110;x=75}
+ const Pt=[[20,130],[210,140],[180,30],[50,20]];const s=pth(P2(Pt,1))+ARC(Pt[0],Pt[3],Pt[1],16,`${a}°`,32)+ARC(Pt[1],Pt[0],Pt[2],16,`${b}°`,32)+ARC(Pt[2],Pt[1],Pt[3],16,`${c}°`,32)+ARC(Pt[3],Pt[2],Pt[0],16,'x',30);
+ return[`Here is a quadrilateral.`+sv(230,150,s)+`Work out the size of angle x.`,ws(['Angles in a quadrilateral add up to 360°',`x = 360 − ${a} − ${b} − ${c}`],`x = ${x}°`)]});
+// ---- Number
+EQ('Counting and arrangements','product rule for codes',4,2,()=>{const L=R(2,4),D=R(2,4),opt=P(['any','no repeat','odd last']);let n=1,st=[];
+ if(opt=='any'){n=26**L*10**D;st=[`Each letter: 26 choices; each digit: 10 choices`,`26<sup>${L}</sup> × 10<sup>${D}</sup>`]}else if(opt=='no repeat'){let t=1,s2=[];for(let i=0;i<D;i++){t*=10-i;s2.push(10-i)}n=t;st=[`Digits cannot repeat: ${s2.join(' × ')}`]}else{n=10**(D-1)*5;st=[`First ${D-1} digit${D>2?'s':''}: 10 choices each; last digit odd: 5 choices`,`10<sup>${D-1}</sup> × 5`]}
+ const q=opt=='any'?`A code is ${L} letters followed by ${D} digits. How many different codes are possible?`:opt=='no repeat'?`A PIN has ${D} digits. No digit can be used more than once. How many different PINs are possible?`:`A PIN has ${D} digits. The last digit must be odd. How many different PINs are possible?`;
+ return[q,ws(st,nf(n))]});
+EQ('Factors, multiples and primes','LCM in context (buses and packs)',4,3,()=>{const a=P([6,8,9,10,12,15]),b=P([4,14,16,18,20,25]),l=a*b/G(a,b),ctx=Math.random()<.5;
+ if(ctx){const h=R(7,9);return[`Bus A leaves every ${a} minutes and bus B every ${b} minutes. Both leave the station at ${h}:00 am. When will they next leave together?`,ws([`Multiples of ${a}: ${[1,2,3,4,5].map(i=>a*i).join(', ')}…`,`Multiples of ${b}: ${[1,2,3,4].map(i=>b*i).join(', ')}…`,`LCM = ${l} minutes`],`${h+Math.floor(l/60)}:${String(l%60).padStart(2,'0')} am`)]}
+ return[`Rolls come in packs of ${a}. Sausages come in packs of ${b}. Kim wants exactly the same number of rolls and sausages. What is the smallest number of each pack she can buy?`,ws([`LCM of ${a} and ${b} = ${l}`,`Rolls: ${l} ÷ ${a} = ${l/a} packs; sausages: ${l} ÷ ${b} = ${l/b} packs`],`${l/a} packs of rolls and ${l/b} packs of sausages`)]});
+EQ('Decimals','use a given multiplication fact',3,3,()=>{const a=R(12,89),b=R(12,89),p=a*b;
+ return[`Use ${a} × ${b} = ${nf(p)} to work out:<br>`+pt(`${a/10} × ${b/10}`,`${a} × ${b/100}`,`${nf(p)} ÷ ${b/10}`),
+  wp(['a',[`Each number is ÷ 10, so the answer is ÷ 100`],`${d2(p/100)}`],['b',['One number is ÷ 100, so the answer is ÷ 100'],`${d2(p/100)}`],['c',[`${nf(p)} ÷ ${b} = ${a}, and dividing by ${b/10} instead gives an answer 10 times bigger`],`${a*10}`])]});
+EQ('Quadratic graphs','complete a table of values',4,2,()=>{const b=R(-4,3),c=R(-5,4),f=x=>x*x+b*x+c,xs=[-2,-1,0,1,2,3],hide=shuffle([0,1,2,3,4,5]).slice(0,3);
+ const eq=`y = x²${b?(b>0?' + ':' − ')+(Math.abs(b)==1?'':Math.abs(b))+'x':''}${c?(c>0?' + ':' − ')+Math.abs(c):''}`;
+ return[`Complete the table of values for ${eq}.<table class=t><tr><th>x</th>${xs.map(x=>`<td>${mn(x)}</td>`).join('')}</tr><tr><th>y</th>${xs.map((x,i)=>`<td>${hide.includes(i)?'&nbsp;':mn(f(x))}</td>`).join('')}</tr></table>`,
+  ws(hide.sort((p,q)=>p-q).map(i=>`x = ${mn(xs[i])}: (${mn(xs[i])})² ${b>=0?'+':'−'} ${Math.abs(b)} × (${mn(xs[i])}) ${c>=0?'+':'−'} ${Math.abs(c)} = ${mn(f(xs[i]))}`),hide.map(i=>`x = ${mn(xs[i])}: y = ${mn(f(xs[i]))}`).join('; '))]});
+
+})();
+
+
+/* ===== Similar questions for past-paper questions (used here and by gcse-exam-questions.html) ===== */
+const SIMS={};
+function simCands(x){const H=x.t=='H',gr=Math.round(exGr(x)),D=window.EXDATA||{},keys=((D.SIMQ||{})[x.f]||[]).map(i=>D.SIMN[i]),byK=new Map(EQN.map(e=>[e.t+'|'+e.n,e]));
+ const close=keys.map(k=>byK.get(k)).filter(e=>e&&(!e.h||H)),near=EQN.filter(e=>(x.g||[]).includes(e.t)&&(!e.h||H)&&!close.includes(e)).sort((a,b)=>Math.abs(a.g-gr)-Math.abs(b.g-gr));
+ let nr=near.filter(e=>Math.abs(e.g-gr)<=2);if(!close.length&&!nr.length)nr=near.slice(0,4);
+ return{c:close.concat(nr),nc:close.length}}
+function simNext(x){const{c,nc}=simCands(x),H=x.t=='H';
+ if(c.length){const i=(SIMS[x.f]=SIMS[x.f]==null?0:SIMS[x.f]+1)%c.length,e=c[i];let q,a;try{[q,a]=e.f()}catch(err){return null}
+  return{h:fixroot(q)+`<span class=emk>[${e.mk} mark${e.mk>1?'s':''}]</span>`,a:fixroot(a),info:`${i<nc?'Closely matched':'Same topic'} · ${e.t} · grade ${e.g} · ${e.mk} mark${e.mk>1?'s':''}`,n:c.length}}
+ const subs=[];(x.g||[]).forEach(tn=>{const t=T.find(y=>y.n==tn);if(t)t.sub.filter(y=>y[1]&&!y.rm&&!y.eq&&(H||!y[2])&&y.g0!=null).forEach(y=>subs.push([tn,y]))});if(!subs.length)return null;
+ const gr=exGr(x),[tn,y]=subs[Math.floor(Math.random()*subs.length)],L=Math.min(3,Math.max(1,Math.round(gr)-y.g0+1));let q,a;try{[q,a]=y[1](L,H)}catch(err){return null}
+ return{h:fixroot(q),a:fixroot(a),info:`Skills practice · ${tn} · ${y[0]}`,n:subs.length}}
+const simHtml=(r,f)=>r?`<div class=simh><b>Similar question</b> <span>${r.info}</span></div><div class=simq>${r.h}</div><div class=sima hidden><div class=simt>Mark scheme</div>${r.a}</div><div class=simb><button class=simms>Mark scheme</button> <button class=simgo data-f="${f}">Another one</button> <button class=simx>Hide</button></div>`:'<div class=simh>No similar question type for this topic yet.</div>';
 let eqm=false;
 function eqAvail(){let tp=exTopics(),y=mode=='r'?$('#yr').value:'',H=tier=='H',mx=99;
 if(y=='Year 7'||y=='Year 8'||y=='Year 9 Set 3/4')mx=5;else if(y=='Year 9 Set 2/3')mx=6;else if(!H)mx=6;
@@ -2140,6 +2537,12 @@ $('#lpsx').onclick=slExport;
 
 $('#lpw').onclick=()=>lpSave(0);$('#lpa').onclick=()=>lpSave(1);$('#lpv').onclick=()=>lpPrev(0);$('#lpvt').onclick=()=>lpPrev(1);
 
+
+$('#cols').addEventListener('click',e=>{const b=e.target.closest('.exsim,.simgo,.simms,.simx');if(!b)return;e.stopPropagation();
+ const card=b.closest('.exc'),box=card&&card.querySelector('.simbox');if(!box)return;
+ if(b.classList.contains('simms')){const a=box.querySelector('.sima');a.hidden=!a.hidden;return}
+ if(b.classList.contains('simx')){box.innerHTML='';return}
+ const f=b.dataset.f,x=EX.find(y=>y.f==f);if(x)box.innerHTML=simHtml(simNext(x),f)},true);
 
 /* ===== Show/hide grades (screen, PDFs, lesson plans, slides) ===== */
 function sgrApply(){document.body.classList.toggle('nogr',!SGR);['#sgr','#sgr2'].forEach(i=>{let e=$(i);if(e)e.checked=SGR})}
