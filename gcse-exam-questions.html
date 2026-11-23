@@ -52,14 +52,39 @@ body.ws>*:not(#sheet){display:none}body.ws #sheet{display:block;background:#fff;
 .eqp svg{font-size:22px}
 .eqp .v{display:inline-flex;flex-direction:column;border:solid currentColor;border-width:0 .09em;border-radius:.4em;padding:0 .3em;line-height:1.1;text-align:center;vertical-align:middle}.eqp .v i{font-style:normal}
 .sim .act{font-size:13px;padding:6px 10px}
+
+/* pinned filter bar + pinned chapter menu; phone layout */
+.tb{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 4px;margin-bottom:10px;border-bottom:1px solid var(--line)}
+.tb .sbar{margin-bottom:8px}.tb .shint{margin:6px 2px 4px}
+.frow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.frow .lab{font:600 11px sans-serif;color:var(--mut);text-transform:uppercase;margin:0 2px 0 8px;cursor:help}
+.frow .lab:first-of-type{margin-left:0}.cgrp{display:contents}
+.frow .chip{margin:0}
+.fchip{display:none;font:600 13px sans-serif;padding:5px 11px;border-radius:14px;border:1.5px solid var(--acc);background:var(--acc);color:var(--bg);cursor:pointer;white-space:nowrap}
+aside .fdone{display:none}
+@media (min-width:900px){aside{position:sticky;top:0;align-self:flex-start;max-height:100vh;overflow-y:auto;padding:0 4px 12px 0;scrollbar-width:thin}}
+@media (max-width:899px){
+ header{padding:12px 12px 0}h1{font-size:20px;margin-bottom:10px}
+ .wrap{padding:0 10px 10px;gap:0}main{flex-basis:100%}
+ aside{display:none}
+ body.fo aside{display:block;position:fixed;inset:0;z-index:60;max-width:none;background:var(--bg);overflow-y:auto;padding:12px}
+ body.fo{overflow:hidden}
+ body.fo aside .fdone{display:block;position:sticky;top:0;z-index:2;width:100%;margin:0 0 10px;padding:11px;font-size:15px}
+ .fchip{display:inline-block}
+ .frow{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:3px}
+ .frow::-webkit-scrollbar{display:none}
+ .frow .chip,.frow .lab{flex:0 0 auto;white-space:nowrap}
+ .tb .sbar input{font-size:16px;padding:9px 10px 9px 34px}
+ .shint{font-size:12px}.shint .act{padding:4px 8px!important;font-size:12px!important}
+ .q{padding:9px}
+}
 </style></head><body>
 <header><h1><span class="hl">GCSE Maths</span> Past Exam Question Selector</h1><div class="tabs" id="tabs"></div></header>
 <div class="wrap">
-<aside>
+<aside><button class="act fdone" onclick="fClose()">Show questions &rarr;</button>
 <div class="box"><h3>Textbook chapter</h3><div class="hint" id="bkname" style="margin-bottom:6px"></div><div class="lg"><b style="color:var(--cn)">&#9632; Number</b> <b style="color:var(--ca)">&#9632; Algebra</b> <b style="color:var(--cr)">&#9632; Ratio &amp; proportion</b> <b style="color:var(--cg)">&#9632; Geometry &amp; measures</b> <b style="color:var(--cp)">&#9632; Probability</b> <b style="color:var(--cs)">&#9632; Statistics</b></div><div id="topics"></div></div>
 <div class="box" id="secbox" style="display:none"><h3>Section (optional)</h3><div id="secs"></div></div>
-<div class="box"><h3>GCSE grade</h3><div id="grades"></div><div class="hint" style="margin-top:6px">Choose one or more. Grades are estimated from where the question sits in its paper (Foundation 1–5, Higher 4–9).</div></div>
-<div class="box"><h3>Calculator</h3><div id="calcs"></div></div>
+
 <div class="box"><h3>Whole paper / marks</h3>
 <select id="pp"></select>
 <div class="hint" style="margin:6px 0 10px">Pick a paper to show all its questions in order (other filters are ignored).</div>
@@ -69,8 +94,9 @@ Max marks <input id="maxm" type="number" min="1" value="" placeholder="any" styl
 <button class="act" onclick="printSheet()">Open worksheet / print</button><div id="msg" style="font:13px sans-serif;color:var(--h)"></div>
 <button class="act" style="background:var(--mut)" onclick="basket=[];save();render()">Clear selection</button></div>
 </aside>
-<main><div class="sbar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg><input id="sq" type="search" placeholder="Search topics, e.g. Pythagoras, compound interest, Nov 2023" aria-label="Search questions" autocomplete="off"></div>
-<div class="shint" id="shint"></div>
+<main><div class="tb"><div class="sbar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg><input id="sq" type="search" placeholder="Search topics, e.g. Pythagoras, compound interest, Nov 2023" aria-label="Search questions" autocomplete="off"></div>
+<div class="frow"><button class="fchip" id="fbtn" onclick="fOpen()">&#9776; Menu<span id="fcnt"></span></button><span class="lab" title="Grades are estimated from where the question sits in its paper (Foundation 1–5, Higher 4–9)">Grade</span><span id="grades" class="cgrp"></span><span class="lab">Calc</span><span id="calcs" class="cgrp"></span></div>
+<div class="shint" id="shint"></div></div>
 <div id="list"><div id="load">Loading past-paper questions…</div></div></main></div>
 <div id="sheet"></div>
 <script src="exdata.js"></script>
@@ -115,22 +141,26 @@ function build(){
  const Q=cur(),B=BK[lv];bkname.textContent='Collins '+B.name;
  topics.innerHTML=B.ch.map(([c,cn])=>{const n=Q.filter(q=>q.ch.includes(c)).length;return n?`<button class="chip ${sc(lv,c)}${fT.has(c)?' on':''}" data-t="${c}">${c}. ${esc(cn)} (${n})</button>`:''}).join('');
  const G=lv=='H'?[4,5,6,7,8,9]:[1,2,3,4,5];
- grades.innerHTML=G.map(g=>`<button class="chip${fG.has(g)?' on':''}" data-g="${g}"><span class="${gcls(g)}">●</span> Grade ${g} (${Q.filter(q=>q.gr==g).length})</button>`).join('');
- calcs.innerHTML=[['n','Non-calculator (Paper 1)',false],['c','Calculator (Papers 2 & 3)',true]].map(([k,t,v])=>`<button class="chip${fC.has(k)?' on':''}" data-c="${k}">${t} (${Q.filter(q=>q.calc==v).length})</button>`).join('');
+ grades.innerHTML=G.map(g=>`<button class="chip${fG.has(g)?' on':''}" data-g="${g}" title="Grade ${g}: ${Q.filter(q=>q.gr==g).length} questions"><span class="${gcls(g)}">●</span> ${g}</button>`).join('');
+ calcs.innerHTML=[['n','Non-calc','Paper 1 (non-calculator)',false],['c','Calculator','Papers 2 and 3 (calculator)',true]].map(([k,t,tt,v])=>`<button class="chip${fC.has(k)?' on':''}" data-c="${k}" title="${tt}: ${Q.filter(q=>q.calc==v).length} questions">${t}</button>`).join('');
  const ps=[...new Set(Q.map(plab))].sort((a,b)=>{const qa=Q.find(q=>plab(q)==a),qb=Q.find(q=>plab(q)==b);return sesK(qb.s)-sesK(qa.s)||qa.s.localeCompare(qb.s)||qa.p-qb.p});
  pp.innerHTML='<option value="">All papers (filter by chapter)</option>'+ps.map(p=>`<option${p==pp.value?' selected':''}>${esc(p)}</option>`).join('');
  secBuild()}
+function fOpen(){document.body.classList.add('fo');window.scrollTo(0,0)}
+function fClose(){document.body.classList.remove('fo');window.scrollTo(0,0)}
+function fCount(){const n=fT.size;fcnt.textContent=n?` (${n})`:''}
+function toTop(){const w=document.querySelector('.wrap');if(scrollY>w.offsetTop)scrollTo({top:w.offsetTop})}
 function secBuild(){const Q=cur(),B=BK[lv];
  if(!fT.size||pp.value){secbox.style.display='none';return}secbox.style.display='';
  secs.innerHTML=B.ch.filter(([c])=>fT.has(c)).map(([c,cn,ss])=>ss.map(([code,sn])=>{const n=Q.filter(q=>q.sec.includes(code)).length;return n?`<button class="chip sec ${sc(lv,c)}${fS.has(code)?' on':''}" data-s="${code}">${code} ${esc(sn)} (${n})</button>`:''}).join('')).join('')||'<span class="hint">No sections with questions.</span>'}
 document.addEventListener('click',e=>{
- const l=e.target.closest('[data-l]');if(l){lv=l.dataset.l;fT.clear();fS.clear();fG.clear();pp.value='';save();build();SHOWN=60;render();return}
+ const l=e.target.closest('[data-l]');if(l){lv=l.dataset.l;fT.clear();fS.clear();fG.clear();pp.value='';save();build();SHOWN=60;fCount();render();return}
  const c=e.target.closest('.chip');if(!c)return;
  if(c.dataset.t){const k=+c.dataset.t;if(fT.has(k)){fT.delete(k);[...fS].filter(s=>+s.split('.')[0]==k).forEach(s=>fS.delete(s))}else fT.add(k);secBuild()}
  else if(c.dataset.s){const k=c.dataset.s;fS.has(k)?fS.delete(k):fS.add(k)}
  else if(c.dataset.g){const k=+c.dataset.g;fG.has(k)?fG.delete(k):fG.add(k)}
  else if(c.dataset.c){const k=c.dataset.c;fC.has(k)?fC.delete(k):fC.add(k)}
- c.classList.toggle('on');SHOWN=60;render()});
+ c.classList.toggle('on');SHOWN=60;fCount();render();if(c.closest('.tb'))toTop()});
 pp.onchange=()=>{secBuild();SHOWN=60;render()};maxm.oninput=()=>render();
 let sT=0;sq.addEventListener('input',()=>{clearTimeout(sT);sT=setTimeout(()=>{SHOWN=60;render()},150)});
 sq.addEventListener('keydown',e=>{if(e.key==='Escape'){sq.value='';render()}});
@@ -159,7 +189,7 @@ function render(){
  const mx=+maxm.value||999,PM=!!pp.value,ws=norm(sq.value).split(' ').filter(w=>w.length>=2),SR=ws.length>0;
  let L;
  if(PM)L=cur().filter(q=>plab(q)===pp.value).sort((a,b)=>a.q-b.q);
- else if(!fT.size&&!SR&&!fG.size){PL=[];shint.textContent='';list.innerHTML=`<div class="box"><h3>Choose a textbook chapter</h3><div class="hint">Pick one or more chapters or grades on the left (or search above, or choose a whole paper) to see the ${TN[lv]} exam questions for them. Click <b>Mark scheme</b> under a question to see its mark scheme, and <b>Add to worksheet</b> to build a printable worksheet.</div></div>`;return}
+ else if(!fT.size&&!SR&&!fG.size){PL=[];shint.textContent='';list.innerHTML=`<div class="box"><h3>Choose a textbook chapter</h3><div class="hint">Pick one or more chapters or grades (or search, or choose a whole paper from the menu) to see the ${TN[lv]} exam questions for them. Click <b>Mark scheme</b> under a question to see its mark scheme, and <b>Add to worksheet</b> to build a printable worksheet.</div></div>`;return}
  else L=cur().filter(q=>(!fT.size||q.ch.some(c=>fT.has(c)))&&(!fS.size||q.sec.some(c=>fS.has(c)))&&(!fG.size||fG.has(q.gr))&&(!fC.size||fC.has(q.calc?'c':'n'))&&q.m<=mx&&(!SR||sMatch(q,ws)))
   .sort((a,b)=>firstCh(a)-firstCh(b)||sesK(b.s)-sesK(a.s)||a.p-b.p||a.q-b.q);
  PL=L.map(q=>q.f);const all=PL.length&&PL.every(f=>basket.includes(f)),marks=L.reduce((s,q)=>s+(q.m||0),0);
